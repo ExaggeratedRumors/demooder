@@ -11,12 +11,12 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.Emotionrecognizer"
+        android:theme="@style/Theme.Demooder"
         >
         <activity
             android:name=".core.host.MainActivity"
             android:exported="true"
-            android:theme="@style/Theme.Emotionrecognizer">
+            android:theme="@style/Theme.Demooder">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

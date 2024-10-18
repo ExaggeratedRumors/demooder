@@ -1,4 +1,4 @@
-# Emotion Recognizer
+# Demooder
 
 ![Android support](https://shields.io/badge/Android-SKD_34-green) ![Android support](https://shields.io/badge/In_progress-purple)
 

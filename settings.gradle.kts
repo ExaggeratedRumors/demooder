@@ -16,5 +16,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "emotion-recognizer"
+rootProject.name = "demooder"
 include(":app")

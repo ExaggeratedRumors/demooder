@@ -14,11 +14,11 @@ plugins {
 }
 
 android {
-    namespace = "com.ertools.emotion_recognizer"
+    namespace = "com.ertools.demooder"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.ertools.emotion_recognizer"
+        applicationId = "com.ertools.demooder"
         minSdk = 32
         targetSdk = 34
         versionCode = 1
