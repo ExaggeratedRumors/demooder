@@ -55,24 +55,31 @@ android {
 
 dependencies {
     /** Core **/
-    implementation("androidx.core:core-ktx:1.13.1")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.2")
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.lifecycle.runtime.ktx)
 
     /** Compose **/
-    implementation("androidx.activity:activity-compose:1.9.0")
-    implementation("androidx.compose.runtime:runtime:$compose_ui_version")
-    implementation("androidx.compose.ui:ui:$compose_ui_version")
-    implementation("androidx.compose.ui:ui-tooling-preview:$compose_ui_version")
-    implementation("androidx.compose.material:material:$compose_ui_version")
+    implementation(libs.androidx.activity.compose)
+    implementation(libs.androidx.runtime)
+    implementation(libs.androidx.ui)
+    implementation(libs.androidx.ui.tooling.preview)
+    implementation(libs.androidx.material3.adaptive.navigation.suite)
+    implementation(libs.androidx.material3)
+    implementation(libs.androidx.material3.window.size.clazz)
 
     /** Accompanist **/
-    implementation("com.google.accompanist:accompanist-permissions:0.20.0")
+    implementation(libs.accompanist.permissions)
+
+    /** DeepLearning **/
+    implementation (libs.kotlin.deeplearning.tensorflow)
+    implementation (libs.kotlin.deeplearning.onnx)
+    implementation (libs.kotlin.deeplearning.visualization)
 
     /** Test **/
-    testImplementation("junit:junit:4.13.2")
-    androidTestImplementation("androidx.test.ext:junit:1.1.5")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
-    androidTestImplementation("androidx.compose.ui:ui-test-junit4:$compose_ui_version")
-    debugImplementation("androidx.compose.ui:ui-tooling:$compose_ui_version")
-    debugImplementation("androidx.compose.ui:ui-test-manifest:$compose_ui_version")
+    testImplementation(libs.junit)
+    androidTestImplementation(libs.androidx.junit)
+    androidTestImplementation(libs.androidx.espresso.core)
+    androidTestImplementation(libs.androidx.ui.test.junit4)
+    debugImplementation(libs.androidx.ui.tooling)
+    debugImplementation(libs.androidx.ui.test.manifest)
 }

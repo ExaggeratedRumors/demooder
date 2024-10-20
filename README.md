@@ -26,7 +26,7 @@ in progress
 - JVM 22
 - Android SDK 34
 - Kotlin 1.9.22
-- Jetpack Compose 1.6.8
+- Jetpack Compose 1.7.4
 - Compose Compiler 1.5.10
-- KotlinDL 0.4.0
+- KotlinDL 0.5.0
 
