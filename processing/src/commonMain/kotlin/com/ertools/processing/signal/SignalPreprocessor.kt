@@ -55,7 +55,7 @@ object SignalPreprocessor {
         return Windowing.applyWindow(this, window)
     }
 
-    fun ComplexDoubleArray.applyWeighting(weighting: Weighting.WeightingType): ComplexDoubleArray {
+    fun DoubleArray.applyWeighting(weighting: Weighting.WeightingType): DoubleArray {
         val frameSize = this.size
         val frequencies = (0 until frameSize).map {
             it * Utils.AUDIO_SAMPLING_RATE.toFloat() / (2 * frameSize)
@@ -63,7 +63,7 @@ object SignalPreprocessor {
         val weight = frequencies.map { Weighting.applyWeighting(it, weighting) }
         return this.mapIndexed { index, amplitude ->
             amplitude * weight[index]
-        }.toComplexDoubleArray()
+        }.toDoubleArray()
     }
 
     fun ComplexDoubleArray.fft(): ComplexDoubleArray {
@@ -142,6 +142,15 @@ object SignalPreprocessor {
     fun middleFrequency(numberOfTerce: Int) =
         12.5f * 2f.pow((numberOfTerce - 1) / 3f)
 
+    fun amplitudeToDecibels(amplitudeSpectrum: DoubleArray, weighting: Weighting.WeightingType): DoubleArray {
+        return amplitudeSpectrum
+            .toDecibels()
+            .applyWeighting(weighting)
+    }
+
+    fun DoubleArray.toDecibels(): DoubleArray = this.map {
+        10 * log10(max(0.5, it))
+    }.toDoubleArray()
 
 
     fun ByteArray.downsample(length: Int, inputIsStereo: Boolean, inFrequency: Int, outFrequency: Int): ByteArray {
