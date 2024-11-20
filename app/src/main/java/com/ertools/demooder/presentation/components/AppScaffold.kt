@@ -27,7 +27,7 @@ fun AppScaffold(
 ) {
     val navController = rememberNavController()
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
-    var selectedView = remember { mutableStateOf(navigationItems[0]) }
+    val selectedView = remember { mutableStateOf(navigationItems[0]) }
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
