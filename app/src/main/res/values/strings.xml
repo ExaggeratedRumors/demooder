@@ -1,3 +1,15 @@
 <resources>
+    <!-- GLOBAL -->
     <string name="app_name">demooder</string>
+
+    <!-- NAVIGATION -->
+    <string name="nav_home">Home</string>
+    <string name="nav_prediction">Prediction</string>
+    <string name="nav_records">Records</string>
+    <string name="nav_settings">Settings</string>
+
+    <!-- HOME -->
+
+    <!-- PREDICTION -->
+
 </resources>

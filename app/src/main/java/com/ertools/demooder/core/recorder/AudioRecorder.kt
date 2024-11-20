@@ -9,7 +9,7 @@ import com.ertools.demooder.utils.DEBUG_ENGINE
 import com.ertools.demooder.utils.READ_DATA_DELAY
 import com.ertools.demooder.utils.SAMPLING_RATE
 import com.ertools.demooder.utils.THIRDS_NUMBER
-import com.ertools.demooder.utils.isPermissionsGainded
+import com.ertools.demooder.utils.isPermissionsGained
 import kotlin.concurrent.thread
 import kotlin.math.max
 
@@ -44,7 +44,7 @@ class AudioRecorder (private val context: Context) : SpectrumProvider {
 
     @SuppressLint("MissingPermission")
     private fun initRecorder() {
-        recorder = if (!isPermissionsGainded(context)) null
+        recorder = if (!isPermissionsGained(context)) null
         else AudioRecord(
             MediaRecorder.AudioSource.MIC,
             SAMPLING_RATE,
