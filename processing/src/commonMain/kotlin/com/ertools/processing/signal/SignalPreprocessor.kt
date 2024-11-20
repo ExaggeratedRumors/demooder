@@ -4,17 +4,16 @@ import com.ertools.processing.commons.LabelsExtraction
 import com.ertools.processing.commons.Utils
 import com.ertools.processing.io.WavFile
 import com.ertools.processing.spectrogram.SpectrogramSample
-import com.ertools.processing.signal.Weighting
-import com.ertools.processing.signal.Windowing
 import org.jetbrains.kotlinx.multik.ndarray.complex.*
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
+import kotlin.experimental.or
 import kotlin.math.sin
 
 import kotlin.math.*
 
 object SignalPreprocessor {
-    fun process(
+    fun processWavFile(
         wavFiles: List<WavFile>,
         frameSize: Int = 256,
         stepSize: Int = 128,
@@ -40,7 +39,6 @@ object SignalPreprocessor {
             .applyWindow(window)
             .fft()
             .cutInHalf()
-
     }
 
     fun ByteArray.convertToComplex(): ComplexDoubleArray {
@@ -60,7 +58,7 @@ object SignalPreprocessor {
     fun ComplexDoubleArray.applyWeighting(weighting: Weighting.WeightingType): ComplexDoubleArray {
         val frameSize = this.size
         val frequencies = (0 until frameSize).map {
-            it * Utils.SPECTROGRAM_SAMPLING_RATE.toFloat() / (2 * frameSize)
+            it * Utils.AUDIO_SAMPLING_RATE.toFloat() / (2 * frameSize)
         }
         val weight = frequencies.map { Weighting.applyWeighting(it, weighting) }
         return this.mapIndexed { index, amplitude ->
@@ -87,14 +85,64 @@ object SignalPreprocessor {
 
     fun ComplexDoubleArray.cutInHalf(): ComplexDoubleArray = this.sliceArray(0 until this.size / 2)
 
-    fun Array<ComplexDoubleArray>.convertStftToDb(): Array<DoubleArray> = Array(this.size) { frameIndex ->
-        DoubleArray(this[frameIndex].size) { freqIndex ->
-            val real = this[frameIndex][freqIndex].re
-            val imaginary = this[frameIndex][freqIndex].im
-            val result = 10 * log10(hypot(real, imaginary) + 1e-10)
-            result
+    fun Array<ComplexDoubleArray>.convertStftToAmplitude(): Array<DoubleArray> =
+        Array(this.size) { frameIndex ->
+            DoubleArray(this[frameIndex].size) { freqIndex ->
+                val real = this[frameIndex][freqIndex].re
+                val imaginary = this[frameIndex][freqIndex].im
+                val result = 10 * log10(hypot(real, imaginary) + 1e-10)
+                result
+            }
         }
+
+    fun ComplexDoubleArray.complexToAmplitude(): DoubleArray = DoubleArray(this.size) { freqIndex ->
+        val real = this[freqIndex].re
+        val imaginary = this[freqIndex].im
+        val result = 10 * log10(hypot(real, imaginary) + 1e-10)
+        result
     }
+
+    fun ByteArray.maxAmplitude(): Int {
+        var maxAmplitude = 0
+        for (i in this.indices step 2) {
+            val sample = this[i].toShort() or (this[i + 1].toInt() shl 8).toShort()
+            maxAmplitude = max(maxAmplitude, sample.toInt())
+        }
+        return maxAmplitude
+    }
+
+
+    fun ComplexDoubleArray.convertToAmplitudeOfThirds(): IntArray{
+        val amplitudeData = IntArray(Utils.AUDIO_THIRDS_AMOUNT) { 0 }
+        val cutoffFreq33 = cutoffFrequency(33)
+        val freqWindow = Utils.AUDIO_SAMPLING_RATE.toFloat() / Utils.AUDIO_FFT_SIZE
+        var terce = 1
+        var iterator = 0
+        var accumulated = ComplexDouble(0, 0)
+        while (iterator < this.size) {
+            if((iterator * freqWindow) > cutoffFreq33 || terce > Utils.AUDIO_THIRDS_AMOUNT) break
+            accumulated += this[iterator]
+            if((iterator + 1) * freqWindow > cutoffFrequency(terce) &&
+                iterator * freqWindow < Utils.AUDIO_SAMPLING_RATE / 2f) {
+                terce += 1
+                continue
+            }
+            val absDoubledValue = accumulated.re.pow(2) + accumulated.im.pow(2)
+            if(absDoubledValue > amplitudeData[terce - 1])
+                amplitudeData[terce - 1] = absDoubledValue.toInt()
+            accumulated = ComplexDouble(0, 0)
+            iterator += 1
+        }
+        return amplitudeData
+    }
+
+    fun cutoffFrequency(numberOfTerce: Int) =
+        12.5f * 2f.pow((2f * numberOfTerce - 1) / 6f)
+
+    fun middleFrequency(numberOfTerce: Int) =
+        12.5f * 2f.pow((numberOfTerce - 1) / 3f)
+
+
 
     fun ByteArray.downsample(length: Int, inputIsStereo: Boolean, inFrequency: Int, outFrequency: Int): ByteArray {
         if(inFrequency == outFrequency && this.size == length) return this

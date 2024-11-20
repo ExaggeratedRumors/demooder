@@ -129,15 +129,6 @@ fun SideBar(
                 modifier = Modifier.padding(contentPadding)
             ) {
                 content()
-               /* composable(NavigationItem.Home.route) {
-                    val views: List<Pair<String, @Composable () -> Unit>> = listOf(
-                        "Emotion Recognizer" to { Text("Emotion Recognizer") },
-                        "Audio Visualizer" to { AudioVisualizer(context) }
-                    )
-                    TabView(views)
-                }
-                composable(NavigationItem.Prediction.route) { AudioVisualizer(context) }*/
-
             }
         }
     }

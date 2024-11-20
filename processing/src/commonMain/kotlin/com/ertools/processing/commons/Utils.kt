@@ -16,7 +16,11 @@ object Utils {
     const val SPECTROGRAM_FRAME_SIZE = 512
     const val SPECTROGRAM_STEP_SIZE = 256
     const val SPECTROGRAM_COLOR_RANGE = 255
-    const val SPECTROGRAM_SAMPLING_RATE = 44100
+
+    /** Audio **/
+    const val AUDIO_SAMPLING_RATE = 44100
+    const val AUDIO_FFT_SIZE = 1024
+    const val AUDIO_THIRDS_AMOUNT = 33
 
     /** Pathing **/
     const val EXT_WAV_FILE = "wav"

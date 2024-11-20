@@ -1,13 +1,5 @@
 @file:Suppress("PropertyName")
 
-val compose_ui_version: String by project
-val compose_material_version: String by project
-val compose_material3_version: String by project
-val compose_animation_version: String by project
-val compose_buildr_version: String by project
-val compose_foundation_version: String by project
-val compose_runtime_version: String by project
-
 plugins {
     id("com.android.application")
     kotlin("android")
@@ -15,12 +7,12 @@ plugins {
 
 android {
     namespace = "com.ertools.demooder"
-    compileSdk = 34
+    compileSdk = libs.versions.android.compileSdk.get().toInt()
 
     defaultConfig {
         applicationId = "com.ertools.demooder"
-        minSdk = 31
-        targetSdk = 34
+        minSdk = libs.versions.android.minSdk.get().toInt()
+        targetSdk = libs.versions.android.targetSdk.get().toInt()
         versionCode = 1
         versionName = "1.0"
         compileSdkPreview = "UpsideDownCake"
@@ -58,6 +50,9 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
 
+    /** Processing **/
+    implementation(project(":processing"))
+
     /** Compose **/
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.runtime)
@@ -66,6 +61,9 @@ dependencies {
     implementation(libs.androidx.material3.adaptive.navigation.suite)
     implementation(libs.androidx.material3)
     implementation(libs.androidx.material3.window.size.clazz)
+
+    /** ViewModel **/
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
 
     /** Accompanist **/
     implementation(libs.accompanist.permissions)
@@ -79,8 +77,8 @@ dependencies {
     /** Navigation **/
     implementation(libs.androidx.navigation.compose)
 
-    /** Processing **/
-    //implementation(project(":processing"))
+    /** Complex **/
+    implementation(libs.multik.core)
 
     /** Test **/
     testImplementation(libs.junit)
