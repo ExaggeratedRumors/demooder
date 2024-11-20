@@ -8,8 +8,8 @@ import android.media.MediaRecorder
 import com.ertools.demooder.utils.DEBUG_ENGINE
 import com.ertools.demooder.utils.READ_DATA_DELAY
 import com.ertools.demooder.utils.SAMPLING_RATE
-import com.ertools.demooder.utils.THIRDS_NUMBER
 import com.ertools.demooder.utils.isPermissionsGained
+import com.ertools.processing.signal.SignalPreprocessor
 import kotlin.concurrent.thread
 import kotlin.math.max
 
@@ -20,7 +20,7 @@ class AudioRecorder (private val context: Context) : SpectrumProvider {
         AudioFormat.ENCODING_PCM_16BIT
     )
     private val data = ByteArray(max(bufferSize, 0))
-    private var spectrum = IntArray(THIRDS_NUMBER)
+    private var spectrum = IntArray(11)
     private var recorder: AudioRecord? = null
     @Volatile
     private var isRecording = false
@@ -66,11 +66,12 @@ class AudioRecorder (private val context: Context) : SpectrumProvider {
         }
     }
 
-    private fun processData(data: ByteArray) = data
-        .convertToComplex()
-        .fft()
-        .convertToAmplitudeOfThirds()
+    private fun processData(data: ByteArray) = SignalPreprocessor.run {
+        data.convertToComplex()
+            .fft()
+            .convertToAmplitudeOfThirds()
+    }
 
     override fun getAmplitudeSpectrum() = spectrum
-    override fun getMaxAmplitude() = calculateMaxAmplitude(data)
+    override fun getMaxAmplitude() = SignalPreprocessor.run { data.maxAmplitude() }
 }

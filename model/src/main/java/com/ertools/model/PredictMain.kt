@@ -8,7 +8,6 @@ import com.ertools.processing.io.IOManager
 import com.ertools.processing.signal.SignalPreprocessor
 import com.ertools.processing.signal.Windowing
 import com.ertools.processing.spectrogram.SpectrogramsMetadata
-import java.io.File
 
 fun main () {
     /** Data **/
@@ -28,7 +27,7 @@ fun main () {
     println("R:\tRead ${soundData.size} samples.")
 
     println("I:\tProcess data to spectrograms.")
-    val spectrogramSet = SignalPreprocessor.process(
+    val spectrogramSet = SignalPreprocessor.processWavFile(
         wavFiles = soundData,
         frameSize = frameSize,
         stepSize = stepSize,

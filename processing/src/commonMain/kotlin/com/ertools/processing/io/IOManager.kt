@@ -5,7 +5,7 @@ import com.ertools.processing.commons.ImageDim
 import com.ertools.processing.commons.LabelsExtraction
 import com.ertools.processing.commons.Utils
 import com.ertools.processing.commons.Utils.SPECTROGRAM_COLOR_RANGE
-import com.ertools.processing.signal.SignalPreprocessor.convertStftToDb
+import com.ertools.processing.signal.SignalPreprocessor.convertStftToAmplitude
 import com.ertools.processing.spectrogram.SpectrogramSample
 import com.ertools.processing.spectrogram.SpectrogramsMetadata
 import com.fasterxml.jackson.databind.ObjectMapper
@@ -88,7 +88,7 @@ object IOManager {
     }
 
     fun complexArrayToPng(sample: SpectrogramSample): BufferedImage {
-        val magnitudeMatrix = sample.data.convertStftToDb()
+        val magnitudeMatrix = sample.data.convertStftToAmplitude()
 
         /* Create image */
         val width = magnitudeMatrix.size

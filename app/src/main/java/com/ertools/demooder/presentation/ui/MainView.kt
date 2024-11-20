@@ -4,9 +4,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.Navigation
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.ertools.demooder.presentation.components.BottomNavBar
 import com.ertools.demooder.presentation.components.SideBar
 import com.ertools.demooder.presentation.navigation.NavigationItem
 import com.ertools.demooder.presentation.theme.Theme
@@ -18,17 +20,17 @@ import com.google.accompanist.systemuicontroller.rememberSystemUiController
     apiLevel = 34
 )
 @Composable
-fun MainView (viewModel: MainViewModel) {
+fun MainView () {
+    val viewModel = viewModel<MainViewModel>()
     Theme.MainTheme {
-        val systemUiController = rememberSystemUiController()
-        systemUiController.setSystemBarsColor(
-            color = MaterialTheme.colorScheme.background
-        )
-
         val navController = rememberNavController()
         val context = LocalContext.current
-        SideBar(
-            navController = navController,
+        BottomNavBar(
+            listOf(
+                NavigationItem.Home,
+                NavigationItem.Prediction,
+                NavigationItem.Records
+            ),
             startRoute = NavigationItem.Home.route
         ) {
             composable(NavigationItem.Home.route) { HomeView(navController) }
