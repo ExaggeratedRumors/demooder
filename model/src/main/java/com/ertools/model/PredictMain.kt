@@ -2,7 +2,7 @@ package com.ertools.model
 
 import com.ertools.processing.commons.ImageDim
 import com.ertools.processing.commons.LabelsExtraction
-import com.ertools.processing.commons.Utils
+import com.ertools.processing.commons.ProcessingUtils
 import com.ertools.processing.dataset.DatasetJvmPreprocessor
 import com.ertools.processing.io.IOManager
 import com.ertools.processing.signal.SignalPreprocessor
@@ -11,9 +11,9 @@ import com.ertools.processing.spectrogram.SpectrogramsMetadata
 
 fun main () {
     /** Data **/
-    val dataDir = Utils.DIR_OWN_REC
-    val frameSize = Utils.SPECTROGRAM_FRAME_SIZE
-    val stepSize = Utils.SPECTROGRAM_STEP_SIZE
+    val dataDir = ProcessingUtils.DIR_OWN_REC
+    val frameSize = ProcessingUtils.SPECTROGRAM_FRAME_SIZE
+    val stepSize = ProcessingUtils.SPECTROGRAM_STEP_SIZE
     val modelName = "DL_4c_4d_50e_128b"
     val dim = ImageDim(136, 128)
 

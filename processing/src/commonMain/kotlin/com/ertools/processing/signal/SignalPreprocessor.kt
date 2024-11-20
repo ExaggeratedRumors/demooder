@@ -1,7 +1,7 @@
 package com.ertools.processing.signal
 
 import com.ertools.processing.commons.LabelsExtraction
-import com.ertools.processing.commons.Utils
+import com.ertools.processing.commons.ProcessingUtils
 import com.ertools.processing.io.WavFile
 import com.ertools.processing.spectrogram.SpectrogramSample
 import org.jetbrains.kotlinx.multik.ndarray.complex.*
@@ -58,7 +58,7 @@ object SignalPreprocessor {
     fun DoubleArray.applyWeighting(weighting: Weighting.WeightingType): DoubleArray {
         val frameSize = this.size
         val frequencies = (0 until frameSize).map {
-            it * Utils.AUDIO_SAMPLING_RATE.toFloat() / (2 * frameSize)
+            it * ProcessingUtils.AUDIO_SAMPLING_RATE.toFloat() / (2 * frameSize)
         }
         val weight = frequencies.map { Weighting.applyWeighting(it, weighting) }
         return this.mapIndexed { index, amplitude ->
@@ -112,24 +112,24 @@ object SignalPreprocessor {
     }
 
 
-    fun ComplexDoubleArray.convertToAmplitudeOfThirds(): IntArray{
-        val amplitudeData = IntArray(Utils.AUDIO_THIRDS_AMOUNT) { 0 }
-        val cutoffFreq33 = cutoffFrequency(33)
-        val freqWindow = Utils.AUDIO_SAMPLING_RATE.toFloat() / Utils.AUDIO_FFT_SIZE
+    fun ComplexDoubleArray.convertToAmplitudeOfThirds(): DoubleArray{
+        val amplitudeData = DoubleArray(ProcessingUtils.AUDIO_THIRDS_AMOUNT) { 0.0 }
+        val cutoffFreq33 = cutoffFrequency(ProcessingUtils.AUDIO_THIRDS_AMOUNT)
+        val freqWindow = ProcessingUtils.AUDIO_SAMPLING_RATE.toFloat() / ProcessingUtils.AUDIO_FFT_SIZE
         var terce = 1
         var iterator = 0
         var accumulated = ComplexDouble(0, 0)
         while (iterator < this.size) {
-            if((iterator * freqWindow) > cutoffFreq33 || terce > Utils.AUDIO_THIRDS_AMOUNT) break
+            if((iterator * freqWindow) > cutoffFreq33 || terce > ProcessingUtils.AUDIO_THIRDS_AMOUNT) break
             accumulated += this[iterator]
             if((iterator + 1) * freqWindow > cutoffFrequency(terce) &&
-                iterator * freqWindow < Utils.AUDIO_SAMPLING_RATE / 2f) {
+                iterator * freqWindow < ProcessingUtils.AUDIO_SAMPLING_RATE / 2f) {
                 terce += 1
                 continue
             }
             val absDoubledValue = accumulated.re.pow(2) + accumulated.im.pow(2)
             if(absDoubledValue > amplitudeData[terce - 1])
-                amplitudeData[terce - 1] = absDoubledValue.toInt()
+                amplitudeData[terce - 1] = absDoubledValue
             accumulated = ComplexDouble(0, 0)
             iterator += 1
         }
