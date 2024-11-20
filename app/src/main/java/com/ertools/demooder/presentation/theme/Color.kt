@@ -9,7 +9,7 @@ object Colors {
     val ON_PRIMARY = Color(0xFFFFFFFF)
     val PRIMARY_CONTAINER = Color(0xFFFFFFFF)
     val ON_PRIMARY_CONTAINER = Color(0xFFFFFFFF)
-    val INVERSE_PRIMARY = Color(0xFFFFFFFF)
+    val INVERSE_PRIMARY = Color(0x80FFFFFF)
     val SECONDARY = Color(0xFFD7D7D7)
     val ON_SECONDARY = Color(0xFF2D2618)
     val SECONDARY_CONTAINER = Color(0xFFFFFFFF)
