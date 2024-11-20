@@ -27,7 +27,8 @@ fun HomeView(viewModel: TabViewModel) {
             viewModel.updateTabIndexBasedOnSwipe()
         }),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center) {
+        verticalArrangement = Arrangement.Center
+    ) {
         Row(modifier = Modifier.align(Alignment.CenterHorizontally)) {
             Text(
                 text = "Welcome Home!",
