@@ -11,7 +11,7 @@ object PERMISSIONS {
     ).toTypedArray()
 }
 
-fun isPermissionsGainded(context: Context): Boolean {
+fun isPermissionsGained(context: Context): Boolean {
     return PERMISSIONS.REQUIRED_PERMISSIONS.all {
         ContextCompat.checkSelfPermission(
             context, it

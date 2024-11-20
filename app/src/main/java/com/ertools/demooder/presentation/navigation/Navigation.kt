@@ -1,45 +1,39 @@
 package com.ertools.demooder.presentation.navigation
 
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountBox
-import androidx.compose.material.icons.filled.Call
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.outlined.AccountBox
-import androidx.compose.material.icons.outlined.Call
-import androidx.compose.material.icons.outlined.Settings
-import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
+import com.ertools.demooder.R
 
 sealed class NavigationItem(
     val route: String,
-    val title: String,
-    val selectedIcon: ImageVector,
-    val unselectedIcon: ImageVector,
+    @StringRes val title: Int? = null,
+    @DrawableRes val selectedIcon: Int? = null,
+    @DrawableRes val unselectedIcon: Int? = null,
     val badgeCount: Int? = null
 ) {
     data object Home : NavigationItem (
         route = "home",
-        title = "Home",
-        selectedIcon = Icons.Filled.Home,
-        unselectedIcon = Icons.Filled.Home
+        title = R.string.nav_home,
+        selectedIcon = R.drawable.home_filled,
+        unselectedIcon = R.drawable.home_outline
     )
     data object Prediction : NavigationItem (
         route = "prediction",
-        title = "Start speech",
-        selectedIcon = Icons.Filled.Call,
-        unselectedIcon = Icons.Outlined.Call
+        title = R.string.nav_prediction,
+        selectedIcon = R.drawable.predict_filled,
+        unselectedIcon = R.drawable.predict_outline
     )
     data object Records : NavigationItem (
         route = "records",
-        title = "Records",
-        selectedIcon = Icons.Filled.AccountBox,
-        unselectedIcon = Icons.Outlined.AccountBox,
-        badgeCount = 105
+        title = R.string.nav_records,
+        selectedIcon = R.drawable.records_filled,
+        unselectedIcon = R.drawable.records_outline,
+        badgeCount = 0
     )
     data object Settings : NavigationItem (
         route = "settings",
-        title = "Settings",
-        selectedIcon = Icons.Filled.Settings,
-        unselectedIcon = Icons.Outlined.Settings
+        title = R.string.nav_settings,
+        selectedIcon = R.drawable.settings_fileld,
+        unselectedIcon = R.drawable.settings_outline
     )
 }
