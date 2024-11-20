@@ -1,7 +1,7 @@
 package com.ertools.model.operation
 
 import com.ertools.processing.commons.LabelsExtraction
-import com.ertools.processing.commons.Utils
+import com.ertools.processing.commons.ProcessingUtils
 import org.jetbrains.kotlinx.dl.api.core.Sequential
 import org.jetbrains.kotlinx.dl.api.core.WritingMode
 import org.jetbrains.kotlinx.dl.api.core.callback.Callback
@@ -31,9 +31,9 @@ fun Sequential.compile() {
 fun Sequential.fit(
     train: Dataset,
     validation: Dataset,
-    epochs: Int = Utils.MODEL_EPOCHS,
-    batchSize: Int = Utils.MODEL_BATCH_SIZE,
-    earlyStop: Boolean = Utils.MODEL_EARLY_STOP
+    epochs: Int = ProcessingUtils.MODEL_EPOCHS,
+    batchSize: Int = ProcessingUtils.MODEL_BATCH_SIZE,
+    earlyStop: Boolean = ProcessingUtils.MODEL_EARLY_STOP
 ) {
     val earlyStopping = EarlyStopping(
         monitor = EpochTrainingEvent::valLossValue,
@@ -57,7 +57,7 @@ fun Sequential.fit(
 
 fun Sequential.evaluate(
     test: Dataset,
-    batchSize: Int = Utils.MODEL_BATCH_SIZE
+    batchSize: Int = ProcessingUtils.MODEL_BATCH_SIZE
 ): Double? {
     return this.evaluate(
         dataset = test,
@@ -92,14 +92,14 @@ fun TensorFlowInferenceModel.predict(testData: Dataset) {
 }
 
 fun Sequential.save(
-    modelName: String = Utils.MODEL_DEFAULT_NAME
+    modelName: String = ProcessingUtils.MODEL_DEFAULT_NAME
 ) {
-    this.save(File(Utils.DIR_MODEL_OUTPUT, modelName), writingMode = WritingMode.OVERRIDE)
+    this.save(File(ProcessingUtils.DIR_MODEL_OUTPUT, modelName), writingMode = WritingMode.OVERRIDE)
 }
 
 fun Sequential.load(
-    path: String = Utils.DIR_MODEL_OUTPUT,
-    modelName: String = Utils.MODEL_DEFAULT_NAME
+    path: String = ProcessingUtils.DIR_MODEL_OUTPUT,
+    modelName: String = ProcessingUtils.MODEL_DEFAULT_NAME
 ) {
     this.loadWeights(File(path, modelName))
 }

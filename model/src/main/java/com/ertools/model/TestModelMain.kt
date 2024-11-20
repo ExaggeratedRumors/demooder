@@ -2,14 +2,14 @@ package com.ertools.model
 
 import com.ertools.model.operation.evaluate
 import com.ertools.model.operation.predict
-import com.ertools.processing.commons.Utils
+import com.ertools.processing.commons.ProcessingUtils
 import com.ertools.processing.dataset.DatasetJvmPreprocessor
 import com.ertools.processing.io.IOManager
 import java.util.*
 
 fun main() {
     /** Data **/
-    val spectrogramDataPath = Utils.DIR_CREMA_D
+    val spectrogramDataPath = ProcessingUtils.DIR_CREMA_D
     val modelName = "DL_6c_3d_50e_128b"
 
     /** Test program **/

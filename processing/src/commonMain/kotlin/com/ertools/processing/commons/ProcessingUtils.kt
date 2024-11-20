@@ -1,7 +1,7 @@
 package com.ertools.processing.commons
 
 
-object Utils {
+object ProcessingUtils {
     /** Wav files **/
     const val WAV_HEADER_SIZE = 44
     const val WAV_ADDITIONAL_HEADER_SIZE = 34

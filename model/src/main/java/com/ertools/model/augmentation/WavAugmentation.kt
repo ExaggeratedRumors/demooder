@@ -1,6 +1,6 @@
 package com.ertools.model.augmentation
 
-import com.ertools.processing.commons.Utils
+import com.ertools.processing.commons.ProcessingUtils
 import com.ertools.processing.io.IOManager
 import javax.sound.sampled.AudioFormat
 import javax.sound.sampled.AudioInputStream
@@ -12,12 +12,12 @@ object WavAugmentation {
     fun wavFileAugmentation(
         path: String,
         numberOfFiles: Int = Integer.MAX_VALUE,
-        augmentFilesAmount: Int = Utils.WAV_AUGMENT_AMOUNT
+        augmentFilesAmount: Int = ProcessingUtils.WAV_AUGMENT_AMOUNT
     ): Int {
         val files = IOManager.fetchWavFiles(path, numberOfFiles)
         var counter = 0
         files.forEach { file ->
-            if(file.name.contains(Utils.WAV_AUGMENT_AFFIX)) return@forEach
+            if(file.name.contains(ProcessingUtils.WAV_AUGMENT_AFFIX)) return@forEach
             (0 until augmentFilesAmount).forEach { i ->
                 val inputStream = AudioSystem.getAudioInputStream(file)
 
@@ -40,7 +40,7 @@ object WavAugmentation {
                 IOManager.saveWavFile(
                     outputStream,
                     path,
-                    "${file.nameWithoutExtension}_${Utils.WAV_AUGMENT_AFFIX}${i + 1}"
+                    "${file.nameWithoutExtension}_${ProcessingUtils.WAV_AUGMENT_AFFIX}${i + 1}"
                 )
                 counter += 1
             }

@@ -1,6 +1,6 @@
 package com.ertools.processing.io
 
-import com.ertools.processing.commons.Utils
+import com.ertools.processing.commons.ProcessingUtils
 import com.ertools.processing.signal.SignalPreprocessor.downsample
 import java.io.File
 import java.io.FileInputStream
@@ -24,7 +24,7 @@ class WavFile(file: File) {
                 println(header)
                 inputStream.read(dataBuffer)
                 data = if(header.subchunk2Id == "data") dataBuffer
-                else dataBuffer.downsample(Utils.WAV_MAX_LENGTH,true, header.sampleRate, Utils.WAV_MAX_SAMPLE_RATE)
+                else dataBuffer.downsample(ProcessingUtils.WAV_MAX_LENGTH,true, header.sampleRate, ProcessingUtils.WAV_MAX_SAMPLE_RATE)
             } catch (e: Exception) {
                 println("E: ${e.localizedMessage}")
                 throw e
@@ -36,11 +36,11 @@ class WavFile(file: File) {
     /** Privates **/
     /**************/
     private fun FileInputStream.readHeader(): WavHeader {
-        val headerBytes = ByteArray(Utils.WAV_HEADER_SIZE)
+        val headerBytes = ByteArray(ProcessingUtils.WAV_HEADER_SIZE)
         this.read(headerBytes)
 
         var cursor = 0
-        val stringSize = Utils.WAV_STRING_SIZE
+        val stringSize = ProcessingUtils.WAV_STRING_SIZE
         val buffer = ByteBuffer.wrap(headerBytes).order(ByteOrder.LITTLE_ENDIAN)
 
         val chunkId = ByteArray(stringSize).apply { buffer.get(this); cursor += this.size }.decodeToString()
@@ -57,7 +57,7 @@ class WavFile(file: File) {
         val subchunk2Id = ByteArray(stringSize).apply { buffer.get(this); cursor += this.size }.decodeToString()
 
         val subchunk2Size = if(subchunk2Id == "LIST") {
-            val additionalHeaderBytes = ByteArray(Utils.WAV_ADDITIONAL_HEADER_SIZE)
+            val additionalHeaderBytes = ByteArray(ProcessingUtils.WAV_ADDITIONAL_HEADER_SIZE)
             this.read(additionalHeaderBytes)
             val additionalBuffer = ByteBuffer.wrap(additionalHeaderBytes).order(ByteOrder.LITTLE_ENDIAN)
             additionalBuffer.int.also { cursor += Int.SIZE_BYTES }

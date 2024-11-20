@@ -9,6 +9,7 @@ import com.ertools.demooder.utils.DEBUG_ENGINE
 import com.ertools.demooder.utils.READ_DATA_DELAY
 import com.ertools.demooder.utils.SAMPLING_RATE
 import com.ertools.demooder.utils.isPermissionsGained
+import com.ertools.processing.commons.ProcessingUtils
 import com.ertools.processing.signal.SignalPreprocessor
 import kotlin.concurrent.thread
 import kotlin.math.max
@@ -20,7 +21,7 @@ class AudioRecorder (private val context: Context) : SpectrumProvider {
         AudioFormat.ENCODING_PCM_16BIT
     )
     private val data = ByteArray(max(bufferSize, 0))
-    private var spectrum = IntArray(11)
+    private var spectrum = DoubleArray(ProcessingUtils.AUDIO_THIRDS_AMOUNT)
     private var recorder: AudioRecord? = null
     @Volatile
     private var isRecording = false
@@ -47,7 +48,7 @@ class AudioRecorder (private val context: Context) : SpectrumProvider {
         recorder = if (!isPermissionsGained(context)) null
         else AudioRecord(
             MediaRecorder.AudioSource.MIC,
-            SAMPLING_RATE,
+            ProcessingUtils.AUDIO_SAMPLING_RATE,
             AudioFormat.CHANNEL_IN_MONO,
             AudioFormat.ENCODING_PCM_16BIT,
             bufferSize

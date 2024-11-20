@@ -1,7 +1,7 @@
 package com.ertools.model
 
 import com.ertools.processing.commons.LabelsExtraction
-import com.ertools.processing.commons.Utils
+import com.ertools.processing.commons.ProcessingUtils
 import com.ertools.processing.io.IOManager
 import com.ertools.processing.signal.SignalPreprocessor
 import com.ertools.processing.signal.Windowing
@@ -13,10 +13,10 @@ import kotlin.math.min
 
 fun main () {
     /** Data **/
-    val dataDir = Utils.DIR_OWN_REC
-    val spectrogramsBatchSize = Utils.SPECTROGRAM_BATCH_SIZE
-    val frameSize = Utils.SPECTROGRAM_FRAME_SIZE
-    val stepSize = Utils.SPECTROGRAM_STEP_SIZE
+    val dataDir = ProcessingUtils.DIR_OWN_REC
+    val spectrogramsBatchSize = ProcessingUtils.SPECTROGRAM_BATCH_SIZE
+    val frameSize = ProcessingUtils.SPECTROGRAM_FRAME_SIZE
+    val stepSize = ProcessingUtils.SPECTROGRAM_STEP_SIZE
 
 
     /** Program **/
@@ -54,7 +54,7 @@ fun main () {
         println("R:\t${"%.1f".format(Locale.ENGLISH, 100.0 * end / soundData.size)}%/100%.")
     }
     IOManager.saveSpectrogramMetadata(metadata, dataDir)
-    println("R:\tSaved ${metadata.dataAmount} spectrograms image to ${Utils.DIR_SPECTROGRAMS_OUTPUT}/$dataDir")
+    println("R:\tSaved ${metadata.dataAmount} spectrograms image to ${ProcessingUtils.DIR_SPECTROGRAMS_OUTPUT}/$dataDir")
 
     println("I:\tEnd program.")
 }

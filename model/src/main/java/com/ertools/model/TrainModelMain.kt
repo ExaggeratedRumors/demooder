@@ -6,14 +6,14 @@ import com.ertools.model.operation.evaluate
 import com.ertools.model.operation.fit
 import com.ertools.model.operation.predict
 import com.ertools.model.operation.save
-import com.ertools.processing.commons.Utils
+import com.ertools.processing.commons.ProcessingUtils
 import com.ertools.processing.dataset.DatasetJvmPreprocessor
 import com.ertools.processing.io.IOManager
 import org.jetbrains.kotlinx.dl.impl.summary.logSummary
 
 fun main() {
     /** Data **/
-    val spectrogramData = Utils.DIR_CREMA_D
+    val spectrogramData = ProcessingUtils.DIR_CREMA_D
     val epochs = 50
     val batchSize = 128
     val outputModelFilename = "DL_6c_3d_50e_128b"
@@ -61,7 +61,7 @@ fun main() {
 
         println("I:\tSave model.")
         it.save(outputModelFilename)
-        println("R:\tModel saved to directory ${Utils.DIR_MODEL_OUTPUT}/$outputModelFilename")
+        println("R:\tModel saved to directory ${ProcessingUtils.DIR_MODEL_OUTPUT}/$outputModelFilename")
     }
 
     println("I:\tEnd program.")

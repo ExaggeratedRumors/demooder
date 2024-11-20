@@ -3,8 +3,8 @@ package com.ertools.processing.io
 
 import com.ertools.processing.commons.ImageDim
 import com.ertools.processing.commons.LabelsExtraction
-import com.ertools.processing.commons.Utils
-import com.ertools.processing.commons.Utils.SPECTROGRAM_COLOR_RANGE
+import com.ertools.processing.commons.ProcessingUtils
+import com.ertools.processing.commons.ProcessingUtils.SPECTROGRAM_COLOR_RANGE
 import com.ertools.processing.signal.SignalPreprocessor.convertStftToAmplitude
 import com.ertools.processing.spectrogram.SpectrogramSample
 import com.ertools.processing.spectrogram.SpectrogramsMetadata
@@ -33,8 +33,8 @@ object IOManager {
         wavDir: String,
         maxNumberOfFiles: Int = Int.MAX_VALUE
     ): List<File> {
-        return File(Utils.DIR_AUDIO_INPUT, wavDir)
-            .listFiles { _, name -> name.endsWith(".${Utils.EXT_WAV_FILE}") }
+        return File(ProcessingUtils.DIR_AUDIO_INPUT, wavDir)
+            .listFiles { _, name -> name.endsWith(".${ProcessingUtils.EXT_WAV_FILE}") }
             ?.take(maxNumberOfFiles) ?: emptyList()
     }
 
@@ -48,7 +48,7 @@ object IOManager {
         AudioSystem.write(
             stream,
             AudioFileFormat.Type.WAVE,
-            File("${Utils.DIR_AUDIO_INPUT}/$dir", "$filename.${Utils.EXT_WAV_FILE}")
+            File("${ProcessingUtils.DIR_AUDIO_INPUT}/$dir", "$filename.${ProcessingUtils.EXT_WAV_FILE}")
         )
     }
 
@@ -63,12 +63,12 @@ object IOManager {
     }
 
     fun saveSpectrogramMetadata(metadata: SpectrogramsMetadata, dir: String) {
-        val file = File("${Utils.DIR_SPECTROGRAMS_OUTPUT}/$dir", Utils.FILE_SPECTROGRAMS_METADATA)
+        val file = File("${ProcessingUtils.DIR_SPECTROGRAMS_OUTPUT}/$dir", ProcessingUtils.FILE_SPECTROGRAMS_METADATA)
         saveObject(file, metadata)
     }
 
     fun loadSpectrogramMetadata(dir: String): SpectrogramsMetadata {
-        val file = File("${Utils.DIR_SPECTROGRAMS_OUTPUT}/$dir", Utils.FILE_SPECTROGRAMS_METADATA)
+        val file = File("${ProcessingUtils.DIR_SPECTROGRAMS_OUTPUT}/$dir", ProcessingUtils.FILE_SPECTROGRAMS_METADATA)
         return loadObject(file, SpectrogramsMetadata::class.java)
     }
 
@@ -78,13 +78,13 @@ object IOManager {
 
     fun saveSpectrogramSample(sample: SpectrogramSample, dir: String) {
         val image = complexArrayToPng(sample)
-        val fileDir = File("${Utils.DIR_SPECTROGRAMS_OUTPUT}/$dir")
+        val fileDir = File("${ProcessingUtils.DIR_SPECTROGRAMS_OUTPUT}/$dir")
         if(!fileDir.exists()) fileDir.mkdir()
         val file = File(
-            "${Utils.DIR_SPECTROGRAMS_OUTPUT}/$dir",
-            "${sample.filename}.${Utils.EXT_SPECTROGRAM_OUTPUT}"
+            "${ProcessingUtils.DIR_SPECTROGRAMS_OUTPUT}/$dir",
+            "${sample.filename}.${ProcessingUtils.EXT_SPECTROGRAM_OUTPUT}"
         )
-        ImageIO.write(image, Utils.EXT_SPECTROGRAM_OUTPUT, file)
+        ImageIO.write(image, ProcessingUtils.EXT_SPECTROGRAM_OUTPUT, file)
     }
 
     fun complexArrayToPng(sample: SpectrogramSample): BufferedImage {
@@ -121,19 +121,19 @@ object IOManager {
         val metadata: SpectrogramsMetadata = loadSpectrogramMetadata(dir)
         val dim = ImageDim(width = metadata.timeSizeMin, height = metadata.freqSizeMin)
         val dataset = OnFlyImageDataset.create(
-            pathToData = File("${Utils.DIR_SPECTROGRAMS_OUTPUT}/$dir"),
+            pathToData = File("${ProcessingUtils.DIR_SPECTROGRAMS_OUTPUT}/$dir"),
             labelGenerator = LabelsExtraction.getEmotionLabelGenerator(),
             preprocessing = pipeline.invoke(dim)
         ).also { dataset ->
-            if (shuffle) (0 until Random.nextInt(Utils.DATASET_SHUFFLE_ATTEMPTS)).forEach { _ -> dataset.shuffle() }
+            if (shuffle) (0 until Random.nextInt(ProcessingUtils.DATASET_SHUFFLE_ATTEMPTS)).forEach { _ -> dataset.shuffle() }
         }
         return Pair(dataset, dim)
     }
 
     fun loadAndSplitDataset(
         dir: String,
-        testDataRatio: Double = Utils.DATASET_TEST_RATIO,
-        validDataRatio: Double = Utils.DATASET_VALID_RATIO,
+        testDataRatio: Double = ProcessingUtils.DATASET_TEST_RATIO,
+        validDataRatio: Double = ProcessingUtils.DATASET_VALID_RATIO,
         pipeline: (ImageDim) -> (Operation<BufferedImage, Pair<FloatArray, TensorShape>>)
     ): Triple<Dataset, Dataset, Dataset> {
         val (dataset, _) = loadDataset(dir, true, pipeline)
@@ -145,7 +145,7 @@ object IOManager {
     /***********/
     /** Model **/
     /***********/
-    fun loadModel(modelName: String) = TensorFlowInferenceModel.load(File(Utils.DIR_MODEL_OUTPUT, modelName))
+    fun loadModel(modelName: String) = TensorFlowInferenceModel.load(File(ProcessingUtils.DIR_MODEL_OUTPUT, modelName))
 
 
     /*************/
