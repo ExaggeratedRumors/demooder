@@ -4,10 +4,10 @@ android-compileSdk = "34"
 android-minSdk = "31"
 android-targetSdk = "31"
 agp = "8.2.2"
-kotlin = "2.0.21"
+kotlin = "1.9.22"
 accompanistPermissions = "0.20.0"
 activityCompose = "1.9.3"
-coreKtx = "1.15.0"
+coreKtx = "1.13.1"
 espressoCore = "3.6.1"
 junit = "4.13.2"
 junitVersion = "1.2.1"
@@ -60,7 +60,7 @@ androidx-junit-ktx = { group = "androidx.test.ext", name = "junit-ktx", version.
 [plugins]
 android-library = { id = "com.android.library", version.ref = "agp" }
 android-application = { id = "com.android.application", version.ref = "agp" }
-kotlin-android = { id = "org.jetbrains.kotlin.android", version = "2.0.21" }
+kotlin-android = { id = "org.jetbrains.kotlin.android", version = "1.9.21" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 jetbrains-compose = { id = "org.jetbrains.compose", version.ref = "compose-plugin" }

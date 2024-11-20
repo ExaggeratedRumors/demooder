@@ -4,11 +4,13 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.Navigation
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.ertools.demooder.presentation.components.SideBar
 import com.ertools.demooder.presentation.navigation.NavigationItem
 import com.ertools.demooder.presentation.theme.Theme
+import com.ertools.demooder.presentation.viewmodel.MainViewModel
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
 @Preview(name = "main", group = "main",
@@ -16,7 +18,7 @@ import com.google.accompanist.systemuicontroller.rememberSystemUiController
     apiLevel = 34
 )
 @Composable
-fun MainView () {
+fun MainView (viewModel: MainViewModel) {
     Theme.MainTheme {
         val systemUiController = rememberSystemUiController()
         systemUiController.setSystemBarsColor(
@@ -30,8 +32,8 @@ fun MainView () {
             startRoute = NavigationItem.Home.route
         ) {
             composable(NavigationItem.Home.route) { HomeView(navController) }
-            composable(NavigationItem.Prediction.route) { PredictionView(navController) }
-            composable(NavigationItem.Records.route) { RecordsView(navController, context) }
+            composable(NavigationItem.Prediction.route) { PredictionView(navController, context) }
+            composable(NavigationItem.Records.route) { RecordsView(navController, viewModel) }
             composable(NavigationItem.Settings.route) { SettingsView(navController) }
         }
     }
