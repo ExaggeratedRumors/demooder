@@ -17,6 +17,8 @@ out/
 !**/src/main/**/out/
 !**/src/test/**/out/
 .kotlin
+!**/build/
+
 
 ### Eclipse ###
 .apt_generated
@@ -61,3 +63,4 @@ bin/
 local.properties
 *.wav
 data/**/*.png
+model/data
