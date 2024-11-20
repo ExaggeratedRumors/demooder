@@ -1,10 +1,13 @@
 package com.ertools.demooder.presentation.ui
 
+import android.content.Context
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 
 @Composable
-fun HomeView(navController: NavHostController) {
-
-
+fun PredictionView(
+    navController: NavHostController,
+    context: Context
+) {
+    AudioVisualizer(context)
 }

@@ -13,7 +13,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 
 @Composable
-fun TabView(views: List<Pair<String, @Composable () -> Unit>>) {
+fun TabLayout(views: List<Pair<String, @Composable () -> Unit>>) {
     var selectedTabIndex by remember { mutableIntStateOf(0) }
     val tabs = views.map { it.first }
 
