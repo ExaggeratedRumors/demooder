@@ -69,6 +69,7 @@ dependencies {
 
     /** Accompanist **/
     implementation(libs.accompanist.permissions)
+    implementation(libs.accompanist.systemuicontroller)
 
     /** DeepLearning **/
     implementation (libs.kotlin.deeplearning.tensorflow)
