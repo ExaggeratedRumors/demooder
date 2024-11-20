@@ -40,15 +40,15 @@ https://github.com/ExaggeratedRumors/demooder.git
 3. Unzip Wav files in `data_audio` directory (from root it's `demooder-model/data_audio` directory).
 4. [optional] Run data augmentation task:
 ```bash
-./gradlew dataAugmentation
+./gradlew :model:dataAugmentation
 ```
 5. Run create spectrograms task:
 ```bash
-./gradlew createSpectrograms
+./gradlew :model:createSpectrograms
 ```
 6. Run model training task:
 ```bash
-./gradlew trainModel
+./gradlew :model:trainModel
 ```
 7. Output model is saved in `data_models` directory.
 
