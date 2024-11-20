@@ -1,0 +1,27 @@
+Praca dyplomowa konsultacje:
+
+
+KON 1
+
+1. Wykorzystać w UI Bottom navigation bar.
+2. Aplikacja powinna działać na wyłączonym ekranie (w tle).
+3. Jakie są gotowe architektury sieci konwolucyjnej do rozpoznawania obrazów - sprawdzić czy można wczytać w kotlinie gotowy pretrenowany model (czyli jakiś z tensorflow) - można wykorzystać MobileRes, wykorzystać architekturę i trenować od nowa lub wstępnie wytrenowaną. Modeli opartych na sieci konwolucyjnej jest niewiele.
+4. Jak osiągnę za dużą skuteczność to przetestować model na telefonie lub nagrać coś swojego i przetestować na sieci.
+5. Iść w kierunku budowania i testowania modelu.
+
+
+KON 2
+
+1. Augmentacja danych - rozszerzenie danych ale dźwiękowych (a nie spektrogramu).
+2. Przeskalowywać spektrogramy zamiast przycinać
+3. Do najkrótszej próbki dołożyć ciszę lub szum gaussowski - nie tracić cennych informacji w dłuższych próbkach
+4. Uciąć częstotliwości na samej górze i na samym dole (białe tło)
+5. Sieć konwolucyjna 1D - należy sprawdzić czy przyniesie lepsze efekty nauka sieci 1D przy wykorzystaniu ekstrakcji cech (zcr, rmse itd.).
+6. Powtarzalność - na koniec treningu należy sprawdzić czy dokładność na zbiorze treningowym po uczeniu jest równa dokładności na ostatniej epoce.
+
+
+TODO:
+1. Zmniejszyć spektrogramy do górnej połowy.
+2. Ustalić maksymalną szerokość spektrogramu w momencie ich generowania.
+3. Augmentacja danych - zwiększyć liczność zbioru nagrań.
+4. Utworzyć model ze stałą wielkością cech wejściowych.

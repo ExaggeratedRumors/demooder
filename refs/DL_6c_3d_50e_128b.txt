@@ -1,0 +1,129 @@
+I:	Load and split dataset.
+R:	Training data size: 23814, validation data size: 5954, full data size: 29768.
+I:	Build CNN for spectrogram data.
+147167 - epochs: 1 loss: 0.13278373 metric: [0.28907645] val loss: 0.121095210313797 val metrics: [0.3871746063232422]
+256693 - epochs: 2 loss: 0.11887591 metric: [0.40272674] val loss: 0.11785051971673965 val metrics: [0.41794607043266296]
+348246 - epochs: 3 loss: 0.11573603 metric: [0.4275986] val loss: 0.11409036815166473 val metrics: [0.4461839199066162]
+437985 - epochs: 4 loss: 0.11326674 metric: [0.44379458] val loss: 0.11230836063623428 val metrics: [0.4578396677970886]
+559089 - epochs: 5 loss: 0.11093419 metric: [0.46164772] val loss: 0.11041960120201111 val metrics: [0.46895653009414673]
+648148 - epochs: 6 loss: 0.10856676 metric: [0.48129734] val loss: 0.10941050201654434 val metrics: [0.47176215052604675]
+737352 - epochs: 7 loss: 0.10664937 metric: [0.49579433] val loss: 0.10805028676986694 val metrics: [0.4855184257030487]
+826507 - epochs: 8 loss: 0.104623675 metric: [0.5093722] val loss: 0.10599110275506973 val metrics: [0.5023170709609985]
+915618 - epochs: 9 loss: 0.10240698 metric: [0.5239527] val loss: 0.10389456897974014 val metrics: [0.5157912373542786]
+1004930 - epochs: 10 loss: 0.100336544 metric: [0.53498214] val loss: 0.10302840918302536 val metrics: [0.5189393758773804]
+1115235 - epochs: 11 loss: 0.098672375 metric: [0.5463319] val loss: 0.10187877714633942 val metrics: [0.5262431502342224]
+1221458 - epochs: 12 loss: 0.09646128 metric: [0.55911595] val loss: 0.10195619612932205 val metrics: [0.5230849385261536]
+1311032 - epochs: 13 loss: 0.09438158 metric: [0.57073027] val loss: 0.10036095231771469 val metrics: [0.5338894724845886]
+1400559 - epochs: 14 loss: 0.09189882 metric: [0.58577037] val loss: 0.09889926016330719 val metrics: [0.5436764359474182]
+1489866 - epochs: 15 loss: 0.089379735 metric: [0.60110295] val loss: 0.09680455923080444 val metrics: [0.5574226379394531]
+1578942 - epochs: 16 loss: 0.08665696 metric: [0.615391] val loss: 0.09578797221183777 val metrics: [0.5630641579627991]
+1668434 - epochs: 17 loss: 0.083860844 metric: [0.63264537] val loss: 0.09495192021131516 val metrics: [0.570035457611084]
+1757456 - epochs: 18 loss: 0.08056943 metric: [0.6514037] val loss: 0.09414561092853546 val metrics: [0.5758432149887085]
+1846722 - epochs: 19 loss: 0.077187546 metric: [0.668867] val loss: 0.09292931109666824 val metrics: [0.5801650285720825]
+1936113 - epochs: 20 loss: 0.07416915 metric: [0.6848262] val loss: 0.0913129672408104 val metrics: [0.5884560346603394]
+2025545 - epochs: 21 loss: 0.07135142 metric: [0.70145386] val loss: 0.09141843020915985 val metrics: [0.590294599533081]
+2115022 - epochs: 22 loss: 0.06981511 metric: [0.70801306] val loss: 0.09215483069419861 val metrics: [0.5936391949653625]
+2204577 - epochs: 23 loss: 0.06789665 metric: [0.7169535] val loss: 0.08931322395801544 val metrics: [0.6079243421554565]
+2294230 - epochs: 24 loss: 0.06542108 metric: [0.73061496] val loss: 0.08836324512958527 val metrics: [0.6164118051528931]
+2383637 - epochs: 25 loss: 0.06272344 metric: [0.74532086] val loss: 0.08855480700731277 val metrics: [0.6172428727149963]
+2472789 - epochs: 26 loss: 0.060113907 metric: [0.75701874] val loss: 0.09005818516016006 val metrics: [0.614769697189331]
+2564497 - epochs: 27 loss: 0.057062656 metric: [0.7724766] val loss: 0.09140707552433014 val metrics: [0.6066348552703857]
+2654369 - epochs: 28 loss: 0.054446444 metric: [0.78384024] val loss: 0.0920373871922493 val metrics: [0.610956609249115]
+2744469 - epochs: 29 loss: 0.053375367 metric: [0.78956383] val loss: 0.08973508328199387 val metrics: [0.6214085817337036]
+2834460 - epochs: 30 loss: 0.051880293 metric: [0.79486966] val loss: 0.09288173913955688 val metrics: [0.6088360548019409]
+2924445 - epochs: 31 loss: 0.049869083 metric: [0.80460393] val loss: 0.09524381905794144 val metrics: [0.595331609249115]
+3014653 - epochs: 32 loss: 0.047300495 metric: [0.8152156] val loss: 0.09324140846729279 val metrics: [0.6080905199050903]
+3104763 - epochs: 33 loss: 0.04446404 metric: [0.82975435] val loss: 0.08903716504573822 val metrics: [0.6240479946136475]
+3195098 - epochs: 34 loss: 0.041164093 metric: [0.8443349] val loss: 0.08694867789745331 val metrics: [0.638187050819397]
+3285101 - epochs: 35 loss: 0.038387507 metric: [0.856367] val loss: 0.08829330652952194 val metrics: [0.6360664367675781]
+3375358 - epochs: 36 loss: 0.036524393 metric: [0.86555815] val loss: 0.0889197513461113 val metrics: [0.6375221610069275]
+3465667 - epochs: 37 loss: 0.03541698 metric: [0.86977774] val loss: 0.08917468786239624 val metrics: [0.6372199654579163]
+3555576 - epochs: 38 loss: 0.034201153 metric: [0.8731618] val loss: 0.09780308604240417 val metrics: [0.6114855408668518]
+3645510 - epochs: 39 loss: 0.034010738 metric: [0.87332886] val loss: 0.0976523607969284 val metrics: [0.6103219985961914]
+3736658 - epochs: 40 loss: 0.033698045 metric: [0.8747493] val loss: 0.10069596767425537 val metrics: [0.6069773435592651]
+3826944 - epochs: 41 loss: 0.03176473 metric: [0.8809325] val loss: 0.09727142006158829 val metrics: [0.6206177473068237]
+3916955 - epochs: 42 loss: 0.030133696 metric: [0.88895386] val loss: 0.08705779165029526 val metrics: [0.6589952111244202]
+4007242 - epochs: 43 loss: 0.02949629 metric: [0.89137703] val loss: 0.08762333542108536 val metrics: [0.651963472366333]
+4097212 - epochs: 44 loss: 0.029221479 metric: [0.8918366] val loss: 0.09258415549993515 val metrics: [0.6356836557388306]
+4186913 - epochs: 45 loss: 0.027854346 metric: [0.8984375] val loss: 0.0891854390501976 val metrics: [0.647651731967926]
+4276923 - epochs: 46 loss: 0.026956197 metric: [0.9008188] val loss: 0.09089254587888718 val metrics: [0.6408466100692749]
+4367059 - epochs: 47 loss: 0.026181158 metric: [0.90340906] val loss: 0.0922611802816391 val metrics: [0.6401918530464172]
+4456763 - epochs: 48 loss: 0.023781031 metric: [0.9138536] val loss: 0.08508480340242386 val metrics: [0.6717339754104614]
+4546541 - epochs: 49 loss: 0.022423536 metric: [0.9203292] val loss: 0.08283673971891403 val metrics: [0.6769272089004517]
+4638632 - epochs: 50 loss: 0.021540726 metric: [0.9232119] val loss: 0.08160693943500519 val metrics: [0.6865782141685486]
+4638680 [main] INFO org.jetbrains.kotlinx.dl.impl.summary.ModelSummaryLogger - ==============================================================================
+4638680 [main] INFO org.jetbrains.kotlinx.dl.impl.summary.ModelSummaryLogger - Model type: Sequential
+4638680 [main] INFO org.jetbrains.kotlinx.dl.impl.summary.ModelSummaryLogger - ______________________________________________________________________________
+4638680 [main] INFO org.jetbrains.kotlinx.dl.impl.summary.ModelSummaryLogger - Layer (type)                           Output Shape              Param #      
+4638680 [main] INFO org.jetbrains.kotlinx.dl.impl.summary.ModelSummaryLogger - ==============================================================================
+4638680 [main] INFO org.jetbrains.kotlinx.dl.impl.summary.ModelSummaryLogger - input_1(Input)                         [None, 138, 128, 1]       0            
+4638680 [main] INFO org.jetbrains.kotlinx.dl.impl.summary.ModelSummaryLogger - ______________________________________________________________________________
+4638680 [main] INFO org.jetbrains.kotlinx.dl.impl.summary.ModelSummaryLogger - conv2d_2(Conv2D)                       [None, 138, 128, 16]      160          
+4638680 [main] INFO org.jetbrains.kotlinx.dl.impl.summary.ModelSummaryLogger - ______________________________________________________________________________
+4638680 [main] INFO org.jetbrains.kotlinx.dl.impl.summary.ModelSummaryLogger - conv2d_3(Conv2D)                       [None, 138, 128, 16]      2320         
+4638680 [main] INFO org.jetbrains.kotlinx.dl.impl.summary.ModelSummaryLogger - ______________________________________________________________________________
+4638680 [main] INFO org.jetbrains.kotlinx.dl.impl.summary.ModelSummaryLogger - maxpool2d_4(MaxPool2D)                 [None, 69, 64, 16]        0            
+4638680 [main] INFO org.jetbrains.kotlinx.dl.impl.summary.ModelSummaryLogger - ______________________________________________________________________________
+4638680 [main] INFO org.jetbrains.kotlinx.dl.impl.summary.ModelSummaryLogger - dropout_5(Dropout)                     [None, 69, 64, 16]        0            
+4638680 [main] INFO org.jetbrains.kotlinx.dl.impl.summary.ModelSummaryLogger - ______________________________________________________________________________
+4638680 [main] INFO org.jetbrains.kotlinx.dl.impl.summary.ModelSummaryLogger - conv2d_6(Conv2D)                       [None, 69, 64, 32]        4640         
+4638680 [main] INFO org.jetbrains.kotlinx.dl.impl.summary.ModelSummaryLogger - ______________________________________________________________________________
+4638680 [main] INFO org.jetbrains.kotlinx.dl.impl.summary.ModelSummaryLogger - conv2d_7(Conv2D)                       [None, 69, 64, 32]        9248         
+4638680 [main] INFO org.jetbrains.kotlinx.dl.impl.summary.ModelSummaryLogger - ______________________________________________________________________________
+4638680 [main] INFO org.jetbrains.kotlinx.dl.impl.summary.ModelSummaryLogger - maxpool2d_8(MaxPool2D)                 [None, 34, 32, 32]        0            
+4638680 [main] INFO org.jetbrains.kotlinx.dl.impl.summary.ModelSummaryLogger - ______________________________________________________________________________
+4638680 [main] INFO org.jetbrains.kotlinx.dl.impl.summary.ModelSummaryLogger - dropout_9(Dropout)                     [None, 34, 32, 32]        0            
+4638680 [main] INFO org.jetbrains.kotlinx.dl.impl.summary.ModelSummaryLogger - ______________________________________________________________________________
+4638680 [main] INFO org.jetbrains.kotlinx.dl.impl.summary.ModelSummaryLogger - conv2d_10(Conv2D)                      [None, 34, 32, 64]        18496        
+4638680 [main] INFO org.jetbrains.kotlinx.dl.impl.summary.ModelSummaryLogger - ______________________________________________________________________________
+4638680 [main] INFO org.jetbrains.kotlinx.dl.impl.summary.ModelSummaryLogger - conv2d_11(Conv2D)                      [None, 34, 32, 64]        36928        
+4638680 [main] INFO org.jetbrains.kotlinx.dl.impl.summary.ModelSummaryLogger - ______________________________________________________________________________
+4638680 [main] INFO org.jetbrains.kotlinx.dl.impl.summary.ModelSummaryLogger - maxpool2d_12(MaxPool2D)                [None, 17, 16, 64]        0            
+4638680 [main] INFO org.jetbrains.kotlinx.dl.impl.summary.ModelSummaryLogger - ______________________________________________________________________________
+4638680 [main] INFO org.jetbrains.kotlinx.dl.impl.summary.ModelSummaryLogger - dropout_13(Dropout)                    [None, 17, 16, 64]        0            
+4638680 [main] INFO org.jetbrains.kotlinx.dl.impl.summary.ModelSummaryLogger - ______________________________________________________________________________
+4638680 [main] INFO org.jetbrains.kotlinx.dl.impl.summary.ModelSummaryLogger - flatten_14(Flatten)                    [None, 17408]             0            
+4638680 [main] INFO org.jetbrains.kotlinx.dl.impl.summary.ModelSummaryLogger - ______________________________________________________________________________
+4638680 [main] INFO org.jetbrains.kotlinx.dl.impl.summary.ModelSummaryLogger - dense_15(Dense)                        [None, 64]                1114176      
+4638680 [main] INFO org.jetbrains.kotlinx.dl.impl.summary.ModelSummaryLogger - ______________________________________________________________________________
+4638680 [main] INFO org.jetbrains.kotlinx.dl.impl.summary.ModelSummaryLogger - dropout_16(Dropout)                    [None, 64]                0            
+4638680 [main] INFO org.jetbrains.kotlinx.dl.impl.summary.ModelSummaryLogger - ______________________________________________________________________________
+4638680 [main] INFO org.jetbrains.kotlinx.dl.impl.summary.ModelSummaryLogger - dense_17(Dense)                        [None, 64]                4160         
+4638680 [main] INFO org.jetbrains.kotlinx.dl.impl.summary.ModelSummaryLogger - ______________________________________________________________________________
+4638681 [main] INFO org.jetbrains.kotlinx.dl.impl.summary.ModelSummaryLogger - dropout_18(Dropout)                    [None, 64]                0            
+4638681 [main] INFO org.jetbrains.kotlinx.dl.impl.summary.ModelSummaryLogger - ______________________________________________________________________________
+4638681 [main] INFO org.jetbrains.kotlinx.dl.impl.summary.ModelSummaryLogger - dense_19(Dense)                        [None, 6]                 390          
+4638681 [main] INFO org.jetbrains.kotlinx.dl.impl.summary.ModelSummaryLogger - ______________________________________________________________________________
+4638681 [main] INFO org.jetbrains.kotlinx.dl.impl.summary.ModelSummaryLogger - ==============================================================================
+4638681 [main] INFO org.jetbrains.kotlinx.dl.impl.summary.ModelSummaryLogger - Total trainable params: 1190518
+4638681 [main] INFO org.jetbrains.kotlinx.dl.impl.summary.ModelSummaryLogger - Total frozen params: 0
+4638681 [main] INFO org.jetbrains.kotlinx.dl.impl.summary.ModelSummaryLogger - Total params: 1190518
+4638681 [main] INFO org.jetbrains.kotlinx.dl.impl.summary.ModelSummaryLogger - ______________________________________________________________________________
+
+I:	Evaluate CNN - train dataset.
+R:	0.9163590669631958 accuracy
+I:	Confusion Matrix
+ANG	|	3872	70	37	50	40	9
+DIS	|	53	3738	94	80	87	50
+FEA	|	60	96	3659	114	95	38
+HAP	|	92	86	73	3737	71	41
+NEU	|	13	35	38	54	3269	38
+SAD	|	33	75	132	89	151	3545
+		ANG	DIS	FEA	HAP	NEU	SAD
+		
+		
+I:	Evaluate CNN - valid dataset.
+R:	0.6836563944816589 accuracy
+I:	Confusion Matrix
+ANG	|	860	49	21	48	26	2
+DIS	|	58	628	65	92	81	58
+FEA	|	38	72	645	127	57	83
+HAP	|	111	64	80	656	50	23
+NEU	|	25	43	37	87	667	42
+SAD	|	20	102	123	56	123	635
+		ANG	DIS	FEA	HAP	NEU	SAD
+I:	Save model.
+R:	Model saved to directory data_models/DL_6c_3d_50e_128b
+I:	End program.
+
+ 

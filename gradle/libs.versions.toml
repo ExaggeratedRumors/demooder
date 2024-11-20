@@ -1,0 +1,66 @@
+[versions]
+android-compileSdk = "34"
+android-minSdk = "31"
+android-targetSdk = "31"
+agp = "8.2.0"
+kotlin = "1.9.20"
+accompanistPermissions = "0.20.0"
+activityCompose = "1.9.3"
+coreKtx = "1.13.1"
+espressoCore = "3.6.1"
+junit = "4.13.2"
+junitVersion = "1.2.1"
+lifecycleRuntimeKtx = "2.8.6"
+material3AdaptiveNavigationSuite = "1.3.0"
+runtime = "1.7.4"
+ui = "1.7.4"
+navigationCompose = "2.8.3"
+compose-plugin = "1.6.10"
+appcompat = "1.7.0"
+material = "1.12.0"
+junitKtx = "1.2.1"
+kotlinDeeplearningTensorflow = "0.5.2"
+libtensorflow = "1.15.0"
+jackson = "2.18.1"
+slf4j = "1.6.1"
+
+[libraries]
+accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanistPermissions" }
+androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activityCompose" }
+androidx-espresso-core = { module = "androidx.test.espresso:espresso-core", version.ref = "espressoCore" }
+androidx-junit = { module = "androidx.test.ext:junit", version.ref = "junitVersion" }
+androidx-lifecycle-runtime-ktx = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "lifecycleRuntimeKtx" }
+androidx-core-ktx = { module = "androidx.core:core-ktx", version.ref = "coreKtx" }
+
+androidx-material3 = { module = "androidx.compose.material3:material3", version.ref = "material3AdaptiveNavigationSuite" }
+androidx-material3-adaptive-navigation-suite = { module = "androidx.compose.material3:material3-adaptive-navigation-suite", version.ref = "material3AdaptiveNavigationSuite" }
+androidx-material3-window-size-clazz = { module = "androidx.compose.material3:material3-window-size-class", version.ref = "material3AdaptiveNavigationSuite" }
+androidx-runtime = { module = "androidx.compose.runtime:runtime", version.ref = "runtime" }
+androidx-ui = { module = "androidx.compose.ui:ui", version.ref = "ui" }
+androidx-ui-test-junit4 = { module = "androidx.compose.ui:ui-test-junit4", version.ref = "ui" }
+androidx-ui-test-manifest = { module = "androidx.compose.ui:ui-test-manifest", version.ref = "ui" }
+androidx-ui-tooling = { module = "androidx.compose.ui:ui-tooling", version.ref = "ui" }
+androidx-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview", version.ref = "ui" }
+junit = { module = "junit:junit", version.ref = "junit" }
+kotlin-deeplearning-onnx = { module = "org.jetbrains.kotlinx:kotlin-deeplearning-onnx", version.ref = "kotlinDeeplearningTensorflow" }
+kotlin-deeplearning-tensorflow = { module = "org.jetbrains.kotlinx:kotlin-deeplearning-tensorflow", version.ref = "kotlinDeeplearningTensorflow" }
+kotlin-deeplearning-visualization = { module = "org.jetbrains.kotlinx:kotlin-deeplearning-visualization", version.ref = "kotlinDeeplearningTensorflow" }
+kotlin-libtensorflow = { module = "org.tensorflow:libtensorflow", version.ref = "libtensorflow" }
+kotlin-libtensorflow-jni-gpu = { module = "org.tensorflow:libtensorflow_jni_gpu", version.ref = "libtensorflow" }
+androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
+kotlin-fasterxml-jackson-module = { module = "com.fasterxml.jackson.module:jackson-module-kotlin", version.ref = "jackson" }
+kotlin-org-slf4j-api = { module = "org.slf4j:slf4j-api", version.ref = "slf4j" }
+kotlin-org-slf4j-simple = { module = "org.slf4j:slf4j-simple", version.ref = "slf4j" }
+androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
+material = { group = "com.google.android.material", name = "material", version.ref = "material" }
+androidx-junit-ktx = { group = "androidx.test.ext", name = "junit-ktx", version.ref = "junitKtx" }
+
+[plugins]
+android-library = { id = "com.android.library", version.ref = "agp" }
+android-application = { id = "com.android.application", version.ref = "agp" }
+kotlin-android = { id = "org.jetbrains.kotlin.android", version = "2.0.21" }
+compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+jetbrains-compose = { id = "org.jetbrains.compose", version.ref = "compose-plugin" }
+jetbrains-kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+
