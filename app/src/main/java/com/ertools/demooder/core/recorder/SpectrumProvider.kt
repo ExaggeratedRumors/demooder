@@ -1,6 +1,6 @@
 package com.ertools.demooder.core.recorder
 
 interface SpectrumProvider {
-    fun getAmplitudeSpectrum(): IntArray
+    fun getAmplitudeSpectrum(): DoubleArray
     fun getMaxAmplitude(): Int
 }

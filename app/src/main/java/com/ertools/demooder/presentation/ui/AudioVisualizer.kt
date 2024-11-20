@@ -33,9 +33,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.ertools.demooder.core.recorder.AudioRecorder
-import com.ertools.demooder.core.recorder.DampingState
 import com.ertools.demooder.core.recorder.SpectrumProvider
-import com.ertools.demooder.core.recorder.getDbSignalForm
 import com.ertools.demooder.presentation.theme.AV_BAR_SIZE
 import com.ertools.demooder.presentation.theme.AV_BUTTONS_SIZE
 import com.ertools.demooder.presentation.theme.AV_GRAPH_SIZE
@@ -48,13 +46,15 @@ import com.ertools.demooder.presentation.theme.Colors.AV_STOP_BTN_COLOR
 import com.ertools.demooder.presentation.theme.Strings
 import com.ertools.demooder.utils.INVALIDATE_GUI_DELAY
 import com.ertools.demooder.utils.Logger
+import com.ertools.processing.signal.SignalPreprocessor
+import com.ertools.processing.signal.Weighting.WeightingType
 import kotlinx.coroutines.delay
 
 @Composable
 fun AudioVisualizer(context: Context) {
     val recorder = remember { AudioRecorder(context) }
     val isRecording = remember { mutableStateOf(false) }
-    val dampingState = remember { mutableStateOf(DampingState.A_WEIGHTING) }
+    val weightingState = remember { mutableStateOf(WeightingType.A_WEIGHTING) }
     Column (
         modifier = Modifier
             .fillMaxSize()
@@ -68,11 +68,11 @@ fun AudioVisualizer(context: Context) {
             ) {
             RecordButton(recorder, isRecording)
             Spacer(modifier = Modifier.width(AV_OBJECTS_GAP_SIZE))
-            DampingButton(dampingState)
+            DampingButton(weightingState)
 
         }
         Spacer(modifier = Modifier.height(AV_OBJECTS_GAP_SIZE))
-        Graph(provider = recorder, state = dampingState)
+        Graph(provider = recorder, state = weightingState)
     }
 }
 
@@ -98,25 +98,25 @@ fun RecordButton(recorder: AudioRecorder, isRecording: MutableState<Boolean>) {
 }
 
 @Composable
-fun DampingButton(dampingState: MutableState<DampingState>) {
+fun DampingButton(weightingState: MutableState<WeightingType>) {
     Button(
         onClick = {
-            if(dampingState.value == DampingState.A_WEIGHTING) {
-                dampingState.value = DampingState.C_WEIGHTING
+            if(weightingState.value == WeightingType.A_WEIGHTING) {
+                weightingState.value = WeightingType.C_WEIGHTING
             } else {
-                dampingState.value = DampingState.A_WEIGHTING
+                weightingState.value = WeightingType.A_WEIGHTING
             }
         },
         modifier = Modifier.size(AV_BUTTONS_SIZE),
         colors = ButtonDefaults.buttonColors(
-            containerColor = if (dampingState.value == DampingState.A_WEIGHTING)
+            containerColor = if (weightingState.value == WeightingType.A_WEIGHTING)
                 AV_A_BTN_COLOR
             else
                 AV_C_BTN_COLOR
         )
     ) {
         Text(
-            text = if (dampingState.value == DampingState.A_WEIGHTING)
+            text = if (weightingState.value == WeightingType.A_WEIGHTING)
                 Strings.AV_A_BTN_NAME
             else
                 Strings.AV_C_BTN_NAME
@@ -125,12 +125,12 @@ fun DampingButton(dampingState: MutableState<DampingState>) {
 }
 
 @Composable
-fun Graph (provider: SpectrumProvider, state: MutableState<DampingState>) {
+fun Graph (provider: SpectrumProvider, state: MutableState<WeightingType>) {
     var spectrum by remember { mutableStateOf(provider.getAmplitudeSpectrum()) }
 
     LaunchedEffect(key1 = true) {
         while (true) {
-            spectrum = getDbSignalForm(provider.getAmplitudeSpectrum(), state.value)
+            spectrum = SignalPreprocessor.amplitudeToDecibels(provider.getAmplitudeSpectrum(), state.value)
             delay(INVALIDATE_GUI_DELAY)
             Logger.logSpectrum(spectrum)
         }
