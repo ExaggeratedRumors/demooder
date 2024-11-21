@@ -56,13 +56,10 @@ object SignalPreprocessor {
     }
 
     fun DoubleArray.applyWeighting(weighting: Weighting.WeightingType): DoubleArray {
-        val frameSize = this.size
-        val frequencies = (0 until frameSize).map {
-            it * ProcessingUtils.AUDIO_SAMPLING_RATE.toFloat() / (2 * frameSize)
-        }
-        val weight = frequencies.map { Weighting.applyWeighting(it, weighting) }
-        return this.mapIndexed { index, amplitude ->
-            amplitude * weight[index]
+        return this.mapIndexed { i, value ->
+            val thirdIndex = i * 3
+            val frequency = middleFrequency(thirdIndex)
+            value + Weighting.applyWeighting(frequency, weighting)
         }.toDoubleArray()
     }
 
@@ -112,10 +109,34 @@ object SignalPreprocessor {
     }
 
 
+    fun ComplexDoubleArray.toOctavesAmplitude(): DoubleArray {
+        val thirdsFrequencies = (1..ProcessingUtils.AUDIO_THIRDS_AMOUNT).map {
+            cutoffFrequency(it)
+        }
+        val octavesFrequencies = (0 until ProcessingUtils.AUDIO_OCTAVES_AMOUNT).map {
+            thirdsFrequencies[it * 3]
+        }
+
+        val freqWindow = ProcessingUtils.AUDIO_SAMPLING_RATE.toFloat() / ProcessingUtils.AUDIO_FFT_SIZE
+        val octaves = DoubleArray(ProcessingUtils.AUDIO_OCTAVES_AMOUNT) { 0.0 }
+        var index = 0
+        var octave = 0
+        for(sample in this) {
+            val freq = index * freqWindow
+            if(freq > octavesFrequencies[ProcessingUtils.AUDIO_OCTAVES_AMOUNT - 1]) break
+            if(freq > octavesFrequencies[octave]) octave += 1
+            val amplitude = sample.re.pow(2) + sample.im.pow(2)
+            if(amplitude > octaves[octave]) octaves[octave] = amplitude
+            index += 1
+        }
+        return octaves
+    }
+
     fun ComplexDoubleArray.convertToAmplitudeOfThirds(): DoubleArray{
         val amplitudeData = DoubleArray(ProcessingUtils.AUDIO_THIRDS_AMOUNT) { 0.0 }
         val cutoffFreq33 = cutoffFrequency(ProcessingUtils.AUDIO_THIRDS_AMOUNT)
         val freqWindow = ProcessingUtils.AUDIO_SAMPLING_RATE.toFloat() / ProcessingUtils.AUDIO_FFT_SIZE
+
         var terce = 1
         var iterator = 0
         var accumulated = ComplexDouble(0, 0)
@@ -136,11 +157,11 @@ object SignalPreprocessor {
         return amplitudeData
     }
 
-    fun cutoffFrequency(numberOfTerce: Int) =
-        12.5f * 2f.pow((2f * numberOfTerce - 1) / 6f)
+    fun cutoffFrequency(numberOfThird: Int) =
+        12.5 * 2f.pow((2f * numberOfThird - 1) / 6f)
 
-    fun middleFrequency(numberOfTerce: Int) =
-        12.5f * 2f.pow((numberOfTerce - 1) / 3f)
+    fun middleFrequency(numberOfThird: Int) =
+        12.5 * 2f.pow((numberOfThird - 1) / 3f)
 
     fun amplitudeToDecibels(amplitudeSpectrum: DoubleArray, weighting: Weighting.WeightingType): DoubleArray {
         return amplitudeSpectrum

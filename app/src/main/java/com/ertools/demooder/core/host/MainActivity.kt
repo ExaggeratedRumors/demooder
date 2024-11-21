@@ -4,14 +4,9 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.activity.viewModels
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.safeDrawingPadding
-import androidx.compose.ui.Modifier
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.ertools.demooder.presentation.ui.MainView
-import com.ertools.demooder.presentation.viewmodel.MainViewModel
 import com.ertools.demooder.utils.PERMISSIONS.REQUIRED_PERMISSIONS
 
 class MainActivity : ComponentActivity() {

@@ -21,6 +21,7 @@ object ProcessingUtils {
     const val AUDIO_SAMPLING_RATE = 44100
     const val AUDIO_FFT_SIZE = 1024
     const val AUDIO_THIRDS_AMOUNT = 33
+    const val AUDIO_OCTAVES_AMOUNT = 11
 
     /** Pathing **/
     const val EXT_WAV_FILE = "wav"
