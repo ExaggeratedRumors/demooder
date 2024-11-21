@@ -114,7 +114,7 @@ object SignalPreprocessor {
             cutoffFrequency(it)
         }
         val octavesFrequencies = (0 until ProcessingUtils.AUDIO_OCTAVES_AMOUNT).map {
-            thirdsFrequencies[it * 3]
+            thirdsFrequencies[it * 3 + 2]
         }
 
         val freqWindow = ProcessingUtils.AUDIO_SAMPLING_RATE.toFloat() / ProcessingUtils.AUDIO_FFT_SIZE
