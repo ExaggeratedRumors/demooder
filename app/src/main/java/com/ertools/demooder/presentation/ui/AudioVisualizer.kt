@@ -34,14 +34,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.integerResource
 import androidx.compose.ui.unit.dp
+import com.ertools.demooder.R
 import com.ertools.demooder.core.recorder.AudioRecorder
 import com.ertools.demooder.core.recorder.SpectrumProvider
-import com.ertools.demooder.presentation.theme.AV_BAR_SIZE
-import com.ertools.demooder.presentation.theme.AV_BUTTONS_SIZE
-import com.ertools.demooder.presentation.theme.AV_GRAPH_SIZE
-import com.ertools.demooder.presentation.theme.AV_OBJECTS_GAP_SIZE
-import com.ertools.demooder.presentation.theme.AV_SPACE_BETWEEN_BARS_SIZE
 import com.ertools.demooder.presentation.theme.Colors.AV_A_BTN_COLOR
 import com.ertools.demooder.presentation.theme.Colors.AV_C_BTN_COLOR
 import com.ertools.demooder.presentation.theme.Colors.AV_START_BTN_COLOR
@@ -70,11 +68,11 @@ fun AudioVisualizer(context: Context) {
             horizontalArrangement = Arrangement.Center,
             ) {
             RecordButton(recorder, isRecording)
-            Spacer(modifier = Modifier.width(AV_OBJECTS_GAP_SIZE))
+            Spacer(modifier = Modifier.width(dimensionResource(R.dimen.prediction_buttons_space)))
             DampingButton(weightingState)
 
         }
-        Spacer(modifier = Modifier.height(AV_OBJECTS_GAP_SIZE))
+        Spacer(modifier = Modifier.height(dimensionResource(R.dimen.prediction_buttons_space)))
         Graph(provider = recorder, state = weightingState)
     }
 }
@@ -91,7 +89,7 @@ fun RecordButton(recorder: AudioRecorder, isRecording: MutableState<Boolean>) {
                 true
             }
         },
-        modifier = Modifier.size(AV_BUTTONS_SIZE),
+        modifier = Modifier.size(dimensionResource(R.dimen.prediction_button_size)),
         colors = ButtonDefaults.buttonColors(
             containerColor = if (isRecording.value) AV_STOP_BTN_COLOR else AV_START_BTN_COLOR
         )
@@ -110,7 +108,7 @@ fun DampingButton(weightingState: MutableState<WeightingType>) {
                 weightingState.value = WeightingType.A_WEIGHTING
             }
         },
-        modifier = Modifier.size(AV_BUTTONS_SIZE),
+        modifier = Modifier.size(dimensionResource(R.dimen.prediction_button_size)),
         colors = ButtonDefaults.buttonColors(
             containerColor = if (weightingState.value == WeightingType.A_WEIGHTING)
                 AV_A_BTN_COLOR
@@ -137,14 +135,14 @@ fun Graph (provider: SpectrumProvider, state: MutableState<WeightingType>) {
                 provider.getAmplitudeSpectrum(),
                 state.value
             )
-            delay(500L)
+            delay(100L)
         }
     }
 
     Surface (
         modifier = Modifier
             .fillMaxWidth()
-            .height(AV_GRAPH_SIZE)
+            .height(dimensionResource(R.dimen.equalizer_height))
             .background(
                 color = MaterialTheme.colorScheme.surface,
                 shape = MaterialTheme.shapes.large
@@ -159,13 +157,13 @@ fun Graph (provider: SpectrumProvider, state: MutableState<WeightingType>) {
         ) {
             spectrum.forEach { sample ->
                 val animatedHeight by animateFloatAsState(
-                    targetValue = sample.toFloat(),
+                    targetValue = sample.toFloat() * integerResource(R.integer.equalizer_bar_factor),
                     animationSpec = spring(),
                     label = "$sample"
                 )
                 Box(
                     modifier = Modifier
-                        .width(AV_BAR_SIZE)
+                        .width(dimensionResource(R.dimen.equalizer_bar_height))
                         .height((animatedHeight).dp)
                         .align(Alignment.Bottom)
                         .background(MaterialTheme.colorScheme.primary)
