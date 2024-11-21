@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- GLOBAL -->
+
+
+    <!-- PREDICTION -->
+    <dimen name="prediction_button_size">120dp</dimen>
+    <dimen name="prediction_buttons_space">50dp</dimen>
+    <dimen name="equalizer_height">400dp</dimen>
+    <dimen name="equalizer_bar_height">24dp</dimen>
+    <integer name="equalizer_bar_factor">2</integer>
+
+
+</resources>

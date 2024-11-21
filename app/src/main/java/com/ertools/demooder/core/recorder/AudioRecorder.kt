@@ -19,7 +19,11 @@ class AudioRecorder (private val context: Context) : SpectrumProvider {
         ProcessingUtils.AUDIO_SAMPLING_RATE,
         AudioFormat.CHANNEL_IN_MONO,
         AudioFormat.ENCODING_PCM_16BIT
-    )
+    ).let {
+        var power = 1
+        while (power * 2 <= it) { power *= 2 }
+        power
+    }
     private val data = ByteArray(max(bufferSize, 0))
     private var spectrum = DoubleArray(ProcessingUtils.AUDIO_OCTAVES_AMOUNT)
     private var recorder: AudioRecord? = null
