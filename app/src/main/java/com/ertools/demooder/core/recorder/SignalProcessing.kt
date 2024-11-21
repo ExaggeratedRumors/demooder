@@ -1,12 +1,13 @@
 package com.ertools.demooder.core.recorder
 
+/*
 import com.ertools.demooder.utils.AUDIO_RECORD_MAX_VALUE
 import com.ertools.demooder.utils.BASIC_FREQUENCY
 import com.ertools.demooder.utils.CALIBRATION
 import com.ertools.demooder.utils.Complex
 import com.ertools.demooder.utils.FFT_SIZE
-import com.ertools.demooder.utils.SAMPLING_RATE
 import com.ertools.demooder.utils.THIRDS_NUMBER
+import com.ertools.processing.commons.ProcessingUtils
 import kotlin.experimental.and
 import kotlin.experimental.or
 import kotlin.math.PI
@@ -89,7 +90,7 @@ fun Array<Complex>.fft(): Array<Complex> {
 fun Array<Complex>.convertToAmplitudeOfThirds(): IntArray{
     val amplitudeData = IntArray(THIRDS_NUMBER) { 0 }
     val cutoffFreq33 = cutoffFrequency(THIRDS_NUMBER)
-    val freqWindow = SAMPLING_RATE.toFloat() / FFT_SIZE
+    val freqWindow = ProcessingUtils.AUDIO_SAMPLING_RATE / ProcessingUtils.AUDIO_FFT_SIZE
     var terce = 1
     var iterator = 0
     var accumulated = Complex()
@@ -97,7 +98,7 @@ fun Array<Complex>.convertToAmplitudeOfThirds(): IntArray{
         if((iterator * freqWindow) > cutoffFreq33 || terce > THIRDS_NUMBER) break
         accumulated += this[iterator]
         if((iterator + 1) * freqWindow > cutoffFrequency(terce) &&
-            iterator * freqWindow < SAMPLING_RATE / 2f) {
+            iterator * freqWindow < ProcessingUtils.AUDIO_SAMPLING_RATE / 2f) {
             terce += 1
             continue
         }
@@ -134,3 +135,5 @@ fun calculateMaxAmplitude(audioData: ByteArray): Int {
     }
     return maxAmplitude
 }
+
+*/
