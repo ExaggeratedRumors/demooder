@@ -19,7 +19,6 @@ import com.ertools.demooder.presentation.viewmodel.MainViewModel
 fun MainView () {
     val viewModel = viewModel<MainViewModel>()
     Theme.MainTheme {
-        val navController = rememberNavController()
         val context = LocalContext.current
         AppScaffold(
             listOf(
@@ -29,10 +28,10 @@ fun MainView () {
             ),
             startRoute = NavigationItem.Home.route
         ) {
-            composable(NavigationItem.Home.route) { HomeView(navController) }
-            composable(NavigationItem.Prediction.route) { PredictionView(navController, context) }
-            composable(NavigationItem.Records.route) { RecordsView(navController, viewModel) }
-            composable(NavigationItem.Settings.route) { SettingsView(navController) }
+            composable(NavigationItem.Home.route) { HomeView() }
+            composable(NavigationItem.Prediction.route) { PredictionView(context) }
+            composable(NavigationItem.Records.route) { RecordsView(viewModel) }
+            composable(NavigationItem.Settings.route) { SettingsView() }
         }
     }
 }
