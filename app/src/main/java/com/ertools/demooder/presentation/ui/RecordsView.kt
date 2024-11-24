@@ -19,7 +19,6 @@ import com.ertools.demooder.presentation.viewmodel.MainViewModel
 
 @Composable
 fun RecordsView(
-    navController: NavHostController,
     viewModel: MainViewModel
 ) {
     Column(modifier = Modifier.fillMaxSize().draggable(

@@ -4,6 +4,6 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 
 @Composable
-fun SettingsView(navController: NavHostController) {
+fun SettingsView() {
 
 }

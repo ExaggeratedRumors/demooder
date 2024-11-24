@@ -1,6 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- GLOBAL -->
+    <dimen name="global_padding">20dp</dimen>
+
+    <!-- HOME -->
+    <dimen name="home_vec_speech_size">250dp</dimen>
+    <dimen name="home_description_width">180dp</dimen>
+    <dimen name="home_description_height">180dp</dimen>
+    <fraction name="home_">0.4f</fraction>
 
 
     <!-- PREDICTION -->

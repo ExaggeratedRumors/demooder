@@ -61,6 +61,8 @@ dependencies {
     implementation(libs.androidx.material3.adaptive.navigation.suite)
     implementation(libs.androidx.material3)
     implementation(libs.androidx.material3.window.size.clazz)
+    implementation(libs.androidx.graphics.shapes.android)
+    implementation(libs.androidx.navigation.compose)
 
     /** ViewModel **/
     implementation(libs.androidx.lifecycle.viewmodel.compose)
@@ -73,9 +75,6 @@ dependencies {
     implementation (libs.kotlin.deeplearning.tensorflow)
     implementation (libs.kotlin.deeplearning.onnx)
     implementation (libs.kotlin.deeplearning.visualization)
-
-    /** Navigation **/
-    implementation(libs.androidx.navigation.compose)
 
     /** Complex **/
     implementation(libs.multik.core)

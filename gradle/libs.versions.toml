@@ -3,7 +3,7 @@ accompanistSystemuicontroller = "0.36.0"
 android-compileSdk = "34"
 android-minSdk = "31"
 android-targetSdk = "31"
-agp = "8.2.2"
+agp = "8.6.0"
 kotlin = "1.9.22"
 accompanistPermissions = "0.20.0"
 activityCompose = "1.9.3"
@@ -26,6 +26,7 @@ kotlinDeeplearningTensorflow = "0.5.2"
 libtensorflow = "1.15.0"
 jackson = "2.18.1"
 slf4j = "2.0.7"
+graphicsShapesAndroid = "1.0.1"
 
 [libraries]
 accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanistPermissions" }
@@ -60,6 +61,7 @@ androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 androidx-junit-ktx = { group = "androidx.test.ext", name = "junit-ktx", version.ref = "junitKtx" }
 multik-core = { module = "org.jetbrains.kotlinx:multik-core", version.ref = "multikCore" }
+androidx-graphics-shapes-android = { group = "androidx.graphics", name = "graphics-shapes-android", version.ref = "graphicsShapesAndroid" }
 
 [plugins]
 android-library = { id = "com.android.library", version.ref = "agp" }
