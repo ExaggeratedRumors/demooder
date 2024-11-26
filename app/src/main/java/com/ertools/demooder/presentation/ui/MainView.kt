@@ -20,18 +20,16 @@ fun MainView () {
     val viewModel = viewModel<MainViewModel>()
     Theme.MainTheme {
         val context = LocalContext.current
+        val navController = rememberNavController()
         AppScaffold(
-            listOf(
-                NavigationItem.Home,
-                NavigationItem.Prediction,
-                NavigationItem.Records
-            ),
+            navController = navController,
             startRoute = NavigationItem.Home.route
         ) {
             composable(NavigationItem.Home.route) { HomeView() }
             composable(NavigationItem.Prediction.route) { PredictionView(context) }
             composable(NavigationItem.Records.route) { RecordsView(viewModel) }
-            composable(NavigationItem.Settings.route) { SettingsView() }
+            composable(NavigationItem.Settings.route) { SettingsView(navController) }
+
         }
     }
 }
