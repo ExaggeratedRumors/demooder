@@ -9,6 +9,9 @@
     <string name="nav_settings">Settings</string>
 
     <!-- HOME -->
+    <string name="home_description_01">Every speech is emotional, even a little bit.</string>
+    <string name="home_description_02">Analise the speech using Demooder!</string>
+    <string name="home_button_speech">Start the speech</string>
 
     <!-- PREDICTION -->
 

@@ -5,7 +5,7 @@ import android.speech.RecognizerIntent
 import androidx.core.app.ActivityCompat.startActivityForResult
 import com.ertools.demooder.core.host.MainActivity
 
-class RecognizerRoutine (val activity: MainActivity){
+class RecognizerRoutine (private val activity: MainActivity){
     val intent = Intent(
         RecognizerIntent.ACTION_RECOGNIZE_SPEECH
     ).putExtra(
