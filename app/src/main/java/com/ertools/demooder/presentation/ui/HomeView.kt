@@ -113,9 +113,10 @@ fun ColumnScope.HomeContent() {
             contentDescription = "Speech bubble",
             contentScale = ContentScale.Crop,
             modifier = Modifier
-                .weight(0.8f)
+                .weight(0.6f)
                 .clip(shape = MaterialTheme.shapes.large)
-                .align(alignment = Alignment.CenterHorizontally)
+                .aspectRatio(1.5f)
+                .align(alignment = Alignment.End)
         )
         val colors = ButtonDefaults.buttonColors(
             containerColor = MaterialTheme.colorScheme.primary,
@@ -130,7 +131,10 @@ fun ColumnScope.HomeContent() {
             shape = Shape.Shapes.extraSmall,
             colors = colors
         ) {
-            Text(stringResource(id = R.string.home_button_speech))
+            Text(
+                text = stringResource(id = R.string.home_button_speech),
+                style = MaterialTheme.typography.bodyLarge
+            )
         }
     }
 }
