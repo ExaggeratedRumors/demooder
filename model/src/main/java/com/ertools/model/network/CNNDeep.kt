@@ -18,33 +18,18 @@ object CNNDeep {
         return Sequential.of(
             Input(dim.width, dim.height, 1L),
             Conv2D(
-                filters = 16,
+                filters = 32,
                 kernelSize = intArrayOf(3, 3),
                 activation = Activations.Relu,
             ),
             Conv2D(
-                filters = 16,
+                filters = 32,
                 kernelSize = intArrayOf(3, 3),
                 activation = Activations.Relu
             ),
             MaxPool2D(
                 poolSize = intArrayOf(1, 2, 2, 1),
             ),
-            Dropout(rate = 0.2f),
-            Conv2D(
-                filters = 32,
-                kernelSize = intArrayOf(3, 3),
-                activation = Activations.Relu,
-            ),
-            Conv2D(
-                filters = 32,
-                kernelSize = intArrayOf(3, 3),
-                activation = Activations.Relu,
-            ),
-            MaxPool2D(
-                poolSize = intArrayOf(1, 2, 2, 1),
-            ),
-            Dropout(rate = 0.2f),
             Conv2D(
                 filters = 64,
                 kernelSize = intArrayOf(3, 3),
@@ -58,18 +43,43 @@ object CNNDeep {
             MaxPool2D(
                 poolSize = intArrayOf(1, 2, 2, 1),
             ),
-            Dropout(rate = 0.2f),
+            Conv2D(
+                filters = 128,
+                kernelSize = intArrayOf(3, 3),
+                activation = Activations.Relu,
+            ),
+            Conv2D(
+                filters = 128,
+                kernelSize = intArrayOf(3, 3),
+                activation = Activations.Relu,
+            ),
+            MaxPool2D(
+                poolSize = intArrayOf(1, 2, 2, 1),
+            ),
+            Conv2D(
+                filters = 256,
+                kernelSize = intArrayOf(3, 3),
+                activation = Activations.Relu,
+            ),
+            Conv2D(
+                filters = 256,
+                kernelSize = intArrayOf(3, 3),
+                activation = Activations.Relu,
+            ),
+            MaxPool2D(
+                poolSize = intArrayOf(1, 2, 2, 1),
+            ),
             Flatten(),
             Dense(
                 outputSize = 64,
                 activation = Activations.Relu,
             ),
-            Dropout(rate = 0.2f),
+            Dropout(rate = 0.25f),
             Dense(
                 outputSize = 64,
                 activation = Activations.Relu,
             ),
-            Dropout(rate = 0.5f),
+            Dropout(rate = 0.25f),
             Dense(
                 outputSize = LabelsExtraction.Emotion.entries.size,
                 activation = Activations.Softmax,

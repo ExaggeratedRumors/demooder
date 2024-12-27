@@ -14,9 +14,9 @@ import org.jetbrains.kotlinx.dl.impl.summary.logSummary
 fun main() {
     /** Data **/
     val spectrogramData = ProcessingUtils.DIR_CREMA_D
-    val epochs = 50
-    val batchSize = 128
-    val outputModelFilename = "DL_6c_3d_50e_128b"
+    val epochs = 100
+    val batchSize = 32
+    val outputModelFilename = "DL_8c_3d_100e_32b"
 
     /** Train program **/
     println("I:\tStart program.")
@@ -28,14 +28,20 @@ fun main() {
     ) { dim ->
         DatasetJvmPreprocessor.getPreprocessingPipeline(dim)
     }
-    val (usable, _) = data.split(1.0) /* take 80% of samples */
-    val (train, valid) = usable.split(0.8) /* 80% of 80% samples is training set, 20% of 80% samples is validation set */
+    val (usable, _) = data.split(1.0) /* take 100% of samples */
+    val (train, valid) = usable.split(0.85) /* 85% samples is training set, 20% of samples is validation set */
 
 
     println("R:\tTraining data size: ${train.xSize()}, validation data size: ${valid.xSize()}, full data size: ${data.xSize()}.")
 
     println("I:\tBuild CNN for spectrogram data.")
     val network = CNNDeep.build(dim)
+    /*val network = vgg16(
+        imageSize = (dim.width * dim.height),
+        numberOfClasses = LabelsExtraction.Emotion.entries.size,
+        numberOfInputChannels = 1,
+        lastLayerActivation = Activations.Softmax
+    )*/
 
     network.use {
         it.compile()
