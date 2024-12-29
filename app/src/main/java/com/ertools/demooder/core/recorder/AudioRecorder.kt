@@ -6,7 +6,7 @@ import android.media.AudioFormat
 import android.media.AudioRecord
 import android.media.MediaRecorder
 import android.util.Log
-import com.ertools.demooder.utils.DEBUG_ENGINE
+import com.ertools.demooder.utils.DEBUG_MODE
 import com.ertools.demooder.utils.READ_DATA_DELAY
 import com.ertools.demooder.utils.isPermissionsGained
 import com.ertools.processing.commons.ProcessingUtils
@@ -32,7 +32,7 @@ class AudioRecorder (private val context: Context) : SpectrumProvider {
 
     fun startRecording() {
         if(isRecording) return
-        if(DEBUG_ENGINE) Log.i("SYSTEM", "Start recording.")
+        if(DEBUG_MODE) Log.i("SYSTEM", "Start recording.")
         initRecorder()
         recorder?.startRecording()
         isRecording = true
@@ -40,7 +40,7 @@ class AudioRecorder (private val context: Context) : SpectrumProvider {
     }
 
     fun stopRecording() {
-        if(DEBUG_ENGINE) Log.i("SYSTEM", "Stop recording.")
+        if(DEBUG_MODE) Log.i("SYSTEM", "Stop recording.")
         isRecording = false
         recorder?.stop()
         recorder?.release()

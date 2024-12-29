@@ -74,7 +74,7 @@ fun TensorFlowInferenceModel.evaluate(
     )
 }
 
-fun TensorFlowInferenceModel.predict(testData: Dataset) {
+fun TensorFlowInferenceModel.confusionMatrix(testData: Dataset) {
     val classes = LabelsExtraction.Emotion.entries
     val confusionMatrix = Array(classes.size) { IntArray(classes.size) }
     for(i in 0 until testData.xSize()) {

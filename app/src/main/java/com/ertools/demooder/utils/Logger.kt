@@ -5,7 +5,7 @@ import java.util.Locale
 
 object Logger {
     fun logSpectrum(spectrum: DoubleArray) {
-        if(DEBUG_ENGINE) {
+        if(DEBUG_MODE) {
             val sb = StringBuilder()
             sb.append("DEBUG INTERFACE: ")
             for (i in spectrum.indices) {
@@ -14,6 +14,10 @@ object Logger {
             }
             Log.i("SPECTRUM", sb.toString())
         }
+    }
+
+    fun log(message: String) {
+        if (DEBUG_MODE) Log.i("DEBUG", message)
     }
 
 }

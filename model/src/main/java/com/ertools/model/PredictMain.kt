@@ -55,7 +55,7 @@ fun main () {
         (0 until predictAmount).forEach { i ->
             val timeStart = System.nanoTime()
             val result = LabelsExtraction.Emotion.entries[it.predict(data.getX(i))]
-            val timeDiff = (System.nanoTime() - timeStart)/1000000
+            val timeDiff = (System.nanoTime() - timeStart) / 1000000
             println("R:\t[TRUE] ${LabelsExtraction.Emotion.entries[data.getY(i).toInt()]}, [PRED] $result, time: $timeDiff ms")
         }
     }
