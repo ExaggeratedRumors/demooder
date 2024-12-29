@@ -4,7 +4,7 @@ import com.ertools.model.network.CNNDeep
 import com.ertools.model.operation.compile
 import com.ertools.model.operation.evaluate
 import com.ertools.model.operation.fit
-import com.ertools.model.operation.predict
+import com.ertools.model.operation.confusionMatrix
 import com.ertools.model.operation.save
 import com.ertools.processing.commons.ProcessingUtils
 import com.ertools.processing.dataset.DatasetJvmPreprocessor
@@ -56,14 +56,14 @@ fun main() {
         println("R:\t$result accuracy")
 
         println("I:\tConfusion Matrix")
-        it.predict(testData = train)
+        it.confusionMatrix(testData = train)
 
         println("I:\tEvaluate CNN - valid dataset.")
         val resulValid = it.evaluate(test = valid)
         println("R:\t$resulValid accuracy")
 
         println("I:\tConfusion Matrix")
-        it.predict(testData = valid)
+        it.confusionMatrix(testData = valid)
 
         println("I:\tSave model.")
         it.save(outputModelFilename)
