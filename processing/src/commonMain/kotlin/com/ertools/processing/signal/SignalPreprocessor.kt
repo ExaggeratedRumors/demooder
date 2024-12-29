@@ -13,7 +13,7 @@ import kotlin.math.sin
 import kotlin.math.*
 
 object SignalPreprocessor {
-    fun processWavFile(
+    fun processWavFiles(
         wavFiles: List<WavFile>,
         frameSize: Int = 256,
         stepSize: Int = 128,
