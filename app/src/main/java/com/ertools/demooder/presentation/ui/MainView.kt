@@ -1,9 +1,16 @@
 package com.ertools.demooder.presentation.ui
 
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.ertools.demooder.presentation.components.AppScaffold
@@ -23,13 +30,23 @@ fun MainView () {
         val navController = rememberNavController()
         AppScaffold(
             navController = navController,
-            startRoute = NavigationItem.Home.route
-        ) {
-            composable(NavigationItem.Home.route) { HomeView() }
-            composable(NavigationItem.Prediction.route) { PredictionView(context) }
-            composable(NavigationItem.Records.route) { RecordsView(viewModel) }
-            composable(NavigationItem.Settings.route) { SettingsView(navController) }
-
+        ) { contentPadding ->
+            NavHost(
+                navController = navController,
+                startDestination = NavigationItem.Home.route,
+                modifier = Modifier.padding(contentPadding),
+                enterTransition = {
+                    EnterTransition.None
+                },
+                exitTransition = {
+                    ExitTransition.None
+                }
+            ) {
+                composable(NavigationItem.Home.route) { HomeView() }
+                composable(NavigationItem.Prediction.route) { PredictionView(context) }
+                composable(NavigationItem.Records.route) { RecordsView(viewModel) }
+                composable(NavigationItem.Settings.route) { SettingsView(navController) }
+            }
         }
     }
 }
