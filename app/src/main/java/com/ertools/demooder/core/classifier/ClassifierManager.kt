@@ -1,7 +1,5 @@
 package com.ertools.demooder.core.classifier
 
-import android.graphics.Bitmap
-import androidx.compose.ui.unit.Constraints
 import com.ertools.demooder.utils.DEBUG_MODE
 import com.ertools.demooder.utils.Logger
 import com.ertools.processing.commons.ImageDim

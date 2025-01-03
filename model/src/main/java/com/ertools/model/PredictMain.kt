@@ -27,7 +27,7 @@ fun main () {
     println("R:\tRead ${soundData.size} samples.")
 
     println("I:\tProcess data to spectrograms.")
-    val spectrogramSet = SignalPreprocessor.processWavFiles(
+    val spectrogramSet = SignalPreprocessor.convertWavFilesToSamples(
         wavFiles = soundData,
         frameSize = frameSize,
         stepSize = stepSize,

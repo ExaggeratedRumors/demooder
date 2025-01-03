@@ -23,9 +23,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.ertools.demooder.R
+import com.ertools.demooder.presentation.viewmodel.SettingsViewModel
 
 
 @Preview
@@ -36,21 +38,26 @@ fun SettingsViewPreview() {
 
 @Composable
 fun SettingsView(
-    navController: NavHostController
+    navController: NavHostController,
+    settingsViewModel: SettingsViewModel = viewModel()
 ) {
     val data = listOf(
         OptionData(
-            optionTitle = "A",
-            currentValue = "b",
+            optionTitle = "Device damping",
+            currentValue = "0dB",
         ) { navController.navigate("a") },
         OptionData(
-            optionTitle = "B",
-            currentValue = "b"
+            optionTitle = "Signal detection period",
+            currentValue = "2s"
         ) { navController.navigate("b") },
         OptionData(
-            optionTitle = "C",
-            currentValue = "c"
-        ) { navController.navigate("c") }
+            optionTitle = "Enable notifications",
+            currentValue = "On"
+        ) { navController.navigate("c") },
+        OptionData(
+            optionTitle = "Anger detection time before trigger notification",
+            currentValue = "10s"
+        ) { navController.navigate("d") }
     )
     LazyColumn(
         modifier = Modifier
@@ -114,6 +121,7 @@ fun SettingsOption(
                     .rotate(90f)
                     .scale(2f)
                     .align(Alignment.Bottom)
+                    .background(color = Color.Transparent)
             )
         }
     }

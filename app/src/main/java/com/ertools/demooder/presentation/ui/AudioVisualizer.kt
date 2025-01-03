@@ -42,6 +42,8 @@ import com.ertools.demooder.presentation.theme.Colors.AV_START_BTN_COLOR
 import com.ertools.demooder.presentation.theme.Colors.AV_STOP_BTN_COLOR
 import com.ertools.demooder.presentation.theme.Strings
 import com.ertools.processing.signal.SignalPreprocessor
+import com.ertools.processing.signal.SignalPreprocessor.applyWeighting
+import com.ertools.processing.signal.SignalPreprocessor.toDecibels
 import com.ertools.processing.signal.Weighting.WeightingType
 import kotlinx.coroutines.delay
 
@@ -125,10 +127,10 @@ fun Graph (provider: SpectrumProvider, state: MutableState<WeightingType>) {
 
     LaunchedEffect(key1 = true) {
         while (true) {
-            spectrum = SignalPreprocessor.amplitudeToDecibels(
-                provider.getAmplitudeSpectrum(),
-                state.value
-            )
+            spectrum =
+                provider.getAmplitudeSpectrum()
+                    .toDecibels()
+                    .applyWeighting(state.value)
             delay(100L)
         }
     }
