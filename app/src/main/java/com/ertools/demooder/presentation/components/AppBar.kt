@@ -83,7 +83,10 @@ fun AppBar(
                         text = {
                             Text(text = item.text)
                         },
-                        onClick = { item.onClick(Unit) },
+                        onClick = { 
+                            menuExpanded.value = false
+                            item.onClick(Unit) 
+                        },
                         modifier = Modifier.fillMaxHeight(),
                         colors = MenuItemColors(
                             textColor = MaterialTheme.colorScheme.onSurface,
