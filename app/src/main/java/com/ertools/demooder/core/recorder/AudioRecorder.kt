@@ -73,7 +73,7 @@ class AudioRecorder (private val context: Context) : SpectrumProvider {
     private fun processData(data: ByteArray) = SignalPreprocessor.run {
         data.convertToComplex()
             .fft()
-            .toOctavesAmplitude()
+            .convertSpectrumToOctavesAmplitude()
     }
 
     override fun getAmplitudeSpectrum() = spectrum

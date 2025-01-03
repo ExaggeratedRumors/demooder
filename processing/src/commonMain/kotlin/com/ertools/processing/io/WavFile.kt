@@ -1,7 +1,7 @@
 package com.ertools.processing.io
 
 import com.ertools.processing.commons.ProcessingUtils
-import com.ertools.processing.signal.SignalPreprocessor.downsample
+import com.ertools.processing.signal.SignalPreprocessor.downsampling
 import java.io.File
 import java.io.FileInputStream
 import java.nio.ByteBuffer
@@ -24,7 +24,7 @@ class WavFile(file: File) {
                 println(header)
                 inputStream.read(dataBuffer)
                 data = if(header.subchunk2Id == "data") dataBuffer
-                else dataBuffer.downsample(ProcessingUtils.WAV_MAX_LENGTH,true, header.sampleRate, ProcessingUtils.WAV_MAX_SAMPLE_RATE)
+                else dataBuffer.downsampling(ProcessingUtils.WAV_MAX_LENGTH,true, header.sampleRate, ProcessingUtils.WAV_MAX_SAMPLE_RATE)
             } catch (e: Exception) {
                 println("E: ${e.localizedMessage}")
                 throw e

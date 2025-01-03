@@ -49,6 +49,7 @@ dependencies {
     /** Core **/
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation(libs.androidx.datastore.preferences)
 
     /** Processing **/
     implementation(project(":processing"))

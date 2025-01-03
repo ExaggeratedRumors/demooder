@@ -35,7 +35,7 @@ fun main () {
         val start = it * spectrogramsBatchSize
         val end = min((it + 1) * spectrogramsBatchSize, soundData.size)
         val subset = soundData.subList(start, end)
-        val spectrogramSet: List<SpectrogramSample> = SignalPreprocessor.processWavFiles(
+        val spectrogramSet: List<SpectrogramSample> = SignalPreprocessor.convertWavFilesToSamples(
             wavFiles = subset,
             frameSize = frameSize,
             stepSize = stepSize,
