@@ -6,7 +6,8 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import com.ertools.demooder.presentation.ui.MainView
+import com.ertools.demooder.presentation.navigation.AppNavigation
+import com.ertools.demooder.presentation.theme.Theme
 import com.ertools.demooder.utils.PERMISSIONS.REQUIRED_PERMISSIONS
 
 class MainActivity : ComponentActivity() {
@@ -25,8 +26,9 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            MainView()
-
+            Theme.MainTheme {
+                AppNavigation()
+            }
         }
     }
 }

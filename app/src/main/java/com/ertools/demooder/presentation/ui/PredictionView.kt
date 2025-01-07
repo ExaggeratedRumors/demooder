@@ -5,7 +5,6 @@ import androidx.compose.runtime.Composable
 
 @Composable
 fun PredictionView(
-    context: Context
 ) {
-    AudioVisualizer(context)
+    AudioVisualizer()
 }

@@ -1,10 +1,14 @@
 package com.ertools.demooder.presentation.theme
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 
 object Theme {
     private val DarkColorPalette = darkColorScheme(
@@ -94,11 +98,16 @@ object Theme {
             LightColorPalette
         }
 
-        MaterialTheme(
-            colorScheme = colors,
-            typography = Typography,
-            shapes = Shape.Shapes,
-            content = content
-        )
+        Box(
+            modifier = Modifier.fillMaxSize().background(colors.background),
+        ) {
+            MaterialTheme(
+                colorScheme = colors,
+                typography = Typography,
+                shapes = Shape.Shapes,
+                content = content
+            )
+        }
+
     }
 }

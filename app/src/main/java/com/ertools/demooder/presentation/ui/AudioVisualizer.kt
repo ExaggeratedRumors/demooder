@@ -30,6 +30,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.integerResource
 import androidx.compose.ui.unit.dp
@@ -41,14 +42,14 @@ import com.ertools.demooder.presentation.theme.Colors.AV_C_BTN_COLOR
 import com.ertools.demooder.presentation.theme.Colors.AV_START_BTN_COLOR
 import com.ertools.demooder.presentation.theme.Colors.AV_STOP_BTN_COLOR
 import com.ertools.demooder.presentation.theme.Strings
-import com.ertools.processing.signal.SignalPreprocessor
 import com.ertools.processing.signal.SignalPreprocessor.applyWeighting
 import com.ertools.processing.signal.SignalPreprocessor.toDecibels
 import com.ertools.processing.signal.Weighting.WeightingType
 import kotlinx.coroutines.delay
 
 @Composable
-fun AudioVisualizer(context: Context) {
+fun AudioVisualizer() {
+    val context = LocalContext.current
     val recorder = remember { AudioRecorder(context) }
     val isRecording = remember { mutableStateOf(false) }
     val weightingState = remember { mutableStateOf(WeightingType.A_WEIGHTING) }

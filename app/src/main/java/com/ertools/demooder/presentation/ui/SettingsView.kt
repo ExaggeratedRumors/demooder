@@ -1,33 +1,27 @@
 package com.ertools.demooder.presentation.ui
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.draw.scale
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.ertools.demooder.R
+import com.ertools.demooder.presentation.components.OptionData
+import com.ertools.demooder.presentation.components.ReturnScaffold
 import com.ertools.demooder.presentation.viewmodel.SettingsViewModel
+import com.ertools.demooder.utils.SETTINGS_DEFAULT_ANGER_DETECTION_TIME
+import com.ertools.demooder.utils.SETTINGS_DEFAULT_DEVICE_DAMPING
+import com.ertools.demooder.utils.SETTINGS_DEFAULT_ENABLE_NOTIFICATIONS
+import com.ertools.demooder.utils.SETTINGS_DEFAULT_SIGNAL_DETECTION_PERIOD
+import com.ertools.demooder.utils.Validation
 
 
 @Preview
@@ -42,87 +36,48 @@ fun SettingsView(
     settingsViewModel: SettingsViewModel = viewModel()
 ) {
     val data = listOf(
-        OptionData(
+        OptionData.InputOptionData(
             optionTitle = "Device damping",
-            currentValue = "0dB",
-        ) { navController.navigate("a") },
-        OptionData(
+            defaultValue = SETTINGS_DEFAULT_DEVICE_DAMPING,
+            onValidate = { Validation.isNumberInRange(it, -100, 100) },
+            onSave = {
+                settingsViewModel.saveDeviceDamping(it.currentValue.value)
+            }
+        ),
+        OptionData.InputOptionData(
             optionTitle = "Signal detection period",
-            currentValue = "2s"
-        ) { navController.navigate("b") },
-        OptionData(
+            defaultValue = SETTINGS_DEFAULT_SIGNAL_DETECTION_PERIOD,
+            onValidate = { Validation.isNumberInRange(it, 1, 10) },
+            onSave = { settingsViewModel.saveSignalDetectionPeriod(it.currentValue.value) }
+        ),
+        OptionData.SwitchOptionData(
             optionTitle = "Enable notifications",
-            currentValue = "On"
-        ) { navController.navigate("c") },
-        OptionData(
+            defaultValue = SETTINGS_DEFAULT_ENABLE_NOTIFICATIONS,
+            onSave = { settingsViewModel.saveEnableNotifications(it.currentValue.value) }
+        ),
+        OptionData.InputOptionData(
             optionTitle = "Anger detection time before trigger notification",
-            currentValue = "10s"
-        ) { navController.navigate("d") }
+            defaultValue = SETTINGS_DEFAULT_ANGER_DETECTION_TIME,
+            onValidate = { Validation.isNumberInRange(it, 1, 60) },
+            onSave = { settingsViewModel.saveAngerDetectionTime(it.currentValue.value) }
+        )
     )
-    LazyColumn(
-        modifier = Modifier
-            .fillMaxWidth()
-            .fillMaxHeight()
-            .background(color = MaterialTheme.colorScheme.background)
-    ) {
-        items(data) {
-            SettingsOption(it)
-        }
-    }
-}
 
-data class OptionData(
-    val optionTitle: String,
-    val currentValue: String,
-    val onClick: () -> Unit
-)
-
-@Composable
-fun SettingsOption(
-    data: OptionData
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .fillMaxHeight(0.1f)
-            .padding(20.dp)
+    ReturnScaffold(
+        viewName = stringResource(R.string.nav_settings),
+        onReturn = { navController.popBackStack() }
     ) {
-        Column(
+        LazyColumn(
             modifier = Modifier
-                .fillMaxWidth(0.8f)
-                .fillMaxHeight(),
-        ){
-            Text(
-                text = data.optionTitle,
-                fontStyle = MaterialTheme.typography.bodyLarge.fontStyle,
-                color = MaterialTheme.colorScheme.onSurface
-            )
-            Text(
-                text = data.currentValue,
-                fontStyle = MaterialTheme.typography.bodyLarge.fontStyle,
-                color = MaterialTheme.colorScheme.onBackground
-            )
-        }
-        Button(
-            onClick = { data.onClick() },
-            modifier = Modifier
-                .wrapContentSize()
-                .align(Alignment.Bottom)
-                .background(color = Color.Transparent),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = Color.Transparent,
-                contentColor = MaterialTheme.colorScheme.onBackground
-            )
+                .fillMaxWidth()
+                .fillMaxHeight()
+                .background(color = MaterialTheme.colorScheme.background)
         ) {
-            Icon(
-                painter = painterResource(R.drawable.settings_link),
-                contentDescription = "Settings",
-                modifier = Modifier
-                    .rotate(90f)
-                    .scale(2f)
-                    .align(Alignment.Bottom)
-                    .background(color = Color.Transparent)
-            )
+            items(data) {
+                it.SettingsOption()
+            }
         }
     }
 }
+
+
