@@ -13,14 +13,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavHostController
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ertools.demooder.presentation.components.TabLayout
 import com.ertools.demooder.presentation.viewmodel.MainViewModel
 
 @Composable
-fun RecordsView(
-    viewModel: MainViewModel
-) {
+fun RecordsView() {
+    val viewModel = viewModel<MainViewModel>()
     Column(modifier = Modifier.fillMaxSize().draggable(
         state = viewModel.dragState.value!!,
         orientation = Orientation.Horizontal,

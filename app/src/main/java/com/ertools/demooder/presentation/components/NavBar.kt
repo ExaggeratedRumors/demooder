@@ -20,16 +20,15 @@ import androidx.compose.ui.res.integerResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavHostController
+import androidx.navigation.NavController
 import com.ertools.demooder.R
-import com.ertools.demooder.presentation.navigation.NavigationItem
+import com.ertools.demooder.presentation.navigation.ScaffoldNavigationItem
 
 @Composable
 fun NavBar(
-    selectedView: MutableState<NavigationItem>,
-    navigationItems: List<NavigationItem>,
-    navController: NavHostController,
-    showNavBar: MutableState<Boolean> = mutableStateOf(true)
+    selectedView: MutableState<ScaffoldNavigationItem>,
+    navigationItems: List<ScaffoldNavigationItem>,
+    navController: NavController,
 ) {
     val navigationItemColors = NavigationBarItemDefaults.colors(
         selectedIconColor = MaterialTheme.colorScheme.onPrimary,
@@ -43,11 +42,9 @@ fun NavBar(
 
     NavigationBar(
         modifier = Modifier
-            .alpha(if(showNavBar.value) 1f else 0f)
             .fillMaxWidth()
             .fillMaxHeight(
-                if(showNavBar.value) 0.01f * integerResource(R.integer.global_navbar_height_ratio)
-                else 0f
+                0.01f * integerResource(R.integer.global_navbar_height_ratio)
             ),
         containerColor = MaterialTheme.colorScheme.primary,
         contentColor = MaterialTheme.colorScheme.onPrimary

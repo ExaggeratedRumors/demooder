@@ -2,12 +2,7 @@ package com.ertools.demooder.presentation.components
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -31,12 +26,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.ertools.demooder.R
-import com.ertools.demooder.presentation.navigation.NavigationItem
+import com.ertools.demooder.presentation.navigation.ScaffoldNavigationItem
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppBar(
-    selectedView: MutableState<NavigationItem>,
+    selectedView: MutableState<ScaffoldNavigationItem>,
     scrollBehavior: TopAppBarScrollBehavior,
     menuItems: List<MenuItem>
 ) {
@@ -69,12 +64,12 @@ fun AppBar(
             DropdownMenu(
                 expanded = menuExpanded.value,
                 onDismissRequest = { menuExpanded.value = false },
-                containerColor = MaterialTheme.colorScheme.surface,
+                containerColor = MaterialTheme.colorScheme.background,
                 border = BorderStroke(
                     dimensionResource(id = R.dimen.global_dropdown_corner),
-                    MaterialTheme.colorScheme.surface
+                    MaterialTheme.colorScheme.background
                 ),
-                modifier = Modifier.background(MaterialTheme.colorScheme.surface),
+                modifier = Modifier.background(MaterialTheme.colorScheme.background),
                 shadowElevation = 0.dp,
                 tonalElevation = 0.dp
             ) {

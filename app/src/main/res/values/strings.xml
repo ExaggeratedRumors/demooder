@@ -1,6 +1,9 @@
 <resources>
     <!-- GLOBAL -->
     <string name="app_name">demooder</string>
+    <string name="dialog_ok">OK</string>
+    <string name="dialog_cancel">Cancel</string>
+
 
     <!-- NAVIGATION -->
     <string name="nav_home">Home</string>
@@ -14,5 +17,9 @@
     <string name="home_button_speech">Start the speech</string>
 
     <!-- PREDICTION -->
+
+    <!-- ERRORS -->
+    <string name="error_number">You must input a number.</string>
+    <string name="error_number_range">Number must be between %1$d and %2$d.</string>
 
 </resources>

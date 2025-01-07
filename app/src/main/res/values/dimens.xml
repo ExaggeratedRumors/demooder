@@ -3,7 +3,7 @@
     <!-- GLOBAL -->
     <dimen name="global_padding">20dp</dimen>
     <dimen name="global_dropdown_corner">0dp</dimen>
-    <integer name="global_navbar_height_ratio">10</integer>
+    <integer name="global_navbar_height_ratio">15</integer>
 
     <!-- HOME -->
     <dimen name="home_vec_speech_size">250dp</dimen>
