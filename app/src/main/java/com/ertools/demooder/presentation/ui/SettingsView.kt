@@ -9,10 +9,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import com.ertools.demooder.R
 import com.ertools.demooder.presentation.components.OptionData
 import com.ertools.demooder.presentation.components.ReturnScaffold
@@ -22,13 +20,6 @@ import com.ertools.demooder.utils.SETTINGS_DEFAULT_DEVICE_DAMPING
 import com.ertools.demooder.utils.SETTINGS_DEFAULT_ENABLE_NOTIFICATIONS
 import com.ertools.demooder.utils.SETTINGS_DEFAULT_SIGNAL_DETECTION_PERIOD
 import com.ertools.demooder.utils.Validation
-
-
-@Preview
-@Composable
-fun SettingsViewPreview() {
-    SettingsView(navController = rememberNavController())
-}
 
 @Composable
 fun SettingsView(

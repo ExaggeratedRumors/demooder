@@ -11,6 +11,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchColors
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
@@ -139,7 +140,25 @@ sealed class OptionData(
                         onCheckedChange = {
                             option.currentValue.value = it
                             option.onSave(option)
-                        }
+                        },
+                        colors = SwitchColors(
+                            checkedThumbColor = MaterialTheme.colorScheme.tertiary,
+                            checkedTrackColor = MaterialTheme.colorScheme.background,
+                            checkedBorderColor = MaterialTheme.colorScheme.tertiary,
+                            checkedIconColor = MaterialTheme.colorScheme.background,
+                            uncheckedIconColor = MaterialTheme.colorScheme.background,
+                            uncheckedBorderColor = MaterialTheme.colorScheme.primary,
+                            uncheckedThumbColor = MaterialTheme.colorScheme.primary,
+                            uncheckedTrackColor = MaterialTheme.colorScheme.background,
+                            disabledCheckedIconColor = MaterialTheme.colorScheme.onSurface,
+                            disabledUncheckedIconColor = MaterialTheme.colorScheme.onSurface,
+                            disabledCheckedTrackColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
+                            disabledUncheckedTrackColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
+                            disabledUncheckedThumbColor = MaterialTheme.colorScheme.onSurface,
+                            disabledCheckedThumbColor = MaterialTheme.colorScheme.onSurface,
+                            disabledCheckedBorderColor = MaterialTheme.colorScheme.onSurface,
+                            disabledUncheckedBorderColor = MaterialTheme.colorScheme.onSurface
+                        )
                     )
                 }
             }
