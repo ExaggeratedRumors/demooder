@@ -40,13 +40,6 @@ object Colors {
     val ON_BACKGROUND = Color(0xFFFFFFFF)
     val OUTLINE = Color(0xFFFFFFFF)
     val OUTLINE_VARIANT = Color(0xFFFFFFFF)
-
-
-    /* Audio Visualizer */
-    val AV_START_BTN_COLOR = Color(0xFF4D7A4D)
-    val AV_STOP_BTN_COLOR = Color(0xFF975D5D)
-    val AV_A_BTN_COLOR = Color(0xFF3D3DCC)
-    val AV_C_BTN_COLOR = Color(0xFF1212CA)
 }
 
 
