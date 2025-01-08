@@ -17,6 +17,11 @@
     <string name="home_button_speech">Start the speech</string>
 
     <!-- PREDICTION -->
+    <string name="prediction_start_recording">Start</string>
+    <string name="prediction_stop_recording">Stop</string>
+    <string name="prediction_record_cd">Record</string>
+    <string name="prediction_save_cd">Save</string>
+    <string name="prediction_clear_cd">Clear</string>
 
     <!-- ERRORS -->
     <string name="error_number">You must input a number.</string>
