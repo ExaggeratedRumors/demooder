@@ -22,15 +22,26 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ertools.demooder.R
+import com.ertools.demooder.core.classifier.ClassifierManager
+import com.ertools.demooder.core.recorder.AudioRecorder
+import com.ertools.demooder.presentation.viewmodel.SettingsViewModel
+import com.ertools.demooder.utils.MODEL_NAME
 
 @Composable
 fun PredictionView(
 ) {
+    /** Recorder **/
+    val context = LocalContext.current
+    val recorder = remember { AudioRecorder(context) }
+    val settingsViewModel: SettingsViewModel = viewModel()
+
+    /** Buttons state **/
     val isRecording = remember { mutableStateOf(false) }
     val isClear = remember { mutableStateOf(false) }
     val isSave = remember { mutableStateOf(false) }
@@ -40,18 +51,23 @@ fun PredictionView(
             .fillMaxHeight()
             .padding(16.dp)
     ) {
+        if (isRecording.value) {
+            recorder.startRecording()
+        } else {
+            recorder.stopRecording()
+        }
         AudioVisualizer(
             modifier = Modifier
                 .fillMaxWidth()
-                .fillMaxHeight(0.6f)
+                .fillMaxHeight(0.7f)
                 .padding(16.dp),
-            isRecording = isRecording
+            recorder = recorder
         )
-        EvaluationLabel(modifier = Modifier.fillMaxHeight(0.3f))
+        EvaluationLabel(modifier = Modifier.fillMaxHeight(0.25f))
         Row (
             modifier = Modifier
                 .fillMaxWidth()
-                .fillMaxHeight(0.8f),
+                .fillMaxHeight(0.9f),
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -61,7 +77,7 @@ fun PredictionView(
                 disableIconResource = R.drawable.settings_link,
                 iconContentDescriptionResource = R.string.prediction_save_cd,
                 modifier = Modifier
-                    .fillMaxHeight(0.8f)
+                    .fillMaxHeight(0.6f)
                     .aspectRatio(1f)
             )
             StateButton(
@@ -70,7 +86,7 @@ fun PredictionView(
                 disableIconResource = R.drawable.stop_filled,
                 iconContentDescriptionResource = R.string.prediction_record_cd,
                 modifier = Modifier
-                    .fillMaxHeight()
+                    .fillMaxHeight(0.8f)
                     .aspectRatio(1f)
             )
             StateButton(
@@ -79,7 +95,7 @@ fun PredictionView(
                 disableIconResource = R.drawable.records_outline,
                 iconContentDescriptionResource = R.string.prediction_clear_cd,
                 modifier = Modifier
-                    .fillMaxHeight(0.8f)
+                    .fillMaxHeight(0.6f)
                     .aspectRatio(1f)
             )
         }
@@ -118,6 +134,10 @@ fun StateButton(
 
 @Composable
 fun EvaluationLabel(modifier: Modifier = Modifier) {
+    val classifier = ClassifierManager().apply {
+        this.loadClassifier(MODEL_NAME)
+    }
+
     Column(
         modifier = modifier
     ) {

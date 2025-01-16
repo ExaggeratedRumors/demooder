@@ -4,6 +4,7 @@ android-compileSdk = "34"
 android-minSdk = "31"
 android-targetSdk = "31"
 agp = "8.6.0"
+coreKtxVersion = "1.6.1"
 datastorePreferences = "1.1.1"
 kotlin = "1.9.22"
 accompanistPermissions = "0.20.0"
@@ -49,6 +50,7 @@ androidx-ui-test-junit4 = { module = "androidx.compose.ui:ui-test-junit4", versi
 androidx-ui-test-manifest = { module = "androidx.compose.ui:ui-test-manifest", version.ref = "ui" }
 androidx-ui-tooling = { module = "androidx.compose.ui:ui-tooling", version.ref = "ui" }
 androidx-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview", version.ref = "ui" }
+core-ktx = { module = "androidx.test:core-ktx", version.ref = "coreKtxVersion" }
 junit = { module = "junit:junit", version.ref = "junit" }
 kotlin-deeplearning-onnx = { module = "org.jetbrains.kotlinx:kotlin-deeplearning-onnx", version.ref = "kotlinDeeplearningTensorflow" }
 kotlin-deeplearning-tensorflow = { module = "org.jetbrains.kotlinx:kotlin-deeplearning-tensorflow", version.ref = "kotlinDeeplearningTensorflow" }

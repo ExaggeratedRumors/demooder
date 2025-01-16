@@ -38,15 +38,8 @@ import kotlinx.coroutines.delay
 @Composable
 fun AudioVisualizer(
     modifier: Modifier = Modifier,
-    isRecording: MutableState<Boolean>
+    recorder: AudioRecorder
 ) {
-    val context = LocalContext.current
-    val recorder = remember { AudioRecorder(context) }
-    if (isRecording.value) {
-        recorder.startRecording()
-    } else {
-        recorder.stopRecording()
-    }
     val weightingType = remember { mutableStateOf(WeightingType.A_WEIGHTING) }
     Column (
         modifier = modifier,
