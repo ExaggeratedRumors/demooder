@@ -5,10 +5,9 @@ const val DEBUG_MODE = true
 
 /* Model */
 const val MODEL_NAME = "DL_6c_3d_50e_128b"
-const val MODEL_INPUT_DURATION_SECONDS = 3
 
 /* Recorder */
-const val READ_DATA_DELAY = 250L
+const val RECORDER_DELAY_MILLIS = 1L /* 250L */
 
 /* Default settings */
 const val SETTINGS_DEFAULT_DEVICE_DAMPING = 0.0

@@ -79,10 +79,12 @@ dependencies {
 
     /** Complex **/
     implementation(libs.multik.core)
+    implementation(libs.androidx.junit.ktx)
 
     /** Test **/
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
+    androidTestImplementation(libs.core.ktx)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
