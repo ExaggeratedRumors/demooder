@@ -74,6 +74,8 @@ class AudioRecorder (
                 bufferSize * recordingDelayMillis / 1000.0
             ).toInt()
 
+            if(DEBUG_MODE) Log.i("SYSTEM", "Shift size: $shiftSize")
+
             while (isRecording) {
                 val readSize = recorder?.read(currentData, 0, bufferSize)
                 if (readSize != null && readSize != AudioRecord.ERROR_INVALID_OPERATION) {
