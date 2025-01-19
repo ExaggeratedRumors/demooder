@@ -26,7 +26,7 @@ class AudioRecorderTest {
 
     @Test
     fun `periodic buffer shift correctly`() {
-        val bufferSize = audioRecorder.bufferSize
+        val bufferSize = audioRecorder.recorderBufferSize
         println("bufferSize = $bufferSize")
         assert(bufferSize == 2048)
     }

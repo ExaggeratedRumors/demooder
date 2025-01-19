@@ -20,7 +20,7 @@ class AudioRecorder (
     private val recordingDelayMillis: Long = RECORDER_DELAY_MILLIS,
     private val recordingPeriodSeconds: Double = SETTINGS_DEFAULT_SIGNAL_DETECTION_PERIOD
 ) : SpectrumProvider, SoundDataProvider {
-    val bufferSize = AudioRecord.getMinBufferSize(
+    val recorderBufferSize = AudioRecord.getMinBufferSize(
         ProcessingUtils.AUDIO_SAMPLING_RATE,
         AudioFormat.CHANNEL_IN_MONO,
         AudioFormat.ENCODING_PCM_16BIT
@@ -29,8 +29,9 @@ class AudioRecorder (
         while (power * 2 <= it) { power *= 2 }
         power
     }
-    private val currentData = ByteArray(bufferSize)
-    private val audioBuffer = ByteArray(recordingPeriodSeconds.toInt() * bufferSize)
+    val dataBufferSize = recordingPeriodSeconds.toInt() * ProcessingUtils.AUDIO_SAMPLING_RATE * 2
+    private val currentData = ByteArray(recorderBufferSize)
+    private val dataBuffer = ByteArray(dataBufferSize)
     private var spectrum = DoubleArray(ProcessingUtils.AUDIO_OCTAVES_AMOUNT)
     private var recorder: AudioRecord? = null
     @Volatile
@@ -67,35 +68,34 @@ class AudioRecorder (
             ProcessingUtils.AUDIO_SAMPLING_RATE,
             AudioFormat.CHANNEL_IN_MONO,
             AudioFormat.ENCODING_PCM_16BIT,
-            bufferSize
+            recorderBufferSize
         )
     }
 
     private fun readDataRoutine() {
         thread {
             val shiftSize = min(
-                recordingPeriodSeconds * bufferSize,
-                bufferSize * recordingDelayMillis / 1000.0
+                recordingPeriodSeconds * recorderBufferSize,
+                recorderBufferSize * recordingDelayMillis / 1000.0
             ).toInt()
 
             if(DEBUG_MODE) Log.i("SYSTEM", "Shift size: $shiftSize")
 
             while (isRecording) {
-                val readSize = recorder?.read(currentData, 0, bufferSize)
+                shiftAudioBuffer()
+                val readSize = recorder?.read(dataBuffer, dataBufferSize - recorderBufferSize, recorderBufferSize)
                 if (readSize != null && readSize != AudioRecord.ERROR_INVALID_OPERATION) {
                     spectrum = toOctaves(currentData.copyOfRange(0, readSize))
-                    shiftAudioBuffer(shiftSize)
-                    audioBuffer.apply { System.arraycopy(currentData, 0, this, size - shiftSize, shiftSize) }
                 }
                 Thread.sleep(recordingDelayMillis)
             }
         }
     }
 
-    private fun shiftAudioBuffer(shift: Int) {
-        if(shift > audioBuffer.size) return
-        for (i in 0 until audioBuffer.size - shift) {
-            audioBuffer[i] = audioBuffer[i + shift]
+    private fun shiftAudioBuffer() {
+        if(recorderBufferSize > dataBuffer.size) return
+        for (i in 0 until dataBufferSize - recorderBufferSize) {
+            dataBuffer[i] = dataBuffer[i + recorderBufferSize]
         }
     }
 
@@ -110,6 +110,6 @@ class AudioRecorder (
     override fun getMaxAmplitude() = SignalPreprocessor.run { currentData.maxAmplitude() }
 
     /** Sound data provider **/
-    override fun getData(): ByteArray = audioBuffer
+    override fun getData(): ByteArray = dataBuffer
     override fun getPeriodSeconds(): Double = recordingPeriodSeconds
 }
