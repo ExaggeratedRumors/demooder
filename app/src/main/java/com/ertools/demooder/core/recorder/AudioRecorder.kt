@@ -20,7 +20,7 @@ class AudioRecorder (
     private val recordingDelayMillis: Long = RECORDER_DELAY_MILLIS,
     private val recordingPeriodSeconds: Double = SETTINGS_DEFAULT_SIGNAL_DETECTION_PERIOD
 ) : SpectrumProvider, SoundDataProvider {
-    private val bufferSize = AudioRecord.getMinBufferSize(
+    val bufferSize = AudioRecord.getMinBufferSize(
         ProcessingUtils.AUDIO_SAMPLING_RATE,
         AudioFormat.CHANNEL_IN_MONO,
         AudioFormat.ENCODING_PCM_16BIT
@@ -36,6 +36,8 @@ class AudioRecorder (
     @Volatile
     private var isRecording = false
 
+
+    /** API **/
     fun startRecording() {
         if(isRecording) return
         if(DEBUG_MODE) Log.i("SYSTEM", "Start recording.")
@@ -54,6 +56,8 @@ class AudioRecorder (
         recorder?.release()
         recorder = null
     }
+
+    /** Private **/
 
     @SuppressLint("MissingPermission")
     private fun initRecorder() {
