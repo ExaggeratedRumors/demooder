@@ -18,6 +18,7 @@ kotlin {
             implementation(libs.kotlin.deeplearning.onnx)
             implementation(libs.kotlin.deeplearning.visualization)
             implementation(libs.multik.core)
+            implementation(libs.junit)
         }
 
         jvmMain.dependencies {
@@ -40,6 +41,7 @@ android {
 
     defaultConfig {
         minSdk = libs.versions.android.minSdk.get().toInt()
+        //testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
     compileOptions {
