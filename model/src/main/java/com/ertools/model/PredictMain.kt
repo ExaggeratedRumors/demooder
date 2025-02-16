@@ -47,7 +47,7 @@ fun main () {
     println("R:\tPredict data size: ${data.xSize()}.")
 
     println("I:\tLoad model.")
-    IOManager.loadModel(modelName).use {
+    IOManager.loadModel("${ProcessingUtils.DIR_MODEL_OUTPUT}/$modelName").use {
         it.reshape(dim.width, dim.height, 1L)
 
         println("I:\tStart predict.")

@@ -145,7 +145,7 @@ object IOManager {
     /***********/
     /** Model **/
     /***********/
-    fun loadModel(modelName: String) = TensorFlowInferenceModel.load(File(ProcessingUtils.DIR_MODEL_OUTPUT, modelName))
+    fun loadModel(modelPath: String) = TensorFlowInferenceModel.load(File(modelPath))
 
 
     /*************/

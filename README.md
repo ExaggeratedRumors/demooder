@@ -20,6 +20,7 @@ in progress
 - JVM 11
 - Android SDK 34
 - Kotlin 1.9.22
+- TensorFlow 1.15.0
 - Jetpack Compose 1.6.10
 - Kotlin Multiplatform 1.9.22
 - KotlinDL 0.5.2

@@ -16,7 +16,7 @@ fun main() {
     val spectrogramData = ProcessingUtils.DIR_CREMA_D
     val epochs = 100
     val batchSize = 32
-    val outputModelFilename = "DL_8c_3d_100e_32b"
+    val outputModelFilename = "DL_8c_3d_100e_32b_v2"
 
     /** Train program **/
     println("I:\tStart program.")
@@ -28,7 +28,7 @@ fun main() {
     ) { dim ->
         DatasetJvmPreprocessor.getPreprocessingPipeline(dim)
     }
-    val (usable, _) = data.split(1.0) /* take 100% of samples */
+    val (usable, _) = data.split(1.0)       /* take 100% of samples */
     val (train, valid) = usable.split(0.85) /* 85% samples is training set, 20% of samples is validation set */
 
 

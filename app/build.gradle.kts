@@ -76,6 +76,7 @@ dependencies {
     implementation (libs.kotlin.deeplearning.tensorflow)
     implementation (libs.kotlin.deeplearning.onnx)
     implementation (libs.kotlin.deeplearning.visualization)
+    //implementation (libs.kotlin.libtensorflow.jni.gpu)
 
     /** Complex **/
     implementation(libs.multik.core)
