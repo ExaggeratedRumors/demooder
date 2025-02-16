@@ -10,7 +10,7 @@ import java.util.*
 fun main() {
     /** Data **/
     val spectrogramDataPath = ProcessingUtils.DIR_CREMA_D
-    val modelName = "DL_6c_3d_50e_128b"
+    val modelName = "DL_8c_3d_100e_32b_v2"
 
     /** Test program **/
     println("I:\tStart load model program.")
@@ -22,7 +22,7 @@ fun main() {
     println("R:\tTraining data size: ${data.xSize()}, shape: $dim.")
 
     println("I:\tLoad model $modelName")
-    IOManager.loadModel(modelName).use {
+    IOManager.loadModel("${ProcessingUtils.DIR_MODEL_OUTPUT}/$modelName").use {
         it.reshape(dim.width, dim.height, 1L)
 
         println("I:\tEvaluate CNN.")

@@ -1,6 +1,6 @@
 package com.ertools.demooder.presentation.ui
 
-import androidx.compose.foundation.background
+import android.content.Context
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
@@ -63,7 +62,7 @@ fun PredictionView(
                 .padding(16.dp),
             recorder = recorder
         )
-        EvaluationLabel(modifier = Modifier.fillMaxHeight(0.25f))
+        EvaluationLabel(modifier = Modifier.fillMaxHeight(0.25f), context = context)
         Row (
             modifier = Modifier
                 .fillMaxWidth()
@@ -133,9 +132,9 @@ fun StateButton(
 }
 
 @Composable
-fun EvaluationLabel(modifier: Modifier = Modifier) {
+fun EvaluationLabel(modifier: Modifier = Modifier, context: Context) {
     val classifier = ClassifierManager().apply {
-        this.loadClassifier(MODEL_NAME)
+        this.loadClassifier(context, MODEL_NAME)
     }
 
     Column(

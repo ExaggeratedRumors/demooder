@@ -2,6 +2,7 @@ package com.ertools.model.operation
 
 import com.ertools.processing.commons.LabelsExtraction
 import com.ertools.processing.commons.ProcessingUtils
+import org.jetbrains.kotlinx.dl.api.core.SavingFormat
 import org.jetbrains.kotlinx.dl.api.core.Sequential
 import org.jetbrains.kotlinx.dl.api.core.WritingMode
 import org.jetbrains.kotlinx.dl.api.core.callback.Callback
@@ -94,7 +95,7 @@ fun TensorFlowInferenceModel.confusionMatrix(testData: Dataset) {
 fun Sequential.save(
     modelName: String = ProcessingUtils.MODEL_DEFAULT_NAME
 ) {
-    this.save(File(ProcessingUtils.DIR_MODEL_OUTPUT, modelName), writingMode = WritingMode.OVERRIDE)
+    this.save(File(ProcessingUtils.DIR_MODEL_OUTPUT, modelName), writingMode = WritingMode.OVERRIDE, savingFormat = SavingFormat.TF_GRAPH)
 }
 
 fun Sequential.load(

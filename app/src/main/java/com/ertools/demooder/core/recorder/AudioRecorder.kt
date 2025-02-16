@@ -41,7 +41,7 @@ class AudioRecorder (
     /** API **/
     fun startRecording() {
         if(isRecording) return
-        if(DEBUG_MODE) Log.i("SYSTEM", "Start recording.")
+        Log.i("SYSTEM", "Start recording.")
         initRecorder()
         if(recorder == null) return
         recorder?.startRecording()
@@ -50,7 +50,7 @@ class AudioRecorder (
     }
 
     fun stopRecording() {
-        if(DEBUG_MODE) Log.i("SYSTEM", "Stop recording.")
+        Log.i("SYSTEM", "Stop recording.")
         if(recorder == null) return
         isRecording = false
         recorder?.stop()
@@ -79,7 +79,7 @@ class AudioRecorder (
                 recorderBufferSize * recordingDelayMillis / 1000.0
             ).toInt()
 
-            if(DEBUG_MODE) Log.i("SYSTEM", "Shift size: $shiftSize")
+            Log.i("AudioRecorder", "Shift size: $shiftSize")
 
             while (isRecording) {
                 shiftAudioBuffer()
