@@ -35,3 +35,4 @@ rootProject.name = "demooder"
 include(":app")
 include(":model")
 include(":processing")
+include(":converter")

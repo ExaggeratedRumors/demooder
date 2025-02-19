@@ -31,13 +31,14 @@ dependencies {
     implementation(libs.kotlin.org.slf4j.simple)
 }
 
-fun createTask(taskName: String, mainClassName: String) {
+fun createTask(taskName: String, mainClassName: String, args: List<String> = emptyList()) {
     tasks.register<JavaExec>(taskName) {
         group = "model tasks"
         description = "Run $mainClassName"
         mainClass.set(mainClassName)
         classpath = sourceSets["main"].runtimeClasspath
         workingDir = file("$rootDir")
+        args(args)
     }
 }
 
@@ -46,3 +47,4 @@ createTask("createSpectrograms", "com.ertools.model.SpectrogramsMainKt")
 createTask("trainModel", "com.ertools.model.TrainModelMainKt")
 createTask("testModel", "com.ertools.model.TestModelMainKt")
 createTask("predict", "com.ertools.model.PredictMainKt")
+createTask("testOnnxModel", "com.ertools.model.TestOnnxModelMainKt", listOf("data/data_models/DL_8c_3d_100e_32b/model.onnx"))

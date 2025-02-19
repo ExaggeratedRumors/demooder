@@ -12,7 +12,7 @@ import org.jetbrains.kotlinx.dl.api.core.layer.pooling.MaxPool2D
 import org.jetbrains.kotlinx.dl.api.core.layer.regularization.Dropout
 import org.jetbrains.kotlinx.dl.api.core.layer.reshaping.Flatten
 
-/** This is almost VGG network architecture **/
+/** Attempt to replicate a VGG network architecture **/
 object CNNDeep {
     fun build(dim: ImageDim): Sequential {
         return Sequential.of(

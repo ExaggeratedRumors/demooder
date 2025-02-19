@@ -5,6 +5,8 @@ import com.ertools.model.operation.confusionMatrix
 import com.ertools.processing.commons.ProcessingUtils
 import com.ertools.processing.dataset.DatasetJvmPreprocessor
 import com.ertools.processing.io.IOManager
+import org.jetbrains.kotlinx.dl.api.core.metric.Metrics
+import org.jetbrains.kotlinx.dl.dataset.evaluate
 import java.util.*
 
 fun main() {
@@ -26,7 +28,7 @@ fun main() {
         it.reshape(dim.width, dim.height, 1L)
 
         println("I:\tEvaluate CNN.")
-        val result = it.evaluate(test = data)
+        val result = it.evaluate(dataset = data, metric = Metrics.ACCURACY)
         println("R:\t${"%.4f".format(Locale.ENGLISH, result)} accuracy")
 
         println("I:\tConfusion Matrix")
