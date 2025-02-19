@@ -43,13 +43,6 @@ fun main() {
 
     println("I:\tBuild CNN for spectrogram data.")
     val network = CNNDeep.build(dim)
-    /*val network = vgg16(
-        imageSize = (dim.width * dim.height),
-        numberOfClasses = LabelsExtraction.Emotion.entries.size,
-        numberOfInputChannels = 1,
-        lastLayerActivation = Activations.Softmax
-    )*/
-
     network.use {
         it.compile(
             optimizer = Adam(
