@@ -1,15 +1,22 @@
 package com.ertools.model
 
+import com.ertools.model.evaluation.ClassifierEvaluator
 import com.ertools.model.network.CNNDeep
-import com.ertools.model.operation.compile
-import com.ertools.model.operation.evaluate
-import com.ertools.model.operation.fit
-import com.ertools.model.operation.confusionMatrix
-import com.ertools.model.operation.save
 import com.ertools.processing.commons.ProcessingUtils
 import com.ertools.processing.dataset.DatasetJvmPreprocessor
 import com.ertools.processing.io.IOManager
+import org.jetbrains.kotlinx.dl.api.core.SavingFormat
+import org.jetbrains.kotlinx.dl.api.core.WritingMode
+import org.jetbrains.kotlinx.dl.api.core.callback.Callback
+import org.jetbrains.kotlinx.dl.api.core.callback.EarlyStopping
+import org.jetbrains.kotlinx.dl.api.core.callback.EarlyStoppingMode
+import org.jetbrains.kotlinx.dl.api.core.history.EpochTrainingEvent
+import org.jetbrains.kotlinx.dl.api.core.loss.Losses
+import org.jetbrains.kotlinx.dl.api.core.metric.Metrics
+import org.jetbrains.kotlinx.dl.api.core.optimizer.Adam
+import org.jetbrains.kotlinx.dl.api.core.optimizer.ClipGradientByValue
 import org.jetbrains.kotlinx.dl.impl.summary.logSummary
+import java.io.File
 
 fun main() {
     /** Data **/
@@ -44,29 +51,63 @@ fun main() {
     )*/
 
     network.use {
-        it.compile()
+        it.compile(
+            optimizer = Adam(
+                learningRate = 0.001f,
+                clipGradient = ClipGradientByValue(0.1f)
+            ),
+            loss = Losses.MSE,
+            metric = Metrics.ACCURACY
+        )
 
         println("I:\tFit CNN.")
-        it.fit(train = train, validation = valid, epochs = epochs, batchSize = batchSize)
+        val earlyStopping = EarlyStopping(
+            monitor = EpochTrainingEvent::valLossValue,
+            minDelta = 0.0,
+            patience = 5,
+            verbose = true,
+            mode = EarlyStoppingMode.AUTO,
+            baseline = 0.01,
+            restoreBestWeights = true
+        )
+
+        it.fit(
+            trainingDataset = train,
+            validationDataset = valid,
+            epochs = epochs,
+            trainBatchSize = batchSize,
+            validationBatchSize = batchSize,
+            callback = if(ProcessingUtils.MODEL_EARLY_STOP) earlyStopping else Callback()
+        )
 
         it.logSummary()
 
         println("I:\tEvaluate CNN - train dataset.")
-        val result = it.evaluate(test = train)
+        val result = it.evaluate(
+            dataset = train,
+            batchSize = batchSize
+        ).metrics[Metrics.ACCURACY]
         println("R:\t$result accuracy")
 
         println("I:\tConfusion Matrix")
-        it.confusionMatrix(testData = train)
+        println(ClassifierEvaluator.confusionMatrix(model = it, testData = data))
 
         println("I:\tEvaluate CNN - valid dataset.")
-        val resulValid = it.evaluate(test = valid)
+        val resulValid = it.evaluate(
+            dataset = valid,
+            batchSize = batchSize
+        ).metrics[Metrics.ACCURACY]
         println("R:\t$resulValid accuracy")
 
         println("I:\tConfusion Matrix")
-        it.confusionMatrix(testData = valid)
+        println(ClassifierEvaluator.confusionMatrix(model = it, testData = data))
 
         println("I:\tSave model.")
-        it.save(outputModelFilename)
+        it.save(
+            File(ProcessingUtils.DIR_MODEL_OUTPUT, outputModelFilename),
+            writingMode = WritingMode.OVERRIDE,
+            savingFormat = SavingFormat.TF_GRAPH
+        )
         println("R:\tModel saved to directory ${ProcessingUtils.DIR_MODEL_OUTPUT}/$outputModelFilename")
     }
 
