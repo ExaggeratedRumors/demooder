@@ -39,7 +39,7 @@ fun main () {
     IOManager.saveSpectrogramSamples(spectrogramSet, dataDir)
     IOManager.saveSpectrogramMetadata(metadata, dataDir)
     println("R:\tProcess ${spectrogramSet.size} predict images and save to: $dataDir")
-
+    
     println("I:\tLoad predict dataset.")
     val (data, _) = IOManager.loadDataset(dataDir, shuffle = false) { _ ->
         DatasetJvmPreprocessor.getPreprocessingPipeline(dim)

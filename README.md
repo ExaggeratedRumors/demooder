@@ -3,7 +3,7 @@
 ![Android support](https://shields.io/badge/Android-SDK_34-green) ![Model](https://shields.io/badge/KotlinDL-0.5.0-purple) ![In progress](https://shields.io/badge/In_progress-purple)
 
 <p align="center">
-    <img src="images/logo.png" width="200" alt="logo"/> 
+    <img src="refs/logo.png" width="200" alt="logo"/> 
 </p>
 
 Android application using input sound to recognize voice.
@@ -25,6 +25,7 @@ in progress
 - Kotlin Multiplatform 1.9.22
 - KotlinDL 0.5.2
 - cudnn 7.6.3
+- onnx 1.16.1
 
 ## Modules
 
@@ -91,7 +92,14 @@ Source: <a href="https://cheyneycomputerscience.github.io/CREMA-D/">CREMA-D</a>
 
 1. Build VGG architecture model: <a href="https://viso.ai/deep-learning/vgg-very-deep-convolutional-networks/">about VGG</a>.
 
+
+
+
 ## Additional requirements
 
-1. CUDA for training model on GPU (Nvidia graphics cards):
+1. CUDA for training model on GPU (Nvidia graphics cards): <a href="https://developer.nvidia.com/compute/machine-learning/cudnn/secure/7.6.3.30/Production/10.0_20190822/cudnn-10.0-windows10-x64-v7.6.3.30.zip">download CUDA</a>.
 2. NNAPI for mobile devices environment acceleration: <a href="https://blog.jetbrains.com/kotlin/2022/12/kotlindl-0-5-has-come-to-android">about inference on Android </a>.
+3. Upgrade for Conda environment during DLL initialization error for converter module:
+```agsl
+conda install conda-forge::vs2015_runtime
+```

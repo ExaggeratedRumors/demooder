@@ -1,0 +1,188 @@
+I:	Start program.
+I:	Load and split dataset.
+R:	Training data size: 25302, validation data size: 4466, full data size: 29768.
+I:	Build CNN for spectrogram data.
+2024-12-21 00:09:15.505665: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library cudart64_100.dll
+2024-12-21 00:09:15.629552: I tensorflow/core/platform/cpu_feature_guard.cc:142] Your CPU supports instructions that this TensorFlow binary was not compiled to use: AVX2
+2024-12-21 00:09:15.633588: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library nvcuda.dll
+2024-12-21 00:09:15.674297: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1618] Found device 0 with properties:
+name: NVIDIA GeForce GTX 1650 with Max-Q Design major: 7 minor: 5 memoryClockRate(GHz): 1.155
+pciBusID: 0000:01:00.0
+2024-12-21 00:09:15.674338: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library cudart64_100.dll
+2024-12-21 00:09:15.683326: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library cublas64_100.dll
+2024-12-21 00:09:15.688754: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library cufft64_100.dll
+2024-12-21 00:09:15.691318: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library curand64_100.dll
+2024-12-21 00:09:15.703082: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library cusolver64_100.dll
+2024-12-21 00:09:15.707709: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library cusparse64_100.dll
+2024-12-21 00:09:15.722613: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library cudnn64_7.dll
+2024-12-21 00:09:15.722757: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1746] Adding visible gpu devices: 0
+2024-12-21 00:09:16.920774: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1159] Device interconnect StreamExecutor with strength 1 edge matrix:
+2024-12-21 00:09:16.920801: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1165]      0
+2024-12-21 00:09:16.920807: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1178] 0:   N
+2024-12-21 00:09:16.921032: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1304] Created TensorFlow device (/job:localhost/replica:0/task:0/device:GPU:0 with 2900 MB memory) -> physical GPU (device: 0, name: NVIDIA GeForce GTX 1650 with Max-Q Design, pci bus id: 0000:01:00.0, compute capability: 7.5)
+I:	Fit CNN.
+2024-12-21 00:09:18.781799: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library cublas64_100.dll
+2024-12-21 00:09:19.257202: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library cudnn64_7.dll
+2024-12-21 00:09:21.202497: W tensorflow/stream_executor/cuda/redzone_allocator.cc:312] Internal: Invoking ptxas not supported on Windows
+Relying on driver to perform ptx compilation. This message will be only logged once.
+[main] INFO org.jetbrains.kotlinx.dl.api.core.GraphTrainableModel - epochs: 1 loss: 0.13047956 metric: [0.29115906] val loss: 0.12465739995241165 val metrics: [0.3618055582046509]
+[main] INFO org.jetbrains.kotlinx.dl.api.core.GraphTrainableModel - epochs: 2 loss: 0.11969125 metric: [0.3936401] val loss: 0.11795911937952042 val metrics: [0.41879957914352417]
+[main] INFO org.jetbrains.kotlinx.dl.api.core.GraphTrainableModel - epochs: 3 loss: 0.11343345 metric: [0.44493806] val loss: 0.11160477250814438 val metrics: [0.46505454182624817]
+[main] INFO org.jetbrains.kotlinx.dl.api.core.GraphTrainableModel - epochs: 4 loss: 0.10618892 metric: [0.496685] val loss: 0.10543156415224075 val metrics: [0.5019345283508301]
+[main] INFO org.jetbrains.kotlinx.dl.api.core.GraphTrainableModel - epochs: 5 loss: 0.09954556 metric: [0.5403761] val loss: 0.10318712145090103 val metrics: [0.5221478343009949]
+[main] INFO org.jetbrains.kotlinx.dl.api.core.GraphTrainableModel - epochs: 6 loss: 0.09297295 metric: [0.5811293] val loss: 0.09782940149307251 val metrics: [0.5542410612106323]
+[main] INFO org.jetbrains.kotlinx.dl.api.core.GraphTrainableModel - epochs: 7 loss: 0.08605552 metric: [0.62056804] val loss: 0.0911184549331665 val metrics: [0.5918651223182678]
+[main] INFO org.jetbrains.kotlinx.dl.api.core.GraphTrainableModel - epochs: 8 loss: 0.07786312 metric: [0.66463625] val loss: 0.08718081563711166 val metrics: [0.6139136552810669]
+[main] INFO org.jetbrains.kotlinx.dl.api.core.GraphTrainableModel - epochs: 9 loss: 0.06986591 metric: [0.706255] val loss: 0.08634764701128006 val metrics: [0.6241815090179443]
+[main] INFO org.jetbrains.kotlinx.dl.api.core.GraphTrainableModel - epochs: 10 loss: 0.0623203 metric: [0.74127614] val loss: 0.08692852407693863 val metrics: [0.6234623193740845]
+[main] INFO org.jetbrains.kotlinx.dl.api.core.GraphTrainableModel - epochs: 11 loss: 0.054323133 metric: [0.77910227] val loss: 0.0872504934668541 val metrics: [0.6319444179534912]
+[main] INFO org.jetbrains.kotlinx.dl.api.core.GraphTrainableModel - epochs: 12 loss: 0.047416504 metric: [0.8116165] val loss: 0.0875857025384903 val metrics: [0.6269841194152832]
+[main] INFO org.jetbrains.kotlinx.dl.api.core.GraphTrainableModel - epochs: 13 loss: 0.041300483 metric: [0.83782756] val loss: 0.08009787648916245 val metrics: [0.6695684790611267]
+[main] INFO org.jetbrains.kotlinx.dl.api.core.GraphTrainableModel - epochs: 14 loss: 0.036169898 metric: [0.860641] val loss: 0.0787210687994957 val metrics: [0.6845238208770752]
+[main] INFO org.jetbrains.kotlinx.dl.api.core.GraphTrainableModel - epochs: 15 loss: 0.032093223 metric: [0.87788403] val loss: 0.07851633429527283 val metrics: [0.686532735824585]
+[main] INFO org.jetbrains.kotlinx.dl.api.core.GraphTrainableModel - epochs: 16 loss: 0.028655114 metric: [0.8902712] val loss: 0.08278623968362808 val metrics: [0.6822172403335571]
+[main] INFO org.jetbrains.kotlinx.dl.api.core.GraphTrainableModel - epochs: 17 loss: 0.026263265 metric: [0.89973134] val loss: 0.08168768882751465 val metrics: [0.6910466551780701]
+[main] INFO org.jetbrains.kotlinx.dl.api.core.GraphTrainableModel - epochs: 18 loss: 0.02340735 metric: [0.9114469] val loss: 0.08234506100416183 val metrics: [0.6857390999794006]
+[main] INFO org.jetbrains.kotlinx.dl.api.core.GraphTrainableModel - epochs: 19 loss: 0.020995539 metric: [0.9216972] val loss: 0.0828082412481308 val metrics: [0.6894345283508301]
+[main] INFO org.jetbrains.kotlinx.dl.api.core.GraphTrainableModel - epochs: 20 loss: 0.019607833 metric: [0.9273467] val loss: 0.07730630040168762 val metrics: [0.7109127044677734]
+[main] INFO org.jetbrains.kotlinx.dl.api.core.GraphTrainableModel - epochs: 21 loss: 0.018473998 metric: [0.931714] val loss: 0.07804827392101288 val metrics: [0.708457350730896]
+[main] INFO org.jetbrains.kotlinx.dl.api.core.GraphTrainableModel - epochs: 22 loss: 0.016574413 metric: [0.9397519] val loss: 0.07448634505271912 val metrics: [0.7233631014823914]
+[main] INFO org.jetbrains.kotlinx.dl.api.core.GraphTrainableModel - epochs: 23 loss: 0.016211282 metric: [0.94010746] val loss: 0.0694144070148468 val metrics: [0.7382440567016602]
+[main] INFO org.jetbrains.kotlinx.dl.api.core.GraphTrainableModel - epochs: 24 loss: 0.014605723 metric: [0.9471792] val loss: 0.0759434923529625 val metrics: [0.7167162895202637]
+[main] INFO org.jetbrains.kotlinx.dl.api.core.GraphTrainableModel - epochs: 25 loss: 0.014943052 metric: [0.94512486] val loss: 0.07105507701635361 val metrics: [0.734747052192688]
+[main] INFO org.jetbrains.kotlinx.dl.api.core.GraphTrainableModel - epochs: 26 loss: 0.013028055 metric: [0.95211756] val loss: 0.06955868750810623 val metrics: [0.7447916865348816]
+[main] INFO org.jetbrains.kotlinx.dl.api.core.GraphTrainableModel - epochs: 27 loss: 0.013086069 metric: [0.9526312] val loss: 0.06736918538808823 val metrics: [0.7494791746139526]
+[main] INFO org.jetbrains.kotlinx.dl.api.core.GraphTrainableModel - epochs: 28 loss: 0.012392062 metric: [0.954488] val loss: 0.06858362257480621 val metrics: [0.7490823268890381]
+[main] INFO org.jetbrains.kotlinx.dl.api.core.GraphTrainableModel - epochs: 29 loss: 0.012459385 metric: [0.95377684] val loss: 0.06661165505647659 val metrics: [0.7567955851554871]
+[main] INFO org.jetbrains.kotlinx.dl.api.core.GraphTrainableModel - epochs: 30 loss: 0.011484408 metric: [0.9585572] val loss: 0.06436613947153091 val metrics: [0.7580109238624573]
+[main] INFO org.jetbrains.kotlinx.dl.api.core.GraphTrainableModel - epochs: 31 loss: 0.011305063 metric: [0.9590313] val loss: 0.06896459311246872 val metrics: [0.7453373074531555]
+[main] INFO org.jetbrains.kotlinx.dl.api.core.GraphTrainableModel - epochs: 32 loss: 0.011046173 metric: [0.9604535] val loss: 0.06721959263086319 val metrics: [0.7577381134033203]
+[main] INFO org.jetbrains.kotlinx.dl.api.core.GraphTrainableModel - epochs: 33 loss: 0.010678451 metric: [0.9614844] val loss: 0.06711495667695999 val metrics: [0.7596229910850525]
+[main] INFO org.jetbrains.kotlinx.dl.api.core.GraphTrainableModel - epochs: 34 loss: 0.010630872 metric: [0.9614232] val loss: 0.06517411023378372 val metrics: [0.7621279358863831]
+[main] INFO org.jetbrains.kotlinx.dl.api.core.GraphTrainableModel - epochs: 35 loss: 0.009958269 metric: [0.9641672] val loss: 0.06550823897123337 val metrics: [0.7642609477043152]
+[main] INFO org.jetbrains.kotlinx.dl.api.core.GraphTrainableModel - epochs: 36 loss: 0.009466268 metric: [0.9664981] val loss: 0.0650634914636612 val metrics: [0.7647073268890381]
+[main] INFO org.jetbrains.kotlinx.dl.api.core.GraphTrainableModel - epochs: 37 loss: 0.010069091 metric: [0.96396965] val loss: 0.0653805360198021 val metrics: [0.7633184790611267]
+[main] INFO org.jetbrains.kotlinx.dl.api.core.GraphTrainableModel - epochs: 38 loss: 0.010341862 metric: [0.96270543] val loss: 0.06771387159824371 val metrics: [0.7572916746139526]
+[main] INFO org.jetbrains.kotlinx.dl.api.core.GraphTrainableModel - epochs: 39 loss: 0.0091909785 metric: [0.9669937] val loss: 0.06793642789125443 val metrics: [0.7509920597076416]
+[main] INFO org.jetbrains.kotlinx.dl.api.core.GraphTrainableModel - epochs: 40 loss: 0.008895867 metric: [0.96770483] val loss: 0.06109919399023056 val metrics: [0.7777777314186096]
+[main] INFO org.jetbrains.kotlinx.dl.api.core.GraphTrainableModel - epochs: 41 loss: 0.008671312 metric: [0.96898705] val loss: 0.06858585774898529 val metrics: [0.7561756372451782]
+[main] INFO org.jetbrains.kotlinx.dl.api.core.GraphTrainableModel - epochs: 42 loss: 0.009254694 metric: [0.9665376] val loss: 0.06439352035522461 val metrics: [0.7668154835700989]
+[main] INFO org.jetbrains.kotlinx.dl.api.core.GraphTrainableModel - epochs: 43 loss: 0.008347911 metric: [0.97036976] val loss: 0.06000000983476639 val metrics: [0.7800595164299011]
+[main] INFO org.jetbrains.kotlinx.dl.api.core.GraphTrainableModel - epochs: 44 loss: 0.008019367 metric: [0.9714365] val loss: 0.06331013888120651 val metrics: [0.7722966074943542]
+[main] INFO org.jetbrains.kotlinx.dl.api.core.GraphTrainableModel - epochs: 45 loss: 0.0090096975 metric: [0.96728826] val loss: 0.06549876928329468 val metrics: [0.7700148820877075]
+[main] INFO org.jetbrains.kotlinx.dl.api.core.GraphTrainableModel - epochs: 46 loss: 0.008064807 metric: [0.9709229] val loss: 0.0645379051566124 val metrics: [0.7688243985176086]
+[main] INFO org.jetbrains.kotlinx.dl.api.core.GraphTrainableModel - epochs: 47 loss: 0.008451994 metric: [0.9701543] val loss: 0.06534691900014877 val metrics: [0.7676587104797363]
+[main] INFO org.jetbrains.kotlinx.dl.api.core.GraphTrainableModel - epochs: 48 loss: 0.0083066225 metric: [0.97013277] val loss: 0.06549932062625885 val metrics: [0.7669890522956848]
+[main] INFO org.jetbrains.kotlinx.dl.api.core.GraphTrainableModel - epochs: 49 loss: 0.0075029777 metric: [0.9736093] val loss: 0.06230081990361214 val metrics: [0.7796131372451782]
+[main] INFO org.jetbrains.kotlinx.dl.api.core.GraphTrainableModel - epochs: 50 loss: 0.0073772436 metric: [0.9740439] val loss: 0.06347454339265823 val metrics: [0.7767609357833862]
+[main] INFO org.jetbrains.kotlinx.dl.api.core.GraphTrainableModel - epochs: 51 loss: 0.008700272 metric: [0.96839803] val loss: 0.0633314698934555 val metrics: [0.7729166746139526]
+[main] INFO org.jetbrains.kotlinx.dl.api.core.GraphTrainableModel - epochs: 52 loss: 0.0073718904 metric: [0.9740439] val loss: 0.0642920434474945 val metrics: [0.7700148820877075]
+[main] INFO org.jetbrains.kotlinx.dl.api.core.GraphTrainableModel - epochs: 53 loss: 0.008070361 metric: [0.97072536] val loss: 0.06531595438718796 val metrics: [0.7725694179534912]
+[main] INFO org.jetbrains.kotlinx.dl.api.core.GraphTrainableModel - epochs: 54 loss: 0.007648704 metric: [0.97244567] val loss: 0.06261730194091797 val metrics: [0.7767609357833862]
+[main] INFO org.jetbrains.kotlinx.dl.api.core.GraphTrainableModel - epochs: 55 loss: 0.006826986 metric: [0.9754267] val loss: 0.060189347714185715 val metrics: [0.7848958373069763]
+[main] INFO org.jetbrains.kotlinx.dl.api.core.GraphTrainableModel - epochs: 56 loss: 0.006721546 metric: [0.9762168] val loss: 0.06166166067123413 val metrics: [0.7813988327980042]
+[main] INFO org.jetbrains.kotlinx.dl.api.core.GraphTrainableModel - epochs: 57 loss: 0.006992048 metric: [0.9748161] val loss: 0.06402045488357544 val metrics: [0.778769850730896]
+[main] INFO org.jetbrains.kotlinx.dl.api.core.GraphTrainableModel - epochs: 58 loss: 0.006961699 metric: [0.97617733] val loss: 0.060391005128622055 val metrics: [0.7850198745727539]
+[main] INFO org.jetbrains.kotlinx.dl.api.core.GraphTrainableModel - epochs: 59 loss: 0.007738862 metric: [0.97234875] val loss: 0.06427428126335144 val metrics: [0.7724205851554871]
+[main] INFO org.jetbrains.kotlinx.dl.api.core.GraphTrainableModel - epochs: 60 loss: 0.006900143 metric: [0.97572476] val loss: 0.06362932920455933 val metrics: [0.7769345641136169]
+[main] INFO org.jetbrains.kotlinx.dl.api.core.GraphTrainableModel - epochs: 61 loss: 0.006814954 metric: [0.97617733] val loss: 0.06511972844600677 val metrics: [0.775545597076416]
+[main] INFO org.jetbrains.kotlinx.dl.api.core.GraphTrainableModel - epochs: 62 loss: 0.0068859803 metric: [0.97601926] val loss: 0.061651378870010376 val metrics: [0.7860863208770752]
+[main] INFO org.jetbrains.kotlinx.dl.api.core.GraphTrainableModel - epochs: 63 loss: 0.006631311 metric: [0.97692794] val loss: 0.0586821474134922 val metrics: [0.7928323745727539]
+[main] INFO org.jetbrains.kotlinx.dl.api.core.GraphTrainableModel - epochs: 64 loss: 0.0068673105 metric: [0.9759618] val loss: 0.05907028913497925 val metrics: [0.7941716313362122]
+[main] INFO org.jetbrains.kotlinx.dl.api.core.GraphTrainableModel - epochs: 65 loss: 0.006754576 metric: [0.9760983] val loss: 0.06357714533805847 val metrics: [0.778769850730896]
+[main] INFO org.jetbrains.kotlinx.dl.api.core.GraphTrainableModel - epochs: 66 loss: 0.0066110315 metric: [0.9766514] val loss: 0.06213397905230522 val metrics: [0.7864583134651184]
+[main] INFO org.jetbrains.kotlinx.dl.api.core.GraphTrainableModel - epochs: 67 loss: 0.006305788 metric: [0.97823167] val loss: 0.0598028302192688 val metrics: [0.7933283448219299]
+[main] INFO org.jetbrains.kotlinx.dl.api.core.GraphTrainableModel - epochs: 68 loss: 0.0065301806 metric: [0.977481] val loss: 0.05962696671485901 val metrics: [0.7912202477455139]
+[main] INFO org.jetbrains.kotlinx.dl.api.core.GraphTrainableModel - epochs: 69 loss: 0.006828055 metric: [0.97582173] val loss: 0.06400430202484131 val metrics: [0.7777777314186096]
+[main] INFO org.jetbrains.kotlinx.dl.api.core.GraphTrainableModel - epochs: 70 loss: 0.006445647 metric: [0.9776391] val loss: 0.05844207480549812 val metrics: [0.7943452596664429]
+[main] INFO org.jetbrains.kotlinx.dl.api.core.GraphTrainableModel - epochs: 71 loss: 0.006616112 metric: [0.9762168] val loss: 0.061060674488544464 val metrics: [0.7883184552192688]
+[main] INFO org.jetbrains.kotlinx.dl.api.core.GraphTrainableModel - epochs: 72 loss: 0.0070414403 metric: [0.9755847] val loss: 0.06006099656224251 val metrics: [0.7898809909820557]
+[main] INFO org.jetbrains.kotlinx.dl.api.core.GraphTrainableModel - epochs: 73 loss: 0.005971316 metric: [0.9793379] val loss: 0.0582081601023674 val metrics: [0.795907735824585]
+[main] INFO org.jetbrains.kotlinx.dl.api.core.GraphTrainableModel - epochs: 74 loss: 0.0061659645 metric: [0.9783107] val loss: 0.06261752545833588 val metrics: [0.7870287895202637]
+[main] INFO org.jetbrains.kotlinx.dl.api.core.GraphTrainableModel - epochs: 75 loss: 0.006129034 metric: [0.9788638] val loss: 0.06457886099815369 val metrics: [0.7778769731521606]
+[main] INFO org.jetbrains.kotlinx.dl.api.core.GraphTrainableModel - epochs: 76 loss: 0.007250069 metric: [0.97475505] val loss: 0.05865306034684181 val metrics: [0.7954613566398621]
+[main] INFO org.jetbrains.kotlinx.dl.api.core.GraphTrainableModel - epochs: 77 loss: 0.006318004 metric: [0.9777971] val loss: 0.06263203173875809 val metrics: [0.7879216074943542]
+[main] INFO org.jetbrains.kotlinx.dl.api.core.GraphTrainableModel - epochs: 78 loss: 0.0065367348 metric: [0.9767699] val loss: 0.0667051151394844 val metrics: [0.7719742059707642]
+[main] INFO org.jetbrains.kotlinx.dl.api.core.GraphTrainableModel - epochs: 79 loss: 0.006345165 metric: [0.97803414] val loss: 0.05862443894147873 val metrics: [0.798983097076416]
+[main] INFO org.jetbrains.kotlinx.dl.api.core.GraphTrainableModel - epochs: 80 loss: 0.0060573737 metric: [0.97917986] val loss: 0.06903412938117981 val metrics: [0.7680059671401978]
+[main] INFO org.jetbrains.kotlinx.dl.api.core.GraphTrainableModel - epochs: 81 loss: 0.0066113397 metric: [0.9767699] val loss: 0.06010738015174866 val metrics: [0.7947420477867126]
+[main] INFO org.jetbrains.kotlinx.dl.api.core.GraphTrainableModel - epochs: 82 loss: 0.0064092567 metric: [0.97680944] val loss: 0.06387854367494583 val metrics: [0.7805555462837219]
+[main] INFO org.jetbrains.kotlinx.dl.api.core.GraphTrainableModel - epochs: 83 loss: 0.005511667 metric: [0.98087865] val loss: 0.059761885553598404 val metrics: [0.7946180701255798]
+[main] INFO org.jetbrains.kotlinx.dl.api.core.GraphTrainableModel - epochs: 84 loss: 0.0062546916 metric: [0.97801614] val loss: 0.05870097130537033 val metrics: [0.7996031641960144]
+[main] INFO org.jetbrains.kotlinx.dl.api.core.GraphTrainableModel - epochs: 85 loss: 0.006004264 metric: [0.97929835] val loss: 0.06122814491391182 val metrics: [0.7933283448219299]
+[main] INFO org.jetbrains.kotlinx.dl.api.core.GraphTrainableModel - epochs: 86 loss: 0.006012746 metric: [0.97925884] val loss: 0.05821625888347626 val metrics: [0.8036705851554871]
+[main] INFO org.jetbrains.kotlinx.dl.api.core.GraphTrainableModel - epochs: 87 loss: 0.005943615 metric: [0.97961444] val loss: 0.058748580515384674 val metrics: [0.7994791865348816]
+[main] INFO org.jetbrains.kotlinx.dl.api.core.GraphTrainableModel - epochs: 88 loss: 0.006709439 metric: [0.9762168] val loss: 0.061615366488695145 val metrics: [0.788095235824585]
+[main] INFO org.jetbrains.kotlinx.dl.api.core.GraphTrainableModel - epochs: 89 loss: 0.0059298626 metric: [0.9795354] val loss: 0.060447949916124344 val metrics: [0.7968502044677734]
+[main] INFO org.jetbrains.kotlinx.dl.api.core.GraphTrainableModel - epochs: 90 loss: 0.006007698 metric: [0.9795749] val loss: 0.06319361180067062 val metrics: [0.7890872955322266]
+[main] INFO org.jetbrains.kotlinx.dl.api.core.GraphTrainableModel - epochs: 91 loss: 0.00567947 metric: [0.9806811] val loss: 0.06368092447519302 val metrics: [0.7850198745727539]
+[main] INFO org.jetbrains.kotlinx.dl.api.core.GraphTrainableModel - epochs: 92 loss: 0.006788364 metric: [0.97633535] val loss: 0.06138911098241806 val metrics: [0.7922123074531555]
+[main] INFO org.jetbrains.kotlinx.dl.api.core.GraphTrainableModel - epochs: 93 loss: 0.0064292694 metric: [0.9778366] val loss: 0.059767723083496094 val metrics: [0.7976438403129578]
+[main] INFO org.jetbrains.kotlinx.dl.api.core.GraphTrainableModel - epochs: 94 loss: 0.005574349 metric: [0.98091817] val loss: 0.0575600229203701 val metrics: [0.8052331209182739]
+[main] INFO org.jetbrains.kotlinx.dl.api.core.GraphTrainableModel - epochs: 95 loss: 0.0062211878 metric: [0.97854775] val loss: 0.05886048451066017 val metrics: [0.7966269850730896]
+[main] INFO org.jetbrains.kotlinx.dl.api.core.GraphTrainableModel - epochs: 96 loss: 0.0056238193 metric: [0.9807996] val loss: 0.05801069363951683 val metrics: [0.8030506372451782]
+[main] INFO org.jetbrains.kotlinx.dl.api.core.GraphTrainableModel - epochs: 97 loss: 0.0060469215 metric: [0.9792193] val loss: 0.062304865568876266 val metrics: [0.7903273701667786]
+[main] INFO org.jetbrains.kotlinx.dl.api.core.GraphTrainableModel - epochs: 98 loss: 0.0059593027 metric: [0.97959644] val loss: 0.06601257622241974 val metrics: [0.7802579402923584]
+[main] INFO org.jetbrains.kotlinx.dl.api.core.GraphTrainableModel - epochs: 99 loss: 0.006789238 metric: [0.97631735] val loss: 0.062194496393203735 val metrics: [0.7906497716903687]
+[main] INFO org.jetbrains.kotlinx.dl.api.core.GraphTrainableModel - epochs: 100 loss: 0.005444986 metric: [0.9811947] val loss: 0.06240222975611687 val metrics: [0.7906001806259155]
+[main] INFO org.jetbrains.kotlinx.dl.impl.summary.ModelSummaryLogger - ==============================================================================
+[main] INFO org.jetbrains.kotlinx.dl.impl.summary.ModelSummaryLogger - Model type: Sequential
+[main] INFO org.jetbrains.kotlinx.dl.impl.summary.ModelSummaryLogger - ______________________________________________________________________________
+[main] INFO org.jetbrains.kotlinx.dl.impl.summary.ModelSummaryLogger - Layer (type)                           Output Shape              Param #
+[main] INFO org.jetbrains.kotlinx.dl.impl.summary.ModelSummaryLogger - ==============================================================================
+[main] INFO org.jetbrains.kotlinx.dl.impl.summary.ModelSummaryLogger - input_1(Input)                         [None, 138, 128, 1]       0
+[main] INFO org.jetbrains.kotlinx.dl.impl.summary.ModelSummaryLogger - ______________________________________________________________________________
+[main] INFO org.jetbrains.kotlinx.dl.impl.summary.ModelSummaryLogger - conv2d_2(Conv2D)                       [None, 138, 128, 32]      320
+[main] INFO org.jetbrains.kotlinx.dl.impl.summary.ModelSummaryLogger - ______________________________________________________________________________
+[main] INFO org.jetbrains.kotlinx.dl.impl.summary.ModelSummaryLogger - conv2d_3(Conv2D)                       [None, 138, 128, 32]      9248
+[main] INFO org.jetbrains.kotlinx.dl.impl.summary.ModelSummaryLogger - ______________________________________________________________________________
+[main] INFO org.jetbrains.kotlinx.dl.impl.summary.ModelSummaryLogger - maxpool2d_4(MaxPool2D)                 [None, 69, 64, 32]        0
+[main] INFO org.jetbrains.kotlinx.dl.impl.summary.ModelSummaryLogger - ______________________________________________________________________________
+[main] INFO org.jetbrains.kotlinx.dl.impl.summary.ModelSummaryLogger - conv2d_5(Conv2D)                       [None, 69, 64, 64]        18496
+[main] INFO org.jetbrains.kotlinx.dl.impl.summary.ModelSummaryLogger - ______________________________________________________________________________
+[main] INFO org.jetbrains.kotlinx.dl.impl.summary.ModelSummaryLogger - conv2d_6(Conv2D)                       [None, 69, 64, 64]        36928
+[main] INFO org.jetbrains.kotlinx.dl.impl.summary.ModelSummaryLogger - ______________________________________________________________________________
+[main] INFO org.jetbrains.kotlinx.dl.impl.summary.ModelSummaryLogger - maxpool2d_7(MaxPool2D)                 [None, 34, 32, 64]        0
+[main] INFO org.jetbrains.kotlinx.dl.impl.summary.ModelSummaryLogger - ______________________________________________________________________________
+[main] INFO org.jetbrains.kotlinx.dl.impl.summary.ModelSummaryLogger - conv2d_8(Conv2D)                       [None, 34, 32, 128]       73856
+[main] INFO org.jetbrains.kotlinx.dl.impl.summary.ModelSummaryLogger - ______________________________________________________________________________
+[main] INFO org.jetbrains.kotlinx.dl.impl.summary.ModelSummaryLogger - conv2d_9(Conv2D)                       [None, 34, 32, 128]       147584
+[main] INFO org.jetbrains.kotlinx.dl.impl.summary.ModelSummaryLogger - ______________________________________________________________________________
+[main] INFO org.jetbrains.kotlinx.dl.impl.summary.ModelSummaryLogger - maxpool2d_10(MaxPool2D)                [None, 17, 16, 128]       0
+[main] INFO org.jetbrains.kotlinx.dl.impl.summary.ModelSummaryLogger - ______________________________________________________________________________
+[main] INFO org.jetbrains.kotlinx.dl.impl.summary.ModelSummaryLogger - conv2d_11(Conv2D)                      [None, 17, 16, 256]       295168
+[main] INFO org.jetbrains.kotlinx.dl.impl.summary.ModelSummaryLogger - ______________________________________________________________________________
+[main] INFO org.jetbrains.kotlinx.dl.impl.summary.ModelSummaryLogger - conv2d_12(Conv2D)                      [None, 17, 16, 256]       590080
+[main] INFO org.jetbrains.kotlinx.dl.impl.summary.ModelSummaryLogger - ______________________________________________________________________________
+[main] INFO org.jetbrains.kotlinx.dl.impl.summary.ModelSummaryLogger - maxpool2d_13(MaxPool2D)                [None, 8, 8, 256]         0
+[main] INFO org.jetbrains.kotlinx.dl.impl.summary.ModelSummaryLogger - ______________________________________________________________________________
+[main] INFO org.jetbrains.kotlinx.dl.impl.summary.ModelSummaryLogger - flatten_14(Flatten)                    [None, 16384]             0
+[main] INFO org.jetbrains.kotlinx.dl.impl.summary.ModelSummaryLogger - ______________________________________________________________________________
+[main] INFO org.jetbrains.kotlinx.dl.impl.summary.ModelSummaryLogger - dense_15(Dense)                        [None, 64]                1048640
+[main] INFO org.jetbrains.kotlinx.dl.impl.summary.ModelSummaryLogger - ______________________________________________________________________________
+[main] INFO org.jetbrains.kotlinx.dl.impl.summary.ModelSummaryLogger - dropout_16(Dropout)                    [None, 64]                0
+[main] INFO org.jetbrains.kotlinx.dl.impl.summary.ModelSummaryLogger - ______________________________________________________________________________
+[main] INFO org.jetbrains.kotlinx.dl.impl.summary.ModelSummaryLogger - dense_17(Dense)                        [None, 64]                4160
+[main] INFO org.jetbrains.kotlinx.dl.impl.summary.ModelSummaryLogger - ______________________________________________________________________________
+[main] INFO org.jetbrains.kotlinx.dl.impl.summary.ModelSummaryLogger - dropout_18(Dropout)                    [None, 64]                0
+[main] INFO org.jetbrains.kotlinx.dl.impl.summary.ModelSummaryLogger - ______________________________________________________________________________
+[main] INFO org.jetbrains.kotlinx.dl.impl.summary.ModelSummaryLogger - dense_19(Dense)                        [None, 6]                 390
+[main] INFO org.jetbrains.kotlinx.dl.impl.summary.ModelSummaryLogger - ______________________________________________________________________________
+[main] INFO org.jetbrains.kotlinx.dl.impl.summary.ModelSummaryLogger - ==============================================================================
+[main] INFO org.jetbrains.kotlinx.dl.impl.summary.ModelSummaryLogger - Total trainable params: 2224870
+[main] INFO org.jetbrains.kotlinx.dl.impl.summary.ModelSummaryLogger - Total frozen params: 0
+[main] INFO org.jetbrains.kotlinx.dl.impl.summary.ModelSummaryLogger - Total params: 2224870
+[main] INFO org.jetbrains.kotlinx.dl.impl.summary.ModelSummaryLogger - ______________________________________________________________________________
+I:	Evaluate CNN - train dataset.
+R:	0.9762958288192749 accuracy
+I:	Confusion Matrix
+ANG	|	4232	11	34	39	16	7
+DIS	|	30	4191	40	24	15	8
+FEA	|	19	15	4248	26	9	10
+HAP	|	24	7	31	4266	7	10
+NEU	|	7	11	9	16	3632	11
+SAD	|	14	36	59	28	27	4133
+		ANG	DIS	FEA	HAP	NEU	SAD
+I:	Evaluate CNN - valid dataset.
+R:	0.7906001806259155 accuracy
+I:	Confusion Matrix

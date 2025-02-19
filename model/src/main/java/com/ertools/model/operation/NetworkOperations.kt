@@ -13,6 +13,7 @@ import org.jetbrains.kotlinx.dl.api.core.loss.Losses
 import org.jetbrains.kotlinx.dl.api.core.metric.Metrics
 import org.jetbrains.kotlinx.dl.api.core.optimizer.Adam
 import org.jetbrains.kotlinx.dl.api.core.optimizer.ClipGradientByValue
+import org.jetbrains.kotlinx.dl.api.inference.InferenceModel
 import org.jetbrains.kotlinx.dl.api.inference.TensorFlowInferenceModel
 import org.jetbrains.kotlinx.dl.dataset.Dataset
 import org.jetbrains.kotlinx.dl.dataset.evaluate
@@ -66,16 +67,8 @@ fun Sequential.evaluate(
     ).metrics[Metrics.ACCURACY]
 }
 
-fun TensorFlowInferenceModel.evaluate(
-    test: Dataset
-): Double {
-    return this.evaluate(
-        dataset = test,
-        metric = Metrics.ACCURACY
-    )
-}
 
-fun TensorFlowInferenceModel.confusionMatrix(testData: Dataset) {
+fun InferenceModel.confusionMatrix(testData: Dataset) {
     val classes = LabelsExtraction.Emotion.entries
     val confusionMatrix = Array(classes.size) { IntArray(classes.size) }
     for(i in 0 until testData.xSize()) {
