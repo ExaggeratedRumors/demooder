@@ -1,6 +1,6 @@
 package com.ertools.model
 
-import com.ertools.model.operation.confusionMatrix
+import com.ertools.model.evaluation.ClassifierEvaluator
 import com.ertools.processing.commons.ProcessingUtils
 import com.ertools.processing.dataset.DatasetJvmPreprocessor
 import com.ertools.processing.io.IOManager
@@ -38,7 +38,7 @@ fun main(args: Array<String>) {
         println("R:\t${"%.4f".format(Locale.ENGLISH, result)} accuracy")
 
         println("I:\tConfusion Matrix")
-        it.confusionMatrix(testData = data)
+        println(ClassifierEvaluator.confusionMatrix(model = it, testData = data))
     }
 
 }
