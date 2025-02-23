@@ -1,6 +1,6 @@
 package com.ertools.model
 
-import com.ertools.processing.commons.LabelsExtraction
+import com.ertools.processing.data.LabelsExtraction
 import com.ertools.processing.commons.ProcessingUtils
 import com.ertools.processing.io.IOManager
 import com.ertools.processing.signal.SignalPreprocessor
@@ -35,7 +35,7 @@ fun main () {
         val start = it * spectrogramsBatchSize
         val end = min((it + 1) * spectrogramsBatchSize, soundData.size)
         val subset = soundData.subList(start, end)
-        val spectrogramSet: List<SpectrogramSample> = SignalPreprocessor.convertWavFilesToSamples(
+        val spectrogramSet: List<SpectrogramSample> = SignalPreprocessor.convertWavFilesToSpectrogramSamples(
             wavFiles = subset,
             frameSize = frameSize,
             stepSize = stepSize,

@@ -2,7 +2,7 @@ package com.ertools.processing.dataset
 
 
 import android.graphics.Bitmap
-import com.ertools.processing.commons.ImageDim
+import com.ertools.processing.data.ImageDim
 import org.jetbrains.kotlinx.dl.api.core.shape.TensorShape
 import org.jetbrains.kotlinx.dl.api.preprocessing.Operation
 import org.jetbrains.kotlinx.dl.api.preprocessing.pipeline

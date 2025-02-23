@@ -1,8 +1,8 @@
 package com.ertools.processing.io
 
 
-import com.ertools.processing.commons.ImageDim
-import com.ertools.processing.commons.LabelsExtraction
+import com.ertools.processing.data.ImageDim
+import com.ertools.processing.data.LabelsExtraction
 import com.ertools.processing.commons.ProcessingUtils
 import com.ertools.processing.commons.ProcessingUtils.SPECTROGRAM_COLOR_RANGE
 import com.ertools.processing.signal.SignalPreprocessor.convertStftToAmplitude

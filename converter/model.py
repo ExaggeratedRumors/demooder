@@ -111,9 +111,56 @@ def reshape_weights(layer, weights_list):
 
     return reshaped_weights
 
+
 def convert_to_onnx(model):
     tf2onnx.convert.from_keras(model, output_path=f"{MODEL_DIR}/model.onnx")
     print(f"#### Model converted to onnx in data_models/{MODEL_DIR}/model.onnx")
+
+
+def load_graph(pb_file):
+    with tf.io.gfile.GFile(pb_file, "rb") as f:
+        graph_def = tf.compat.v1.GraphDef()
+        graph_def.ParseFromString(f.read())
+
+    with tf.compat.v1.Graph().as_default() as graph:
+        tf.import_graph_def(graph_def, name="")
+    return graph
+
+
+def extract_layers_from_graph(graph):
+    keras_model = Sequential()
+
+    for op in graph.get_operations():
+        if "conv2d" in op.name.lower():
+            input_shape = op.inputs[0].shape.as_list()
+            kernel_shape = op.outputs[0].shape.as_list()
+
+            filters = kernel_shape[-1]
+            kernel_size = (3, 3)
+            padding = "same" if "SAME" in str(op.get_attr("padding")) else "valid"
+
+            if not keras_model.layers:
+                keras_model.add(Input(shape=(input_shape[1], input_shape[2], input_shape[3])))
+            keras_model.add(Conv2D(filters=filters, kernel_size=kernel_size, activation="relu",
+                                   padding=padding))
+
+        elif "maxpool" in op.name.lower():
+            keras_model.add(MaxPooling2D(pool_size=(2, 2)))
+
+        elif "dense" in op.name.lower():
+            units = op.outputs[0].shape.as_list()[-1]
+            if len(keras_model.layers) > 0 and not isinstance(keras_model.layers[-1], Flatten):
+                keras_model.add(Flatten())
+            keras_model.add(Dense(units=units, activation="relu"))
+
+    return keras_model
+
+
+def convert_pb_to_keras(pb_path):
+    graph = load_graph(pb_path)
+    keras_model = extract_layers_from_graph(graph)
+    keras_model.summary()
+    return keras_model
 
 
 """

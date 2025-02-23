@@ -1,7 +1,7 @@
 package com.ertools.model.network
 
-import com.ertools.processing.commons.ImageDim
-import com.ertools.processing.commons.LabelsExtraction
+import com.ertools.processing.data.ImageDim
+import com.ertools.processing.data.LabelsExtraction
 import org.jetbrains.kotlinx.dl.api.core.Sequential
 import org.jetbrains.kotlinx.dl.api.core.activation.Activations
 import org.jetbrains.kotlinx.dl.api.core.initializer.GlorotUniform

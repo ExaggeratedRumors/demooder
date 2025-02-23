@@ -1,7 +1,7 @@
 package com.ertools.processing.signal
 
 
-import org.jetbrains.kotlinx.multik.ndarray.complex.ComplexDoubleArray
+import com.ertools.processing.commons.ComplexData
 import org.jetbrains.kotlinx.multik.ndarray.complex.mapIndexed
 import org.jetbrains.kotlinx.multik.ndarray.complex.toComplexDoubleArray
 import kotlin.math.PI
@@ -12,7 +12,7 @@ object Windowing {
         Hamming, Hann, Blackman, Rectangular,
     }
 
-    fun applyWindow(data: ComplexDoubleArray, window: WindowType): ComplexDoubleArray {
+    fun applyWindow(data: ComplexData, window: WindowType): ComplexData {
         when(window) {
             WindowType.Hamming ->
                 return data.mapIndexed {

@@ -1,6 +1,6 @@
 package com.ertools.model.evaluation
 
-import com.ertools.processing.commons.LabelsExtraction
+import com.ertools.processing.data.LabelsExtraction
 import org.jetbrains.kotlinx.dl.api.inference.InferenceModel
 import org.jetbrains.kotlinx.dl.dataset.Dataset
 
