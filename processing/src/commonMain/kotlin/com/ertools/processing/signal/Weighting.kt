@@ -1,6 +1,7 @@
 package com.ertools.processing.signal
 
 
+import com.ertools.processing.commons.AmplitudeSpectrum
 import kotlin.math.log10
 import kotlin.math.pow
 import kotlin.math.sqrt
@@ -8,6 +9,15 @@ import kotlin.math.sqrt
 object Weighting {
     enum class WeightingType {
         A_WEIGHTING, C_WEIGHTING
+    }
+
+    fun applyWeighting(data: AmplitudeSpectrum, weighting: WeightingType): AmplitudeSpectrum {
+        return data.mapIndexed { i, value ->
+            val thirdIndex = i * 3
+            val frequency =
+                FrequencyOperation.middleFrequency(thirdIndex)
+            value + applyWeighting(frequency, weighting)
+        }.toDoubleArray()
     }
 
     fun applyWeighting(f: Double, weighting: WeightingType): Double {

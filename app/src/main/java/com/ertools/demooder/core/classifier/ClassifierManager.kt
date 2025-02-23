@@ -2,20 +2,15 @@ package com.ertools.demooder.core.classifier
 
 import android.content.Context
 import android.util.Log
-import com.ertools.demooder.utils.DEBUG_MODE
-import com.ertools.processing.commons.ImageDim
-import com.ertools.processing.commons.LabelsExtraction
+import com.ertools.processing.data.ImageDim
+import com.ertools.processing.data.LabelsExtraction
 import com.ertools.processing.commons.ProcessingUtils
 import com.ertools.processing.dataset.BitmapSpectrogram
 import com.ertools.processing.dataset.DatasetAndroidPreprocessor
-import com.ertools.processing.io.AndroidIOManager
-import com.ertools.processing.io.IOManager
 import com.ertools.processing.signal.SignalPreprocessor
 import com.ertools.processing.signal.Windowing
 import org.jetbrains.kotlinx.dl.api.inference.TensorFlowInferenceModel
 import org.jetbrains.kotlinx.dl.impl.inference.imagerecognition.predictTopNLabels
-import java.io.File
-import java.io.FileOutputStream
 
 class ClassifierManager {
     var model: TensorFlowInferenceModel? = null
@@ -27,7 +22,6 @@ class ClassifierManager {
 
         val assetsPath = context.assets.list("")?.joinToString(", ") ?: "empty"
         Log.i("ClassifierManager", "Assets: $assetsPath")
-        model = AndroidIOManager.loadModel(context, modelName)
 
         Log.i("ClassifierManager", "Model $modelName loaded with shape ${model!!.shape}")
     }

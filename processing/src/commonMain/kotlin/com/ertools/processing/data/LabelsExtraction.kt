@@ -1,4 +1,4 @@
-package com.ertools.processing.commons
+package com.ertools.processing.data
 
 import java.io.File
 import org.jetbrains.kotlinx.dl.dataset.generator.LabelGenerator

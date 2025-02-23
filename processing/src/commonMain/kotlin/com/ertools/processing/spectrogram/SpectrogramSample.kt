@@ -1,10 +1,10 @@
 package com.ertools.processing.spectrogram
 
-import com.ertools.processing.commons.LabelsExtraction
-import org.jetbrains.kotlinx.multik.ndarray.complex.ComplexDoubleArray
+import com.ertools.processing.data.LabelsExtraction
+import com.ertools.processing.commons.Spectrogram
 
 data class SpectrogramSample(
-    val data: Array<ComplexDoubleArray>,
+    val data: Spectrogram,
     val filename: String,
     val labels: LabelsExtraction.Labels
 ) {

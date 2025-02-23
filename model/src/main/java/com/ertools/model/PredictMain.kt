@@ -1,7 +1,7 @@
 package com.ertools.model
 
-import com.ertools.processing.commons.ImageDim
-import com.ertools.processing.commons.LabelsExtraction
+import com.ertools.processing.data.ImageDim
+import com.ertools.processing.data.LabelsExtraction
 import com.ertools.processing.commons.ProcessingUtils
 import com.ertools.processing.dataset.DatasetJvmPreprocessor
 import com.ertools.processing.io.IOManager
@@ -27,7 +27,7 @@ fun main () {
     println("R:\tRead ${soundData.size} samples.")
 
     println("I:\tProcess data to spectrograms.")
-    val spectrogramSet = SignalPreprocessor.convertWavFilesToSamples(
+    val spectrogramSet = SignalPreprocessor.convertWavFilesToSpectrogramSamples(
         wavFiles = soundData,
         frameSize = frameSize,
         stepSize = stepSize,

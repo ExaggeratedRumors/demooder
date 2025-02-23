@@ -1,7 +1,15 @@
 package com.ertools.processing.signal
 
-import com.ertools.processing.commons.LabelsExtraction
+import com.ertools.processing.commons.AmplitudeSpectrum
+import com.ertools.processing.commons.ComplexData
+import com.ertools.processing.commons.DecibelsSpectrum
+import com.ertools.processing.commons.OctavesAmplitudeSpectrum
+import com.ertools.processing.data.LabelsExtraction
 import com.ertools.processing.commons.ProcessingUtils
+import com.ertools.processing.commons.RawData
+import com.ertools.processing.commons.Spectrogram
+import com.ertools.processing.commons.Spectrum
+import com.ertools.processing.commons.ThirdsAmplitudeSpectrum
 import com.ertools.processing.io.WavFile
 import com.ertools.processing.spectrogram.SpectrogramSample
 import org.jetbrains.kotlinx.multik.ndarray.complex.*
@@ -13,7 +21,8 @@ import kotlin.math.sin
 import kotlin.math.*
 
 object SignalPreprocessor {
-    fun convertWavFilesToSamples(
+
+    fun convertWavFilesToSpectrogramSamples(
         wavFiles: List<WavFile>,
         frameSize: Int = 256,
         stepSize: Int = 128,
@@ -36,7 +45,7 @@ object SignalPreprocessor {
     /**
      * Downsample raw sound data
      */
-    fun ByteArray.downsampling(length: Int, inputIsStereo: Boolean, inFrequency: Int, outFrequency: Int): ByteArray {
+    fun RawData.downSampling(length: Int, inputIsStereo: Boolean, inFrequency: Int, outFrequency: Int): RawData {
         if(inFrequency == outFrequency && this.size == length) return this
         if(inFrequency == outFrequency) return this.copyOfRange(0, length)
 
@@ -104,11 +113,11 @@ object SignalPreprocessor {
      * Short Time Fourier Transform on raw sound data
      */
     fun stft(
-        data: ByteArray,
+        data: RawData,
         frameSize: Int,
         stepSize: Int,
         window: Windowing.WindowType
-    ): Array<ComplexDoubleArray> = Array(1 + (data.size - frameSize) / stepSize) {
+    ): Spectrogram = Array(1 + (data.size - frameSize) / stepSize) {
         data.sliceArray(it * stepSize until it * stepSize + frameSize)
             .convertToComplex()
             .applyWindow(window)
@@ -119,7 +128,7 @@ object SignalPreprocessor {
     /**
      * Convert raw sound data to complex numbers
      */
-    fun ByteArray.convertToComplex(): ComplexDoubleArray {
+    fun RawData.convertToComplex(): ComplexData {
         val complexList = mutableListOf<ComplexDouble>()
         val buffer = ByteBuffer.wrap(this).order(ByteOrder.LITTLE_ENDIAN)
         while (buffer.remaining() >= 2) {
@@ -132,14 +141,14 @@ object SignalPreprocessor {
     /**
      * Apply windowing function to complex numbers
      */
-    fun ComplexDoubleArray.applyWindow(window: Windowing.WindowType): ComplexDoubleArray {
+    fun ComplexData.applyWindow(window: Windowing.WindowType): ComplexData {
         return Windowing.applyWindow(this, window)
     }
 
     /**
      * Fast Fourier Transform on complex numbers
      */
-    fun ComplexDoubleArray.fft(): ComplexDoubleArray {
+    fun ComplexData.fft(): Spectrum {
         val n = this.size
         if(n <= 1) return this
 
@@ -159,7 +168,7 @@ object SignalPreprocessor {
     /**
      * Find maximum amplitude in raw sound data
      */
-    fun ByteArray.maxAmplitude(): Int {
+    fun RawData.maxAmplitude(): Int {
         var maxAmplitude = 0
         for (i in this.indices step 2) {
             val sample = this[i].toShort() or (this[i + 1].toInt() shl 8).toShort()
@@ -172,41 +181,33 @@ object SignalPreprocessor {
     /*****************************/
     /** Operations on amplitude **/
     /*****************************/
-
-    /**
-     * Apply weighting to amplitude spectrum
-     */
-    fun DoubleArray.applyWeighting(weighting: Weighting.WeightingType): DoubleArray {
-        return this.mapIndexed { i, value ->
-            val thirdIndex = i * 3
-            val frequency = middleFrequency(thirdIndex)
-            value + Weighting.applyWeighting(frequency, weighting)
-        }.toDoubleArray()
+    fun AmplitudeSpectrum.applyWeighting(weighting: Weighting.WeightingType): AmplitudeSpectrum {
+        return Weighting.applyWeighting(this, weighting)
     }
 
     /**
-     * Save half of symmetric amplitude spectrum
+     * Save half of symmetric spectrum
      */
-    fun ComplexDoubleArray.cutInHalf(): ComplexDoubleArray = this.sliceArray(0 until this.size / 2)
+    fun Spectrum.cutInHalf(): Spectrum = this.sliceArray(0 until this.size / 2)
 
     /**
      * Convert amplitude to decibels
      */
-    fun DoubleArray.toDecibels(): DoubleArray = this.map {
+    fun AmplitudeSpectrum.toDecibels(): DecibelsSpectrum = this.map {
         10 * log10(max(0.5, it))
     }.toDoubleArray()
 
     /**
      * Convert amplitude to decibels
      */
-    fun ComplexDoubleArray.toDecibels(): DoubleArray = this.map {
+    fun Spectrum.toDecibels(): DecibelsSpectrum = this.map {
         10 * log10(max(0.5, it.re.pow(2) + it.im.pow(2)))
     }.toDoubleArray()
 
     /**
      * Convert STFT to amplitude spectrum
      */
-    fun Array<ComplexDoubleArray>.convertStftToAmplitude(): Array<DoubleArray> =
+    fun Spectrogram.convertStftToAmplitude(): Array<AmplitudeSpectrum> =
         Array(this.size) { frameIndex ->
             DoubleArray(this[frameIndex].size) { freqIndex ->
                 val real = this[frameIndex][freqIndex].re
@@ -219,7 +220,7 @@ object SignalPreprocessor {
     /**
      * Convert spectrum to amplitude
      */
-    fun ComplexDoubleArray.convertSpectrumToAmplitude(): DoubleArray = DoubleArray(this.size) { freqIndex ->
+    fun Spectrum.convertSpectrumToAmplitude(): AmplitudeSpectrum = DoubleArray(this.size) { freqIndex ->
         val real = this[freqIndex].re
         val imaginary = this[freqIndex].im
         val result = 10 * log10(hypot(real, imaginary) + 1e-10)
@@ -229,9 +230,9 @@ object SignalPreprocessor {
     /**
      * Convert spectrum to octaves amplitude spectrum
      */
-    fun ComplexDoubleArray.convertSpectrumToOctavesAmplitude(): DoubleArray {
+    fun Spectrum.convertSpectrumToOctavesAmplitude(): OctavesAmplitudeSpectrum {
         val thirdsFrequencies = (1..ProcessingUtils.AUDIO_THIRDS_AMOUNT).map {
-            cutoffFrequency(it)
+            FrequencyOperation.cutoffFrequency(it)
         }
         val octavesFrequencies = (0 until ProcessingUtils.AUDIO_OCTAVES_AMOUNT).map {
             thirdsFrequencies[it * 3 + 2]
@@ -255,9 +256,9 @@ object SignalPreprocessor {
     /**
      * Convert spectrum to thirds amplitude spectrum
      */
-    fun ComplexDoubleArray.convectSpectrumToThirdsAmplitude(): DoubleArray{
+    fun Spectrum.convectSpectrumToThirdsAmplitude(): ThirdsAmplitudeSpectrum {
         val amplitudeData = DoubleArray(ProcessingUtils.AUDIO_THIRDS_AMOUNT) { 0.0 }
-        val cutoffFreq33 = cutoffFrequency(ProcessingUtils.AUDIO_THIRDS_AMOUNT)
+        val cutoffFreq33 = FrequencyOperation.cutoffFrequency(ProcessingUtils.AUDIO_THIRDS_AMOUNT)
         val freqWindow = ProcessingUtils.AUDIO_SAMPLING_RATE.toFloat() / ProcessingUtils.AUDIO_FFT_SIZE
 
         var terce = 1
@@ -266,7 +267,7 @@ object SignalPreprocessor {
         while (iterator < this.size) {
             if((iterator * freqWindow) > cutoffFreq33 || terce > ProcessingUtils.AUDIO_THIRDS_AMOUNT) break
             accumulated += this[iterator]
-            if((iterator + 1) * freqWindow > cutoffFrequency(terce) &&
+            if((iterator + 1) * freqWindow > FrequencyOperation.cutoffFrequency(terce) &&
                 iterator * freqWindow < ProcessingUtils.AUDIO_SAMPLING_RATE / 2f) {
                 terce += 1
                 continue
@@ -280,20 +281,4 @@ object SignalPreprocessor {
         return amplitudeData
     }
 
-
-    /*****************************/
-    /** Operations on frequency **/
-    /*****************************/
-
-    /**
-     * Calculate cutoff frequency for given number of third
-     */
-    fun cutoffFrequency(numberOfThird: Int) =
-        12.5 * 2f.pow((2f * numberOfThird - 1) / 6f)
-
-    /**
-     * Calculate middle frequency for given number of third
-     */
-    fun middleFrequency(numberOfThird: Int) =
-        12.5 * 2f.pow((numberOfThird - 1) / 3f)
 }
