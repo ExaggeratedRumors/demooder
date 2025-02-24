@@ -1,6 +1,8 @@
 package com.ertools.demooder.presentation.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -38,7 +40,7 @@ sealed class OptionData(
         private val onSave: (InputOptionData) -> Unit
     ) : OptionData(optionTitle) {
         val currentValue: MutableState<Double> = mutableDoubleStateOf(defaultValue)
-        override fun valueToString(): String = "${"%.1f".format(Locale.ENGLISH, currentValue.value)}db"
+        override fun valueToString(): String = "${"%.1f".format(Locale.ENGLISH, currentValue.value)}"
 
         @Composable
         override fun SettingsOption() {
@@ -112,8 +114,7 @@ sealed class OptionData(
         private val onSave: (SwitchOptionData) -> Unit
     ) : OptionData(optionTitle) {
         val currentValue: MutableState<Boolean> = mutableStateOf(defaultValue)
-
-        override fun valueToString(): String = "${currentValue.value}s"
+        override fun valueToString(): String = "${currentValue.value}"
 
         @Composable
         override fun SettingsOption() {
@@ -125,41 +126,51 @@ sealed class OptionData(
                     .padding(20.dp)
             ) {
                 /** Switch **/
-                Column(
+                Box(
                     modifier = Modifier
-                        .fillMaxWidth(0.8f)
-                        .fillMaxHeight(),
+                        .wrapContentSize()
+                        .align(Alignment.CenterVertically)
+                        .padding(horizontal = 20.dp)
+                    ,
                 ) {
-                    Text(
-                        text = option.optionTitle,
-                        fontStyle = MaterialTheme.typography.bodyLarge.fontStyle,
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
-                    Switch(
-                        checked = option.currentValue.value,
-                        onCheckedChange = {
-                            option.currentValue.value = it
-                            option.onSave(option)
-                        },
-                        colors = SwitchColors(
-                            checkedThumbColor = MaterialTheme.colorScheme.tertiary,
-                            checkedTrackColor = MaterialTheme.colorScheme.background,
-                            checkedBorderColor = MaterialTheme.colorScheme.tertiary,
-                            checkedIconColor = MaterialTheme.colorScheme.background,
-                            uncheckedIconColor = MaterialTheme.colorScheme.background,
-                            uncheckedBorderColor = MaterialTheme.colorScheme.primary,
-                            uncheckedThumbColor = MaterialTheme.colorScheme.primary,
-                            uncheckedTrackColor = MaterialTheme.colorScheme.background,
-                            disabledCheckedIconColor = MaterialTheme.colorScheme.onSurface,
-                            disabledUncheckedIconColor = MaterialTheme.colorScheme.onSurface,
-                            disabledCheckedTrackColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
-                            disabledUncheckedTrackColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
-                            disabledUncheckedThumbColor = MaterialTheme.colorScheme.onSurface,
-                            disabledCheckedThumbColor = MaterialTheme.colorScheme.onSurface,
-                            disabledCheckedBorderColor = MaterialTheme.colorScheme.onSurface,
-                            disabledUncheckedBorderColor = MaterialTheme.colorScheme.onSurface
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .fillMaxHeight(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = option.optionTitle,
+                            fontStyle = MaterialTheme.typography.bodyLarge.fontStyle,
+                            color = MaterialTheme.colorScheme.onSurface
                         )
-                    )
+                        Switch(
+                            checked = option.currentValue.value,
+                            onCheckedChange = {
+                                option.currentValue.value = it
+                                option.onSave(option)
+                            },
+                            colors = SwitchColors(
+                                checkedThumbColor = MaterialTheme.colorScheme.tertiary,
+                                checkedTrackColor = MaterialTheme.colorScheme.background,
+                                checkedBorderColor = MaterialTheme.colorScheme.tertiary,
+                                checkedIconColor = MaterialTheme.colorScheme.background,
+                                uncheckedIconColor = MaterialTheme.colorScheme.background,
+                                uncheckedBorderColor = MaterialTheme.colorScheme.secondary,
+                                uncheckedThumbColor = MaterialTheme.colorScheme.secondary,
+                                uncheckedTrackColor = MaterialTheme.colorScheme.background,
+                                disabledCheckedIconColor = MaterialTheme.colorScheme.onSurface,
+                                disabledUncheckedIconColor = MaterialTheme.colorScheme.onSurface,
+                                disabledCheckedTrackColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
+                                disabledUncheckedTrackColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
+                                disabledUncheckedThumbColor = MaterialTheme.colorScheme.onSurface,
+                                disabledCheckedThumbColor = MaterialTheme.colorScheme.onSurface,
+                                disabledCheckedBorderColor = MaterialTheme.colorScheme.onSurface,
+                                disabledUncheckedBorderColor = MaterialTheme.colorScheme.onSurface
+                            )
+                        )
+                    }
                 }
             }
         }

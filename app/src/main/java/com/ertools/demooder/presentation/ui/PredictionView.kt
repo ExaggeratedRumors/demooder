@@ -2,7 +2,11 @@ package com.ertools.demooder.presentation.ui
 
 import android.content.Context
 import android.util.Log
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -10,31 +14,44 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.integerResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ertools.demooder.R
 import com.ertools.demooder.core.classifier.ClassifierManager
 import com.ertools.demooder.core.recorder.AudioRecorder
+import com.ertools.demooder.core.recorder.SpectrumProvider
 import com.ertools.demooder.presentation.viewmodel.SettingsViewModel
+import com.ertools.demooder.utils.AppConstants
+import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
+import java.util.Locale
+import kotlin.concurrent.thread
 
 @Composable
 fun PredictionView(
@@ -63,10 +80,15 @@ fun PredictionView(
                 .fillMaxWidth()
                 .fillMaxHeight(0.7f)
                 .padding(16.dp),
-            recorder = recorder
+            provider = recorder,
+            isRecording = isRecording
         )
         EvaluationLabel(
-            modifier = Modifier.fillMaxHeight(0.25f),
+            modifier = Modifier
+                .fillMaxHeight(0.3f)
+                .fillMaxWidth(0.6f)
+                .background(MaterialTheme.colorScheme.secondary)
+                .align(Alignment.CenterHorizontally),
             context = context,
             recorder = recorder,
             isRecording
@@ -108,7 +130,6 @@ fun PredictionView(
         }
         Spacer(modifier = Modifier.fillMaxHeight())
     }
-
 }
 
 @Composable
@@ -139,6 +160,61 @@ fun StateButton(
     }
 }
 
+
+@Composable
+fun SpectrumView(
+    modifier: Modifier = Modifier,
+    provider: SpectrumProvider,
+    isRecording: MutableState<Boolean>
+) {
+    Column (
+        modifier = modifier,
+        verticalArrangement = Arrangement.Center,
+    ){
+        var spectrum by remember { mutableStateOf(provider.getOctavesAmplitudeSpectrum()) }
+
+        LaunchedEffect(key1 = true) {
+            while (true) {
+                if(isRecording.value) spectrum = provider.getOctavesAmplitudeSpectrum()
+                delay(AppConstants.UI_GRAPH_UPDATE_DELAY)
+            }
+        }
+
+        Surface (
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(dimensionResource(R.dimen.equalizer_height))
+                .background(
+                    color = MaterialTheme.colorScheme.surface,
+                    shape = MaterialTheme.shapes.large
+                ),
+            shape = MaterialTheme.shapes.large
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .padding(horizontal = 16.dp),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                spectrum.forEach { sample ->
+                    val animatedHeight by animateFloatAsState(
+                        targetValue = sample.toFloat() * integerResource(R.integer.equalizer_bar_factor),
+                        animationSpec = spring(),
+                        label = "$sample"
+                    )
+                    Box(
+                        modifier = Modifier
+                            .width(dimensionResource(R.dimen.equalizer_bar_height))
+                            .height((animatedHeight).dp)
+                            .align(Alignment.Bottom)
+                            .background(MaterialTheme.colorScheme.primary)
+                    )
+                }
+            }
+        }
+    }
+}
+
 @Composable
 fun EvaluationLabel(
     modifier: Modifier = Modifier,
@@ -152,13 +228,22 @@ fun EvaluationLabel(
     }
     val prediction = remember { mutableStateOf(listOf<Pair<String, Float>>()) }
     val counter = remember { mutableIntStateOf(0) }
+    val placeholderText = stringResource(R.string.prediction_result_placeholder)
+    val classificationText = remember { mutableStateOf(placeholderText) }
 
     LaunchedEffect(key1 = true) {
-        while (isRecording.value) {
+        while (true) {
             val detectionPeriod = settingsViewModel.signalDetectionPeriod.first()
-            prediction.value = classifier.predict(recorder.getData())
-            counter.intValue += 1
-            Log.i("PredictionView", "Prediction: ${prediction.value}, counter: $counter")
+            if(isRecording.value) {
+                thread {
+                    classifier.predict(recorder.getData()) {
+                        prediction.value = it
+                        classificationText.value = prediction.value.joinToString("\n") {
+                                (label, inference) -> "${label}: ${"%.2f".format(Locale.ENGLISH, inference * 100)}%"
+                        }
+                    }
+                }
+            }
             delay(detectionPeriod.toLong() * 1000)
         }
     }
@@ -166,11 +251,13 @@ fun EvaluationLabel(
     Column(
         modifier = modifier
     ) {
-        if(isRecording.value) {
-            Text(
-                text = prediction.value.joinToString("\n") { "Prediction [$counter]: ${it.first}" },
-                style = MaterialTheme.typography.bodyLarge
-            )
-        }
+
+        Text(
+            text = classificationText.value,
+            style = MaterialTheme.typography.titleMedium,
+            modifier = Modifier.align(Alignment.CenterHorizontally),
+            fontFamily = FontFamily.Monospace,
+            color = MaterialTheme.colorScheme.onSecondary
+        )
     }
 }

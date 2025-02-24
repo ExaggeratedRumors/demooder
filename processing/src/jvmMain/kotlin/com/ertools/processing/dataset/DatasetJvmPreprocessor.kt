@@ -19,7 +19,6 @@ object DatasetJvmPreprocessor {
                 outputWidth = dim.width.toInt()
                 outputHeight = dim.height.toInt()
             }
-            .grayscale()
             .toFloatArray {  }
             .rescale {
                 scalingCoefficient = 255f

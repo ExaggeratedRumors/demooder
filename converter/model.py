@@ -12,7 +12,7 @@ import tf2onnx
 """
 Pathing
 """
-MODEL_DIR = f"data/data_models/DL_8c_3d_100e_32b"
+MODEL_DIR = f"data/data_models/DL_8c_3d_10e_32b"
 
 """
 Functions
@@ -22,10 +22,8 @@ Functions
 def build_model():
     image_width = 138
     image_height = 128
-    num_channels = 1
+    num_channels = 3
     num_classes = 6
-
-    c2 = Conv2D(filters=32, kernel_size=(3, 3), activation="relu")
 
     model = Sequential([
         Input(shape=(image_width, image_height, num_channels)),

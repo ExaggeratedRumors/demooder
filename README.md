@@ -71,7 +71,7 @@ Source: <a href="https://cheyneycomputerscience.github.io/CREMA-D/">CREMA-D</a>
 4. Use Short-Time Fourier Transform (STFT): <a href="https://brianmcfee.net/dstbook-site/content/ch09-stft/STFT.html">about STFT</a>, <a href="https://www.ni.com/docs/en-US/bundle/diadem/page/genmaths/genmaths/calc_fouriertransform.html">about FFT</a>.
 5. Filter by A-weighting or C-weighting: <a href="https://www.noisemeters.com/help/faq/frequency-weighting/">about weighting</a>.
 
-## Predicting
+## Predicting in JVM
 
 1. Read classifier model.
 2. Record voice signal.
@@ -80,6 +80,14 @@ Source: <a href="https://cheyneycomputerscience.github.io/CREMA-D/">CREMA-D</a>
 5. Convert byte data to complex.
 6. Signal windowing and filter by weighting.
 7. Predict.
+
+## Predicting in Android
+1. Convert TF model to ONNX.
+2. Record voice signal.
+3. Downsample signal from 48000Hz to 16000Hz.
+4. Convert byte data to complex.
+5. Convert signal to spectrogram bitmap.
+6. Predict.
 
 ## Visualizing
 1. Read data.
