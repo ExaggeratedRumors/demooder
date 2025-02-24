@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import com.ertools.demooder.R
 import com.ertools.demooder.core.recorder.AudioRecorder
 import com.ertools.demooder.core.recorder.SpectrumProvider
+import com.ertools.demooder.utils.AppConstants
 import kotlinx.coroutines.delay
 
 @Composable
@@ -50,7 +51,7 @@ fun SpectrumGraph (provider: SpectrumProvider) {
     LaunchedEffect(key1 = true) {
         while (true) {
             spectrum = provider.getOctavesAmplitudeSpectrum()
-            delay(250L)
+            delay(AppConstants.UI_GRAPH_UPDATE_DELAY)
         }
     }
 

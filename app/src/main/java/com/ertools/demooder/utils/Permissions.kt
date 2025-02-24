@@ -6,8 +6,11 @@ import androidx.core.content.ContextCompat
 
 data object PERMISSIONS {
     internal val REQUIRED_PERMISSIONS = listOf (
+        if(android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU)
+            Manifest.permission.READ_MEDIA_AUDIO
+        else
+            Manifest.permission.READ_EXTERNAL_STORAGE,
         Manifest.permission.RECORD_AUDIO,
-        Manifest.permission.READ_MEDIA_AUDIO
     ).toTypedArray()
 }
 
