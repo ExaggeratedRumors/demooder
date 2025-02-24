@@ -4,11 +4,12 @@ import android.content.Context
 import android.util.Log
 import com.ertools.demooder.utils.AppConstants
 import com.ertools.processing.ModelShape
+import com.ertools.processing.commons.RawData
 import com.ertools.processing.data.LabelsExtraction
 import org.jetbrains.kotlinx.dl.impl.inference.imagerecognition.predictTopNLabels
 import org.jetbrains.kotlinx.dl.onnx.inference.OnnxInferenceModel
 import org.jetbrains.kotlinx.dl.onnx.inference.executionproviders.ExecutionProvider.CPU
-import org.jetbrains.kotlinx.dl.onnx.inference.inferAndCloseUsing
+import org.jetbrains.kotlinx.dl.onnx.inference.inferUsing
 
 class ClassifierManager {
     private val configuration = ClassifierConfiguration(
@@ -32,20 +33,21 @@ class ClassifierManager {
         )
     }
 
-    fun predict(byteData: ByteArray): List<Pair<String, Float>> {
+    fun predict(rawData: RawData, callback: (List<Pair<String, Float>>) -> (Unit)) {
         if(model == null || preprocessing == null)
             throw IllegalStateException("ClassifierManager: Model not loaded")
+        Log.d("ClassifierManager", "Data size: ${rawData.size}")
 
-        val result = model!!.inferAndCloseUsing(CPU()) {
-            val (data, _) = preprocessing!!.processImage(byteData)
+        val result = model!!.inferUsing(CPU()) {
+            val (data, _) = preprocessing!!.proceed(rawData)
             it.predictTopNLabels(
                 floatArray = data,
                 labels = labels,
                 n = 2
             )
         }
-        Log.i("ClassifierManager", "Prediction result: $result")
+        Log.d("ClassifierManager", "Prediction result: $result")
 
-        return result
+        callback(result)
     }
 }

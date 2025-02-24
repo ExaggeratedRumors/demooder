@@ -36,9 +36,8 @@ class AudioRecorder (
         while (power * 2 <= it) { power *= 2 }
         power
     }
-    val dataBufferSize = recordingPeriodSeconds.toInt() * ProcessingUtils.AUDIO_SAMPLING_RATE * 2
+    private val dataBufferSize = recordingPeriodSeconds.toInt() * ProcessingUtils.AUDIO_SAMPLING_RATE * 2
     private val dataBuffer = ByteArray(dataBufferSize)
-    private var spectrum = DoubleArray(ProcessingUtils.AUDIO_OCTAVES_AMOUNT)
     private var recorder: AudioRecord? = null
     @Volatile
     private var isRecording = false
@@ -105,7 +104,7 @@ class AudioRecorder (
 
     /** Spectrum provider **/
     override fun getAmplitudeSpectrum(): AmplitudeSpectrum =
-        dataBuffer.sliceArray(0 until recorderBufferSize)
+        dataBuffer.sliceArray(dataBufferSize - recorderBufferSize until dataBufferSize)
             .convertToComplex()
             .fft()
             .convertSpectrumToAmplitude()
@@ -113,7 +112,7 @@ class AudioRecorder (
             .applyWeighting(AppConstants.RECORDER_WEIGHTING)
 
     override fun getOctavesAmplitudeSpectrum(): OctavesAmplitudeSpectrum =
-        dataBuffer.sliceArray(0 until recorderBufferSize)
+        dataBuffer.sliceArray(dataBufferSize - recorderBufferSize until dataBufferSize)
             .convertToComplex()
             .fft()
             .convertSpectrumToOctavesAmplitude()
@@ -121,7 +120,7 @@ class AudioRecorder (
             .applyWeighting(AppConstants.RECORDER_WEIGHTING)
 
     override fun getThirdsAmplitudeSpectrum(): ThirdsAmplitudeSpectrum =
-        dataBuffer.sliceArray(0 until recorderBufferSize)
+        dataBuffer.sliceArray(dataBufferSize - recorderBufferSize until dataBufferSize)
             .convertToComplex()
             .fft()
             .convectSpectrumToThirdsAmplitude()

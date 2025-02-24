@@ -21,9 +21,9 @@ import java.io.File
 fun main() {
     /** Data **/
     val spectrogramData = ProcessingUtils.DIR_CREMA_D
-    val epochs = 100
+    val epochs = 10
     val batchSize = 32
-    val outputModelFilename = "DL_8c_3d_100e_32b_v2"
+    val outputModelFilename = "DL_8c_3d_10e_32b"
 
     /** Train program **/
     println("I:\tStart program.")
@@ -99,7 +99,7 @@ fun main() {
         it.save(
             File(ProcessingUtils.DIR_MODEL_OUTPUT, outputModelFilename),
             writingMode = WritingMode.OVERRIDE,
-            savingFormat = SavingFormat.TF_GRAPH
+            savingFormat = SavingFormat.TF_GRAPH_CUSTOM_VARIABLES
         )
         println("R:\tModel saved to directory ${ProcessingUtils.DIR_MODEL_OUTPUT}/$outputModelFilename")
     }

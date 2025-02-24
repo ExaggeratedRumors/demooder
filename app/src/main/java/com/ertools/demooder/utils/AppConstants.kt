@@ -17,7 +17,7 @@ object AppConstants {
     val RECORDER_WEIGHTING = Weighting.WeightingType.A_WEIGHTING
 
     /** Interface **/
-    const val UI_GRAPH_UPDATE_DELAY = 250L
+    const val UI_GRAPH_UPDATE_DELAY = 100L
 
     /* Default settings */
     const val SETTINGS_DEFAULT_DEVICE_DAMPING = 0.0

@@ -12,8 +12,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.ertools.demooder.R
 import com.ertools.demooder.presentation.components.OptionData
 import com.ertools.demooder.presentation.components.ReturnScaffold
@@ -73,4 +75,8 @@ fun SettingsView(
     }
 }
 
-
+@Preview
+@Composable
+fun SettingsViewPreview() {
+    SettingsView(navController = rememberNavController())
+}

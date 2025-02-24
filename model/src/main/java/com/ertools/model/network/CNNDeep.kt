@@ -16,7 +16,7 @@ import org.jetbrains.kotlinx.dl.api.core.layer.reshaping.Flatten
 object CNNDeep {
     fun build(dim: ImageDim): Sequential {
         return Sequential.of(
-            Input(dim.width, dim.height, 1L),
+            Input(dim.width, dim.height, 3L),
             Conv2D(
                 filters = 32,
                 kernelSize = intArrayOf(3, 3),
