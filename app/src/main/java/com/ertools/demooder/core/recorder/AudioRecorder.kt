@@ -6,19 +6,26 @@ import android.media.AudioFormat
 import android.media.AudioRecord
 import android.media.MediaRecorder
 import android.util.Log
-import com.ertools.demooder.utils.DEBUG_MODE
-import com.ertools.demooder.utils.RECORDER_DELAY_MILLIS
-import com.ertools.demooder.utils.SETTINGS_DEFAULT_SIGNAL_DETECTION_PERIOD
+import com.ertools.demooder.utils.AppConstants
 import com.ertools.demooder.utils.isPermissionsGained
+import com.ertools.processing.commons.AmplitudeSpectrum
+import com.ertools.processing.commons.OctavesAmplitudeSpectrum
 import com.ertools.processing.commons.ProcessingUtils
-import com.ertools.processing.signal.SignalPreprocessor
+import com.ertools.processing.commons.ThirdsAmplitudeSpectrum
+import com.ertools.processing.signal.SignalPreprocessor.applyWeighting
+import com.ertools.processing.signal.SignalPreprocessor.convectSpectrumToThirdsAmplitude
+import com.ertools.processing.signal.SignalPreprocessor.convertSpectrumToAmplitude
+import com.ertools.processing.signal.SignalPreprocessor.convertSpectrumToOctavesAmplitude
+import com.ertools.processing.signal.SignalPreprocessor.convertToComplex
+import com.ertools.processing.signal.SignalPreprocessor.fft
+import com.ertools.processing.signal.SignalPreprocessor.toDecibels
 import kotlin.concurrent.thread
 import kotlin.math.min
 
 class AudioRecorder (
     private val context: Context,
-    private val recordingDelayMillis: Long = RECORDER_DELAY_MILLIS,
-    private val recordingPeriodSeconds: Double = SETTINGS_DEFAULT_SIGNAL_DETECTION_PERIOD
+    private val recordingDelayMillis: Long = AppConstants.RECORDER_DELAY_MILLIS,
+    private val recordingPeriodSeconds: Double = AppConstants.SETTINGS_DEFAULT_SIGNAL_DETECTION_PERIOD
 ) : SpectrumProvider, SoundDataProvider {
     val recorderBufferSize = AudioRecord.getMinBufferSize(
         ProcessingUtils.AUDIO_SAMPLING_RATE,
@@ -30,7 +37,6 @@ class AudioRecorder (
         power
     }
     val dataBufferSize = recordingPeriodSeconds.toInt() * ProcessingUtils.AUDIO_SAMPLING_RATE * 2
-    private val currentData = ByteArray(recorderBufferSize)
     private val dataBuffer = ByteArray(dataBufferSize)
     private var spectrum = DoubleArray(ProcessingUtils.AUDIO_OCTAVES_AMOUNT)
     private var recorder: AudioRecord? = null
@@ -41,7 +47,7 @@ class AudioRecorder (
     /** API **/
     fun startRecording() {
         if(isRecording) return
-        Log.i("SYSTEM", "Start recording.")
+        Log.i("AudioRecorder", "Start recording.")
         initRecorder()
         if(recorder == null) return
         recorder?.startRecording()
@@ -50,7 +56,7 @@ class AudioRecorder (
     }
 
     fun stopRecording() {
-        Log.i("SYSTEM", "Stop recording.")
+        Log.i("AudioRecorder", "Stop recording.")
         if(recorder == null) return
         isRecording = false
         recorder?.stop()
@@ -79,13 +85,11 @@ class AudioRecorder (
                 recorderBufferSize * recordingDelayMillis / 1000.0
             ).toInt()
 
-            Log.i("AudioRecorder", "Shift size: $shiftSize")
-
             while (isRecording) {
                 shiftAudioBuffer()
                 val readSize = recorder?.read(dataBuffer, dataBufferSize - recorderBufferSize, recorderBufferSize)
-                if (readSize != null && readSize != AudioRecord.ERROR_INVALID_OPERATION) {
-                    spectrum = toOctaves(currentData.copyOfRange(0, readSize))
+                if (readSize == null || readSize == AudioRecord.ERROR_INVALID_OPERATION) {
+                    Log.e("AudioRecorder", "Error reading data.")
                 }
                 Thread.sleep(recordingDelayMillis)
             }
@@ -99,15 +103,31 @@ class AudioRecorder (
         }
     }
 
-    private fun toOctaves(data: ByteArray) = SignalPreprocessor.run {
-        data.convertToComplex()
+    /** Spectrum provider **/
+    override fun getAmplitudeSpectrum(): AmplitudeSpectrum =
+        dataBuffer.sliceArray(0 until recorderBufferSize)
+            .convertToComplex()
+            .fft()
+            .convertSpectrumToAmplitude()
+            .toDecibels()
+            .applyWeighting(AppConstants.RECORDER_WEIGHTING)
+
+    override fun getOctavesAmplitudeSpectrum(): OctavesAmplitudeSpectrum =
+        dataBuffer.sliceArray(0 until recorderBufferSize)
+            .convertToComplex()
             .fft()
             .convertSpectrumToOctavesAmplitude()
-    }
+            .toDecibels()
+            .applyWeighting(AppConstants.RECORDER_WEIGHTING)
 
-    /** Spectrum provider **/
-    override fun getAmplitudeSpectrum() = spectrum
-    override fun getMaxAmplitude() = SignalPreprocessor.run { currentData.maxAmplitude() }
+    override fun getThirdsAmplitudeSpectrum(): ThirdsAmplitudeSpectrum =
+        dataBuffer.sliceArray(0 until recorderBufferSize)
+            .convertToComplex()
+            .fft()
+            .convectSpectrumToThirdsAmplitude()
+            .toDecibels()
+            .applyWeighting(AppConstants.RECORDER_WEIGHTING)
+
 
     /** Sound data provider **/
     override fun getData(): ByteArray = dataBuffer

@@ -16,7 +16,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -29,36 +28,29 @@ import androidx.compose.ui.unit.dp
 import com.ertools.demooder.R
 import com.ertools.demooder.core.recorder.AudioRecorder
 import com.ertools.demooder.core.recorder.SpectrumProvider
-import com.ertools.processing.signal.SignalPreprocessor.applyWeighting
-import com.ertools.processing.signal.SignalPreprocessor.toDecibels
-import com.ertools.processing.signal.Weighting.WeightingType
 import kotlinx.coroutines.delay
 
 @Composable
-fun AudioVisualizer(
+fun SpectrumView(
     modifier: Modifier = Modifier,
     recorder: AudioRecorder
 ) {
-    val weightingType = remember { mutableStateOf(WeightingType.A_WEIGHTING) }
     Column (
         modifier = modifier,
         verticalArrangement = Arrangement.Center,
     ){
-        Graph(provider = recorder, state = weightingType)
+        SpectrumGraph(provider = recorder)
     }
 }
 
 @Composable
-fun Graph (provider: SpectrumProvider, state: MutableState<WeightingType>) {
-    var spectrum by remember { mutableStateOf(provider.getAmplitudeSpectrum()) }
+fun SpectrumGraph (provider: SpectrumProvider) {
+    var spectrum by remember { mutableStateOf(provider.getOctavesAmplitudeSpectrum()) }
 
     LaunchedEffect(key1 = true) {
         while (true) {
-            spectrum =
-                provider.getAmplitudeSpectrum()
-                    .toDecibels()
-                    .applyWeighting(state.value)
-            delay(100L)
+            spectrum = provider.getOctavesAmplitudeSpectrum()
+            delay(250L)
         }
     }
 

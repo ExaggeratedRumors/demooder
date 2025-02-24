@@ -15,10 +15,7 @@ import com.ertools.demooder.R
 import com.ertools.demooder.presentation.components.OptionData
 import com.ertools.demooder.presentation.components.ReturnScaffold
 import com.ertools.demooder.presentation.viewmodel.SettingsViewModel
-import com.ertools.demooder.utils.SETTINGS_DEFAULT_ANGER_DETECTION_TIME
-import com.ertools.demooder.utils.SETTINGS_DEFAULT_DEVICE_DAMPING
-import com.ertools.demooder.utils.SETTINGS_DEFAULT_ENABLE_NOTIFICATIONS
-import com.ertools.demooder.utils.SETTINGS_DEFAULT_SIGNAL_DETECTION_PERIOD
+import com.ertools.demooder.utils.AppConstants
 import com.ertools.demooder.utils.Validation
 
 @Composable
@@ -29,26 +26,26 @@ fun SettingsView(
     val data = listOf(
         OptionData.InputOptionData(
             optionTitle = "Device damping",
-            defaultValue = SETTINGS_DEFAULT_DEVICE_DAMPING,
+            defaultValue = AppConstants.SETTINGS_DEFAULT_DEVICE_DAMPING,
             onValidate = { Validation.isNumberInRange(it, -100, 100) },
             onSave = {
                 settingsViewModel.saveDeviceDamping(it.currentValue.value)
             }
         ),
         OptionData.InputOptionData(
-            optionTitle = "Signal detection period",
-            defaultValue = SETTINGS_DEFAULT_SIGNAL_DETECTION_PERIOD,
+            optionTitle = "Signal detection period in seconds",
+            defaultValue = AppConstants.SETTINGS_DEFAULT_SIGNAL_DETECTION_PERIOD,
             onValidate = { Validation.isNumberInRange(it, 1, 10) },
             onSave = { settingsViewModel.saveSignalDetectionPeriod(it.currentValue.value) }
         ),
         OptionData.SwitchOptionData(
             optionTitle = "Enable notifications",
-            defaultValue = SETTINGS_DEFAULT_ENABLE_NOTIFICATIONS,
+            defaultValue = AppConstants.SETTINGS_DEFAULT_ENABLE_NOTIFICATIONS,
             onSave = { settingsViewModel.saveEnableNotifications(it.currentValue.value) }
         ),
         OptionData.InputOptionData(
-            optionTitle = "Anger detection time before trigger notification",
-            defaultValue = SETTINGS_DEFAULT_ANGER_DETECTION_TIME,
+            optionTitle = "Anger detection time in seconds before trigger notification",
+            defaultValue = AppConstants.SETTINGS_DEFAULT_ANGER_DETECTION_TIME,
             onValidate = { Validation.isNumberInRange(it, 1, 60) },
             onSave = { settingsViewModel.saveAngerDetectionTime(it.currentValue.value) }
         )

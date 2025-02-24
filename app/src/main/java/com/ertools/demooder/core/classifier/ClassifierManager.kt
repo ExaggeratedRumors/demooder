@@ -2,13 +2,9 @@ package com.ertools.demooder.core.classifier
 
 import android.content.Context
 import android.util.Log
-import com.ertools.demooder.utils.MODEL_INPUT_HEIGHT
-import com.ertools.demooder.utils.MODEL_INPUT_WIDTH
-import com.ertools.demooder.utils.MODEL_NAME
-import com.ertools.demooder.utils.MODEL_PREPROCESSING_FRAME_SIZE
-import com.ertools.demooder.utils.MODEL_PREPROCESSING_FRAME_STEP
+import com.ertools.demooder.utils.AppConstants
+import com.ertools.processing.ModelShape
 import com.ertools.processing.data.LabelsExtraction
-import com.ertools.processing.signal.Windowing
 import org.jetbrains.kotlinx.dl.impl.inference.imagerecognition.predictTopNLabels
 import org.jetbrains.kotlinx.dl.onnx.inference.OnnxInferenceModel
 import org.jetbrains.kotlinx.dl.onnx.inference.executionproviders.ExecutionProvider.CPU
@@ -16,21 +12,24 @@ import org.jetbrains.kotlinx.dl.onnx.inference.inferAndCloseUsing
 
 class ClassifierManager {
     private val configuration = ClassifierConfiguration(
-        modelName = MODEL_NAME,
-        modelInputWidth = MODEL_INPUT_WIDTH,
-        modelInputHeight = MODEL_INPUT_HEIGHT,
-        frameSize = MODEL_PREPROCESSING_FRAME_SIZE,
-        frameStep = MODEL_PREPROCESSING_FRAME_STEP,
-        windowing = Windowing.WindowType.Hamming
+        modelName = AppConstants.MODEL_NAME,
+        frameSize = AppConstants.MODEL_PREPROCESSING_FRAME_SIZE,
+        frameStep = AppConstants.MODEL_PREPROCESSING_FRAME_STEP,
+        windowing = AppConstants.MODEL_PREPROCESSING_WINDOWING
     )
     private var model: OnnxInferenceModel? = null
     private var preprocessing: ClassifierPreprocessor? = null
-    private val labels = LabelsExtraction.Emotion.entries.map { it.ordinal to it.name }.toMap()
+    private val labels = LabelsExtraction.Emotion.entries.associate { it.ordinal to it.name }
 
     fun loadClassifier(context: Context) {
         model = ClassifierIO.loadOnnxModel(context, configuration)
-        preprocessing = ClassifierPreprocessor(configuration)
-        Log.i("ClassifierManager", "Model loaded with shape: ${model!!.inputDimensions}")
+        val shape = ModelShape.fromShapeArray(model!!.inputDimensions)
+        preprocessing = ClassifierPreprocessor(shape, configuration)
+
+        Log.i(
+            "ClassifierManager",
+            "Model loaded with shape: [width=${shape.width}, height=${shape.height}, channels=${shape.channels}]"
+        )
     }
 
     fun predict(byteData: ByteArray): List<Pair<String, Float>> {
@@ -38,14 +37,14 @@ class ClassifierManager {
             throw IllegalStateException("ClassifierManager: Model not loaded")
 
         val result = model!!.inferAndCloseUsing(CPU()) {
-            val (data, shape) = preprocessing!!.processImage(byteData)
-            it.reshape(shape.dims()[0], shape.dims()[1], 1L)
+            val (data, _) = preprocessing!!.processImage(byteData)
             it.predictTopNLabels(
                 floatArray = data,
                 labels = labels,
                 n = 2
             )
         }
+        Log.i("ClassifierManager", "Prediction result: $result")
 
         return result
     }

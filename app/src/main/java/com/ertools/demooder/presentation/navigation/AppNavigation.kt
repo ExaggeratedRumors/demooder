@@ -9,7 +9,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.ertools.demooder.presentation.ui.MainView
-import com.ertools.demooder.presentation.ui.OptionView
 import com.ertools.demooder.presentation.ui.SettingsView
 
 @Composable

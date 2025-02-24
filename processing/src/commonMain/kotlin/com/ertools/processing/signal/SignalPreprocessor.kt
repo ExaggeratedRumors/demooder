@@ -201,7 +201,7 @@ object SignalPreprocessor {
      * Convert amplitude to decibels
      */
     fun Spectrum.toDecibels(): DecibelsSpectrum = this.map {
-        10 * log10(max(0.5, it.re.pow(2) + it.im.pow(2)))
+        10 * log10(hypot(it.re, it.im) + 1e-10)
     }.toDoubleArray()
 
     /**
