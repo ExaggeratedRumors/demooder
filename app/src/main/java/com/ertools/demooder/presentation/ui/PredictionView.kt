@@ -1,6 +1,7 @@
 package com.ertools.demooder.presentation.ui
 
 import android.content.Context
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -16,7 +17,9 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -30,7 +33,8 @@ import com.ertools.demooder.R
 import com.ertools.demooder.core.classifier.ClassifierManager
 import com.ertools.demooder.core.recorder.AudioRecorder
 import com.ertools.demooder.presentation.viewmodel.SettingsViewModel
-import com.ertools.demooder.utils.MODEL_NAME
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.first
 
 @Composable
 fun PredictionView(
@@ -38,7 +42,6 @@ fun PredictionView(
     /** Recorder **/
     val context = LocalContext.current
     val recorder = remember { AudioRecorder(context) }
-    val settingsViewModel: SettingsViewModel = viewModel()
 
     /** Buttons state **/
     val isRecording = remember { mutableStateOf(false) }
@@ -55,14 +58,19 @@ fun PredictionView(
         } else {
             recorder.stopRecording()
         }
-        AudioVisualizer(
+        SpectrumView(
             modifier = Modifier
                 .fillMaxWidth()
                 .fillMaxHeight(0.7f)
                 .padding(16.dp),
             recorder = recorder
         )
-        EvaluationLabel(modifier = Modifier.fillMaxHeight(0.25f), context = context)
+        EvaluationLabel(
+            modifier = Modifier.fillMaxHeight(0.25f),
+            context = context,
+            recorder = recorder,
+            isRecording
+        )
         Row (
             modifier = Modifier
                 .fillMaxWidth()
@@ -132,14 +140,37 @@ fun StateButton(
 }
 
 @Composable
-fun EvaluationLabel(modifier: Modifier = Modifier, context: Context) {
+fun EvaluationLabel(
+    modifier: Modifier = Modifier,
+    context: Context,
+    recorder: AudioRecorder,
+    isRecording: MutableState<Boolean>
+) {
+    val settingsViewModel: SettingsViewModel = viewModel()
     val classifier = ClassifierManager().apply {
         this.loadClassifier(context)
+    }
+    val prediction = remember { mutableStateOf(listOf<Pair<String, Float>>()) }
+    val counter = remember { mutableIntStateOf(0) }
+
+    LaunchedEffect(key1 = true) {
+        while (isRecording.value) {
+            val detectionPeriod = settingsViewModel.signalDetectionPeriod.first()
+            prediction.value = classifier.predict(recorder.getData())
+            counter.intValue += 1
+            Log.i("PredictionView", "Prediction: ${prediction.value}, counter: $counter")
+            delay(detectionPeriod.toLong() * 1000)
+        }
     }
 
     Column(
         modifier = modifier
     ) {
-        Text("test")
+        if(isRecording.value) {
+            Text(
+                text = prediction.value.joinToString("\n") { "Prediction [$counter]: ${it.first}" },
+                style = MaterialTheme.typography.bodyLarge
+            )
+        }
     }
 }

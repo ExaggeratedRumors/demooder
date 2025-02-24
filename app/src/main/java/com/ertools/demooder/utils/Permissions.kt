@@ -4,7 +4,7 @@ import android.Manifest
 import android.content.Context
 import androidx.core.content.ContextCompat
 
-object PERMISSIONS {
+data object PERMISSIONS {
     internal val REQUIRED_PERMISSIONS = listOf (
         Manifest.permission.RECORD_AUDIO,
         Manifest.permission.READ_MEDIA_AUDIO

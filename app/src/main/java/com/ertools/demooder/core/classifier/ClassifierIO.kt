@@ -9,5 +9,4 @@ object ClassifierIO {
         val model = OnnxInferenceModel.load(modelBytes)
         return model
     }
-
 }
