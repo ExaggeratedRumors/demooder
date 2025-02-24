@@ -1,10 +1,19 @@
 package com.ertools.demooder.utils
 
+import androidx.compose.foundation.layout.WindowInsets
+import com.ertools.processing.commons.ProcessingUtils
+import com.ertools.processing.signal.Windowing
+
 /* Debug */
 const val DEBUG_MODE = true
 
 /* Model */
-const val MODEL_NAME = "DL_6c_3d_50e_128b"
+const val MODEL_NAME = "model.onnx"
+const val MODEL_INPUT_WIDTH = 224L
+const val MODEL_INPUT_HEIGHT = 128L
+const val MODEL_PREPROCESSING_FRAME_SIZE = ProcessingUtils.SPECTROGRAM_FRAME_SIZE
+const val MODEL_PREPROCESSING_FRAME_STEP = ProcessingUtils.SPECTROGRAM_STEP_SIZE
+val MODEL_PREPROCESSING_WINDOWING = Windowing.WindowType.Hamming
 
 /* Recorder */
 const val RECORDER_DELAY_MILLIS = 1L /* 250L */

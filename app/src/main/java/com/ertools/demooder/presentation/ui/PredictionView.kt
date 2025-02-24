@@ -134,7 +134,7 @@ fun StateButton(
 @Composable
 fun EvaluationLabel(modifier: Modifier = Modifier, context: Context) {
     val classifier = ClassifierManager().apply {
-        this.loadClassifier(context, MODEL_NAME)
+        this.loadClassifier(context)
     }
 
     Column(
