@@ -4,11 +4,10 @@ import android.content.Context
 import org.jetbrains.kotlinx.dl.onnx.inference.OnnxInferenceModel
 
 object ClassifierIO {
-    fun loadModel(context: Context) {
-        val modelBytes = context.assets.open("model.onnx").readBytes()
+    fun loadOnnxModel(context: Context, configuration: ClassifierConfiguration): OnnxInferenceModel {
+        val modelBytes = context.assets.open(configuration.modelName).readBytes()
         val model = OnnxInferenceModel.load(modelBytes)
-
-
+        return model
     }
 
 }
