@@ -65,3 +65,4 @@ local.properties
 data/**/*.png
 
 processing/build
+app/build
