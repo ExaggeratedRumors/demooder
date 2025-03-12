@@ -63,4 +63,5 @@ bin/
 local.properties
 *.wav
 data/**/*.png
-model/data
+
+processing/build
