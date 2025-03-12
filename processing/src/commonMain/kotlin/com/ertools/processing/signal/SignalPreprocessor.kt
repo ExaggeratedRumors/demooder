@@ -33,6 +33,7 @@ object SignalPreprocessor {
     }.filter { (_, labels) ->
         filters(labels)
     }.map { (file, labels) ->
+        println("Processing file ${file.filename} size: ${file.data.size}")
         val stft = stft(file.data, frameSize, stepSize, window)
         SpectrogramSample(stft, file.filename, labels)
     }

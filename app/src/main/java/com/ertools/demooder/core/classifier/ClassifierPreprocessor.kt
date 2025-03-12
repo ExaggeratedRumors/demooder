@@ -1,5 +1,8 @@
 package com.ertools.demooder.core.classifier
 
+import android.graphics.Bitmap
+import android.os.Environment
+import android.util.Log
 import com.ertools.processing.ModelShape
 import com.ertools.processing.commons.ProcessingUtils
 import com.ertools.processing.commons.RawData
@@ -9,6 +12,8 @@ import com.ertools.processing.dataset.DatasetAndroidPreprocessor
 import com.ertools.processing.signal.SignalPreprocessor
 import com.ertools.processing.signal.SignalPreprocessor.downSampling
 import org.jetbrains.kotlinx.dl.api.core.shape.TensorShape
+import java.io.File
+import java.io.FileOutputStream
 
 class ClassifierPreprocessor(
     modelShape: ModelShape,
@@ -36,8 +41,21 @@ class ClassifierPreprocessor(
             classifierConfiguration.windowing
         )
         val bitmap = BitmapSpectrogram.fromComplexSpectrogram(stft)
-
+        saveBitmap(bitmap.image)
         val (data, shape) = pipeline.apply(bitmap.image)
         return data to shape
+    }
+
+    private fun saveBitmap(bitmap: Bitmap) {
+        /** Save bitmap to external storage **/
+        val environment = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
+        val dir = File(environment, "ertools")
+        if(!dir.exists()) dir.mkdirs()
+        val filename = "spectrogram_${bitmap.hashCode()}.jpg"
+        val inputFile = File(dir, filename)
+        val fos = FileOutputStream(inputFile)
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos)
+        fos.flush()
+        fos.close()
     }
 }

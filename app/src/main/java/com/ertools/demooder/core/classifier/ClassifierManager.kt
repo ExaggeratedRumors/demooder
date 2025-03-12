@@ -27,7 +27,7 @@ class ClassifierManager {
         val shape = ModelShape.fromShapeArray(model!!.inputDimensions)
         preprocessing = ClassifierPreprocessor(shape, configuration)
 
-        Log.i(
+        Log.d(
             "ClassifierManager",
             "Model loaded with shape: [width=${shape.width}, height=${shape.height}, channels=${shape.channels}]"
         )
@@ -36,7 +36,6 @@ class ClassifierManager {
     fun predict(rawData: RawData, callback: (List<Pair<String, Float>>) -> (Unit)) {
         if(model == null || preprocessing == null)
             throw IllegalStateException("ClassifierManager: Model not loaded")
-        Log.d("ClassifierManager", "Data size: ${rawData.size}")
 
         val result = model!!.inferUsing(CPU()) {
             val (data, _) = preprocessing!!.proceed(rawData)

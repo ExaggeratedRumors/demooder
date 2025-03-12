@@ -9,13 +9,12 @@
 Android application using input sound to recognize voice.
 
 ## Release
-
 `
 in progress
 `
 
 ## Technologies
-
+Application:
 - Gradle 8.2 (KMP limited)
 - JVM 11
 - Android SDK 34
@@ -23,15 +22,13 @@ in progress
 - TensorFlow 1.15.0
 - Jetpack Compose 1.6.10
 - Kotlin Multiplatform 1.9.22
-- KotlinDL 0.5.2
-- cudnn 7.6.3
-- onnx 1.16.1
+- Python 3.8.20
+- Numpy 1.23.3
+- TensorFlow 2.10.0
+- Keras 2.10.0
+- cuda 11.2
+- cuDNN 8.1.0
 
-## Modules
-
-- `app` - mobile application.
-- `model` - CNN model execution.
-- `processing` - Common library.
 
 ## Executing
 1. Clone repository:
@@ -55,8 +52,10 @@ https://github.com/ExaggeratedRumors/demooder.git
 7. Output model is saved in `data_models` directory.
 
 ## Sound data
-
-Source: <a href="https://cheyneycomputerscience.github.io/CREMA-D/">CREMA-D</a>
+- <a href="https://cheyneycomputerscience.github.io/CREMA-D/">CREMA-D</a>
+- <a href="https://www.kaggle.com/datasets/uwrfkaggler/ravdess-emotional-speech-audio">RAVDESS</a>
+- <a href="https://www.kaggle.com/datasets/barelydedicated/savee-database">VEESS</a>
+- <a href="https://www.kaggle.com/datasets/ejlok1/toronto-emotional-speech-set-tess">TESS</a>
 
 ## Audio data augmentation
 1. Audio data augmentation: <a href="https://medium.com/@notabelardoriojas/environmental-sound-classification-investigating-different-spectrograms-and-audio-augmentation-95f6989d0ae5">about audio data augmentation</a>.
@@ -64,7 +63,6 @@ Source: <a href="https://cheyneycomputerscience.github.io/CREMA-D/">CREMA-D</a>
 3. Time stretching.
 
 ## Sound signal processing
-
 1. Read WAV files according to the header scheme: <a href="http://soundfile.sapp.org/doc/WaveFormat/">wav file format</a>.
 2. Convert byte data to complex.
 3. Signal windowing: <a href="https://download.ni.com/evaluation/pxi/Understanding%20FFTs%20and%20Windowing.pdf">about windowing</a>.
@@ -72,7 +70,6 @@ Source: <a href="https://cheyneycomputerscience.github.io/CREMA-D/">CREMA-D</a>
 5. Filter by A-weighting or C-weighting: <a href="https://www.noisemeters.com/help/faq/frequency-weighting/">about weighting</a>.
 
 ## Predicting in JVM
-
 1. Read classifier model.
 2. Record voice signal.
 3. Save as WAV file. 
@@ -96,15 +93,8 @@ Source: <a href="https://cheyneycomputerscience.github.io/CREMA-D/">CREMA-D</a>
 4. Convert to octave/thirds bands: <a href="https://sengpielaudio.com/calculator-octave.htm">about octave to third conversion</a>.
 5. Filter by A-weighting or C-weighting.
 
-## Build network
-
-1. Build VGG architecture model: <a href="https://viso.ai/deep-learning/vgg-very-deep-convolutional-networks/">about VGG</a>.
-
-
-
 
 ## Additional requirements
-
 1. CUDA for training model on GPU (Nvidia graphics cards): <a href="https://developer.nvidia.com/compute/machine-learning/cudnn/secure/7.6.3.30/Production/10.0_20190822/cudnn-10.0-windows10-x64-v7.6.3.30.zip">download CUDA</a>.
 2. NNAPI for mobile devices environment acceleration: <a href="https://blog.jetbrains.com/kotlin/2022/12/kotlindl-0-5-has-come-to-android">about inference on Android </a>.
 3. Upgrade for Conda environment during DLL initialization error for converter module:

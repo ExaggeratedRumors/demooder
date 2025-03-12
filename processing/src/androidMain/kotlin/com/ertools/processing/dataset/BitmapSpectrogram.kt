@@ -13,7 +13,6 @@ class BitmapSpectrogram {
         fun fromComplexSpectrogram(complexData: Array<ComplexDoubleArray>): BitmapSpectrogram {
             val amplitudeData = complexData.convertStftToAmplitude()
             return fromAmplitudeSpectrogram(amplitudeData)
-
         }
 
         fun fromAmplitudeSpectrogram(amplitudeData: Array<DoubleArray>): BitmapSpectrogram {
@@ -33,6 +32,7 @@ class BitmapSpectrogram {
                     bitmap.setPixel(x, height - y - 1, color.toArgb())
                 }
             }
+
             return BitmapSpectrogram().apply { image = bitmap }
         }
     }
