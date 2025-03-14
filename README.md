@@ -1,6 +1,6 @@
 # Demooder
 
-![Android support](https://shields.io/badge/Android-SDK_34-green) ![Compose](https://shields.io/badge/Jetpack Compose-1.6.10-blue) ![Model](https://shields.io/badge/TensorFlow-2.10.0-orange) ![In progress](https://shields.io/badge/In_progress-purple)
+![Android support](https://shields.io/badge/Android-SDK_34-green) ![Compose](https://shields.io/badge/Jetpack_Compose-1.6.10-blue) ![Model](https://shields.io/badge/TensorFlow-2.10.0-orange) ![In progress](https://shields.io/badge/In_progress-purple)
 
 <p align="center">
     <img src="refs/logo.png" width="200" alt="logo"/> 
