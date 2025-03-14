@@ -19,6 +19,7 @@ class WavFile(file: File) {
             try {
                 filename = file.nameWithoutExtension
                 header = inputStream.readHeader()
+                print("I:\tProcessing file $filename: ")
                 validate()
                 val dataBuffer = ByteArray(header.subchunk2Size)
                 println(header)
@@ -74,7 +75,7 @@ class WavFile(file: File) {
 
     private fun validate() {
         if(header.chunkId != "RIFF" || header.format != "WAVE")
-            throw IllegalArgumentException("Incorrect file format.")
+            throw IllegalArgumentException("Incorrect file format: ${header}.")
         if(header.audioFormat != 1.toShort())
             throw IllegalArgumentException("Only uncompressed PCM files are supported.")
         if(header.bitsPerSample != 16.toShort())

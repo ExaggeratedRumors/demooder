@@ -1,23 +1,24 @@
-package com.ertools.model
+package com.ertools.processing.scripts
 
-import com.ertools.processing.data.LabelsExtraction
 import com.ertools.processing.commons.ProcessingUtils
+import com.ertools.processing.commons.ProjectPathing
+import com.ertools.processing.data.DataSource
 import com.ertools.processing.io.IOManager
-import com.ertools.processing.signal.SignalPreprocessor
 import com.ertools.processing.signal.Windowing
 import com.ertools.processing.spectrogram.SpectrogramSample
 import com.ertools.processing.spectrogram.SpectrogramsMetadata
-import java.util.*
+import java.util.Locale
 import kotlin.math.ceil
 import kotlin.math.min
 
-fun main () {
+fun main (args: Array<String>) {
     /** Data **/
-    val dataDir = ProcessingUtils.DIR_OWN_REC
-    val spectrogramsBatchSize = ProcessingUtils.SPECTROGRAM_BATCH_SIZE
-    val frameSize = ProcessingUtils.SPECTROGRAM_FRAME_SIZE
-    val stepSize = ProcessingUtils.SPECTROGRAM_STEP_SIZE
+    val dataDir = if(args.isNotEmpty()) args[0] else ProjectPathing.DIR_DATA_TESS
+    val spectrogramsBatchSize = args.getOrNull(1)?.toInt() ?: ProcessingUtils.SPECTROGRAM_BATCH_SIZE
+    val frameSize = args.getOrNull(2)?.toInt() ?: ProcessingUtils.SPECTROGRAM_FRAME_SIZE
+    val stepSize = args.getOrNull(1)?.toInt() ?: ProcessingUtils.SPECTROGRAM_STEP_SIZE
 
+    val dataSource = DataSource.sourceFromDirectoryName(dataDir)
 
     /** Program **/
     println("I:\tStart program.")
@@ -35,26 +36,20 @@ fun main () {
         val start = it * spectrogramsBatchSize
         val end = min((it + 1) * spectrogramsBatchSize, soundData.size)
         val subset = soundData.subList(start, end)
-        val spectrogramSet: List<SpectrogramSample> = SignalPreprocessor.convertWavFilesToSpectrogramSamples(
+        val spectrogramSet: List<SpectrogramSample> = IOManager.convertWavFilesToSpectrogramSamples(
             wavFiles = subset,
+            dataSource = dataSource,
             frameSize = frameSize,
             stepSize = stepSize,
             window = Windowing.WindowType.Hamming,
-            filters = { labels ->
-                labels.quality in listOf(
-                    LabelsExtraction.Quality.XX,
-                    LabelsExtraction.Quality.LO,
-                    LabelsExtraction.Quality.MD,
-                    LabelsExtraction.Quality.HI
-                )
-            }
+            filters = { emotion -> emotion != null }
         )
         IOManager.saveSpectrogramSamples(spectrogramSet, dataDir)
         metadata.update(spectrogramSet)
         println("R:\t${"%.1f".format(Locale.ENGLISH, 100.0 * end / soundData.size)}%/100%.")
     }
     IOManager.saveSpectrogramMetadata(metadata, dataDir)
-    println("R:\tSaved ${metadata.dataAmount} spectrograms image to ${ProcessingUtils.DIR_SPECTROGRAMS_OUTPUT}/$dataDir")
+    println("R:\tSaved ${metadata.dataAmount} spectrograms image to ${ProjectPathing.DIR_SPECTROGRAMS_OUTPUT}/$dataDir")
 
     println("I:\tEnd program.")
 }

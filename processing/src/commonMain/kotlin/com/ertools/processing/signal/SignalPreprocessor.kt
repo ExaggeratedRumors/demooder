@@ -4,14 +4,11 @@ import com.ertools.processing.commons.AmplitudeSpectrum
 import com.ertools.processing.commons.ComplexData
 import com.ertools.processing.commons.DecibelsSpectrum
 import com.ertools.processing.commons.OctavesAmplitudeSpectrum
-import com.ertools.processing.data.LabelsExtraction
 import com.ertools.processing.commons.ProcessingUtils
 import com.ertools.processing.commons.RawData
 import com.ertools.processing.commons.Spectrogram
 import com.ertools.processing.commons.Spectrum
 import com.ertools.processing.commons.ThirdsAmplitudeSpectrum
-import com.ertools.processing.io.WavFile
-import com.ertools.processing.spectrogram.SpectrogramSample
 import org.jetbrains.kotlinx.multik.ndarray.complex.*
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
@@ -21,24 +18,6 @@ import kotlin.math.sin
 import kotlin.math.*
 
 object SignalPreprocessor {
-
-    fun convertWavFilesToSpectrogramSamples(
-        wavFiles: List<WavFile>,
-        frameSize: Int = 256,
-        stepSize: Int = 128,
-        window: Windowing.WindowType = Windowing.WindowType.Hamming,
-        filters: (LabelsExtraction.Labels) -> Boolean = { true }
-    ): List<SpectrogramSample> = wavFiles.map { wavFile ->
-        Pair(wavFile, LabelsExtraction.fromLabel(wavFile.filename))
-    }.filter { (_, labels) ->
-        filters(labels)
-    }.map { (file, labels) ->
-        println("Processing file ${file.filename} size: ${file.data.size}")
-        val stft = stft(file.data, frameSize, stepSize, window)
-        SpectrogramSample(stft, file.filename, labels)
-    }
-
-
     /**********************************/
     /** Operations on raw sound data **/
     /**********************************/

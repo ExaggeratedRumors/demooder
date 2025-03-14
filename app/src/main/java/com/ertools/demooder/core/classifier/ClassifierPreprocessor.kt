@@ -2,11 +2,10 @@ package com.ertools.demooder.core.classifier
 
 import android.graphics.Bitmap
 import android.os.Environment
-import android.util.Log
 import com.ertools.processing.ModelShape
 import com.ertools.processing.commons.ProcessingUtils
 import com.ertools.processing.commons.RawData
-import com.ertools.processing.data.ImageDim
+import com.ertools.processing.commons.ImageDim
 import com.ertools.processing.dataset.BitmapSpectrogram
 import com.ertools.processing.dataset.DatasetAndroidPreprocessor
 import com.ertools.processing.signal.SignalPreprocessor

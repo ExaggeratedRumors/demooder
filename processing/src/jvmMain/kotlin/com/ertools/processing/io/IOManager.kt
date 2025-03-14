@@ -1,19 +1,17 @@
 package com.ertools.processing.io
 
 
-import com.ertools.processing.data.ImageDim
-import com.ertools.processing.data.LabelsExtraction
+import com.ertools.processing.commons.Emotion
 import com.ertools.processing.commons.ProcessingUtils
 import com.ertools.processing.commons.ProcessingUtils.SPECTROGRAM_COLOR_RANGE
+import com.ertools.processing.commons.ProjectPathing
+import com.ertools.processing.data.DataSource
+import com.ertools.processing.signal.SignalPreprocessor
 import com.ertools.processing.signal.SignalPreprocessor.convertStftToAmplitude
+import com.ertools.processing.signal.Windowing
 import com.ertools.processing.spectrogram.SpectrogramSample
 import com.ertools.processing.spectrogram.SpectrogramsMetadata
 import com.fasterxml.jackson.databind.ObjectMapper
-import org.jetbrains.kotlinx.dl.api.core.shape.TensorShape
-import org.jetbrains.kotlinx.dl.api.inference.TensorFlowInferenceModel
-import org.jetbrains.kotlinx.dl.api.preprocessing.Operation
-import org.jetbrains.kotlinx.dl.dataset.Dataset
-import org.jetbrains.kotlinx.dl.dataset.OnFlyImageDataset
 import java.awt.Color
 import java.awt.image.BufferedImage
 import java.io.File
@@ -21,7 +19,6 @@ import javax.imageio.ImageIO
 import javax.sound.sampled.AudioFileFormat
 import javax.sound.sampled.AudioInputStream
 import javax.sound.sampled.AudioSystem
-import kotlin.random.Random
 
 object IOManager {
     private val objectMapper = ObjectMapper().apply { findAndRegisterModules() }
@@ -33,9 +30,26 @@ object IOManager {
         wavDir: String,
         maxNumberOfFiles: Int = Int.MAX_VALUE
     ): List<File> {
-        return File(ProcessingUtils.DIR_AUDIO_INPUT, wavDir)
-            .listFiles { _, name -> name.endsWith(".${ProcessingUtils.EXT_WAV_FILE}") }
-            ?.take(maxNumberOfFiles) ?: emptyList()
+        val rootDir = File(ProjectPathing.DIR_AUDIO_INPUT, wavDir)
+        val wavFiles = mutableListOf<File>()
+        val dirs = mutableListOf(rootDir)
+
+        rootDir.listFiles()?.forEach {
+            if (it.isDirectory) dirs.add(it)
+        }
+
+        while(dirs.isNotEmpty()) {
+            val dir = dirs.removeAt(0)
+            println("I:\tProcessing directory ${dir.name}.")
+            dir.listFiles()?.forEach {
+                if (it.isDirectory) dirs.add(it)
+                if (it.isFile && it.extension == ProcessingUtils.EXT_WAV_FILE) {
+                    wavFiles.add(it)
+                }
+            }
+        }
+
+        return wavFiles.take(maxNumberOfFiles)
     }
 
     fun loadWavFiles(
@@ -48,27 +62,37 @@ object IOManager {
         AudioSystem.write(
             stream,
             AudioFileFormat.Type.WAVE,
-            File("${ProcessingUtils.DIR_AUDIO_INPUT}/$dir", "$filename.${ProcessingUtils.EXT_WAV_FILE}")
+            File("${ProjectPathing.DIR_AUDIO_INPUT}/$dir", "$filename.${ProcessingUtils.EXT_WAV_FILE}")
         )
+    }
+
+    fun convertWavFilesToSpectrogramSamples(
+        wavFiles: List<WavFile>,
+        dataSource: DataSource,
+        frameSize: Int = ProcessingUtils.SPECTROGRAM_FRAME_SIZE,
+        stepSize: Int = ProcessingUtils.SPECTROGRAM_STEP_SIZE,
+        window: Windowing.WindowType = Windowing.WindowType.Hamming,
+        filters: (Emotion?) -> Boolean = { true }
+    ): List<SpectrogramSample> = wavFiles.map { wavFile ->
+        Pair(wavFile, dataSource.extractLabels(wavFile.filename))
+    }.filter { (_, labels) ->
+        filters(labels)
+    }.map { (file, labels) ->
+        val stft = SignalPreprocessor.stft(file.data, frameSize, stepSize, window)
+        SpectrogramSample(stft, file.filename, labels)
     }
 
 
     /******************/
     /** Spectrograms **/
     /******************/
-    fun getMetadataDim(dir: String): ImageDim {
-        val metadata: SpectrogramsMetadata = loadSpectrogramMetadata(dir)
-        val dim = ImageDim(width = metadata.timeSizeMin, height = metadata.freqSizeMin)
-        return dim
-    }
-
     fun saveSpectrogramMetadata(metadata: SpectrogramsMetadata, dir: String) {
-        val file = File("${ProcessingUtils.DIR_SPECTROGRAMS_OUTPUT}/$dir", ProcessingUtils.FILE_SPECTROGRAMS_METADATA)
+        val file = File("${ProjectPathing.DIR_SPECTROGRAMS_OUTPUT}/$dir", ProcessingUtils.FILE_SPECTROGRAMS_METADATA)
         saveObject(file, metadata)
     }
 
     fun loadSpectrogramMetadata(dir: String): SpectrogramsMetadata {
-        val file = File("${ProcessingUtils.DIR_SPECTROGRAMS_OUTPUT}/$dir", ProcessingUtils.FILE_SPECTROGRAMS_METADATA)
+        val file = File("${ProjectPathing.DIR_SPECTROGRAMS_OUTPUT}/$dir", ProcessingUtils.FILE_SPECTROGRAMS_METADATA)
         return loadObject(file, SpectrogramsMetadata::class.java)
     }
 
@@ -78,10 +102,10 @@ object IOManager {
 
     fun saveSpectrogramSample(sample: SpectrogramSample, dir: String) {
         val image = complexArrayToPng(sample)
-        val fileDir = File("${ProcessingUtils.DIR_SPECTROGRAMS_OUTPUT}/$dir")
+        val fileDir = File("${ProjectPathing.DIR_SPECTROGRAMS_OUTPUT}/$dir")
         if(!fileDir.exists()) fileDir.mkdir()
         val file = File(
-            "${ProcessingUtils.DIR_SPECTROGRAMS_OUTPUT}/$dir",
+            "${ProjectPathing.DIR_SPECTROGRAMS_OUTPUT}/$dir",
             "${sample.filename}.${ProcessingUtils.EXT_SPECTROGRAM_OUTPUT}"
         )
         ImageIO.write(image, ProcessingUtils.EXT_SPECTROGRAM_OUTPUT, file)
@@ -109,43 +133,6 @@ object IOManager {
         }
         return image
     }
-
-    /*************/
-    /** Dataset **/
-    /*************/
-    fun loadDataset(
-        dir: String,
-        shuffle: Boolean = false,
-        pipeline: (ImageDim) -> (Operation<BufferedImage, Pair<FloatArray, TensorShape>>)
-    ): Pair<OnFlyImageDataset<File>, ImageDim> {
-        val metadata: SpectrogramsMetadata = loadSpectrogramMetadata(dir)
-        val dim = ImageDim(width = metadata.timeSizeMin, height = metadata.freqSizeMin)
-        val dataset = OnFlyImageDataset.create(
-            pathToData = File("${ProcessingUtils.DIR_SPECTROGRAMS_OUTPUT}/$dir"),
-            labelGenerator = LabelsExtraction.getEmotionLabelGenerator(),
-            preprocessing = pipeline.invoke(dim)
-        ).also { dataset ->
-            if (shuffle) (0 until Random.nextInt(ProcessingUtils.DATASET_SHUFFLE_ATTEMPTS)).forEach { _ -> dataset.shuffle() }
-        }
-        return Pair(dataset, dim)
-    }
-
-    fun loadAndSplitDataset(
-        dir: String,
-        testDataRatio: Double = ProcessingUtils.DATASET_TEST_RATIO,
-        validDataRatio: Double = ProcessingUtils.DATASET_VALID_RATIO,
-        pipeline: (ImageDim) -> (Operation<BufferedImage, Pair<FloatArray, TensorShape>>)
-    ): Triple<Dataset, Dataset, Dataset> {
-        val (dataset, _) = loadDataset(dir, true, pipeline)
-        val (preTrain, test) = dataset.split(1 - testDataRatio)
-        val (train, valid) = preTrain.split(1 - validDataRatio)
-        return Triple(train, test, valid)
-    }
-
-    /***********/
-    /** Model **/
-    /***********/
-    fun loadModel(modelPath: String) = TensorFlowInferenceModel.load(File(modelPath))
 
 
     /*************/

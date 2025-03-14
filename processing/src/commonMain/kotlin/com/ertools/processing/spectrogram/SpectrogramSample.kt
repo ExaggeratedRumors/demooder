@@ -1,12 +1,12 @@
 package com.ertools.processing.spectrogram
 
-import com.ertools.processing.data.LabelsExtraction
+import com.ertools.processing.commons.Emotion
 import com.ertools.processing.commons.Spectrogram
 
 data class SpectrogramSample(
     val data: Spectrogram,
     val filename: String,
-    val labels: LabelsExtraction.Labels
+    val labels: Emotion?
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

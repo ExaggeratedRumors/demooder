@@ -1,4 +1,4 @@
-package com.ertools.model.augmentation
+package com.ertools.processing.augmentation
 
 import com.ertools.processing.commons.ProcessingUtils
 import com.ertools.processing.io.IOManager

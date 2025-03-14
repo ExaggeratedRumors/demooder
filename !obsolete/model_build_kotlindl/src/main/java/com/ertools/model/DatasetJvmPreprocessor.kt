@@ -1,6 +1,6 @@
-package com.ertools.processing.dataset
+package com.ertools.processing
 
-import com.ertools.processing.commons.ProcessingUtils
+import com.ertools.processing.commons.ProjectPathing
 import com.ertools.processing.data.ImageDim
 import org.jetbrains.kotlinx.dl.api.core.shape.TensorShape
 import org.jetbrains.kotlinx.dl.api.preprocessing.Operation
@@ -23,7 +23,7 @@ object DatasetJvmPreprocessor {
             }
             .onResult {
                 /** save **/
-                val outputDirectory = File(ProcessingUtils.DIR_SPECTROGRAMS_OUTPUT, "temp")
+                val outputDirectory = File(ProjectPathing.DIR_SPECTROGRAMS_OUTPUT, "temp")
                 val outputFile = File(outputDirectory, "spectrogram.jpg")
                 outputFile.parentFile.mkdirs()
                 outputFile.createNewFile()

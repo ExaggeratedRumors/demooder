@@ -5,30 +5,24 @@ plugins {
 
 kotlin {
     jvm {
-
+        //createTask("dataAugmentation", "com.ertools.processing.scripts.DataAugmentationScriptKt")
+        //createTask("generateSpectrograms", "com.ertools.processing.scripts.SpectrogramsGeneratorScriptKt")
     }
 
     androidTarget {
-
     }
 
     sourceSets {
         androidMain.dependencies {
-            implementation(libs.kotlin.deeplearning.tensorflow)
-            implementation(libs.kotlin.deeplearning.onnx)
-            implementation(libs.kotlin.deeplearning.visualization)
             implementation(libs.multik.core)
             implementation(libs.junit)
         }
 
         jvmMain.dependencies {
-            implementation(libs.kotlin.deeplearning.tensorflow)
-            implementation(libs.kotlin.deeplearning.onnx)
+
         }
 
         commonMain.dependencies {
-            implementation(libs.kotlin.deeplearning.tensorflow)
-            implementation(libs.kotlin.deeplearning.onnx)
             implementation(libs.kotlin.fasterxml.jackson.module)
             implementation(libs.multik.core)
         }
@@ -41,7 +35,6 @@ android {
 
     defaultConfig {
         minSdk = libs.versions.android.minSdk.get().toInt()
-        //testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
     compileOptions {
@@ -51,6 +44,21 @@ android {
     tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
         kotlinOptions {
             jvmTarget = "11"
+        }
+    }
+}
+
+fun createTask(taskName: String, mainClassName: String) {
+    tasks.register<JavaExec>(taskName) {
+        group = "model tasks"
+        description = "Run $mainClassName"
+        mainClass.set(mainClassName)
+        classpath = sourceSets["main"].runtimeClasspath
+        workingDir = file("$rootDir")
+
+        val argsProperty = project.findProperty("args")?.toString()
+        if (argsProperty != null) {
+            args = argsProperty.split("\\s+".toRegex())
         }
     }
 }

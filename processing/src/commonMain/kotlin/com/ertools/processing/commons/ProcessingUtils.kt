@@ -23,24 +23,8 @@ object ProcessingUtils {
     const val AUDIO_THIRDS_AMOUNT = 33
     const val AUDIO_OCTAVES_AMOUNT = 11
 
-    /** Pathing **/
+    /** Constants **/
     const val EXT_WAV_FILE = "wav"
     const val EXT_SPECTROGRAM_OUTPUT = "png"
-    const val DIR_CREMA_D = "CREMA-D/AudioWAV"
-    const val DIR_OWN_REC = "OWN_REC"
     const val FILE_SPECTROGRAMS_METADATA = "metadata"
-    const val DIR_AUDIO_INPUT = "data/data_audio"
-    const val DIR_SPECTROGRAMS_OUTPUT = "data/data_spectrograms"
-    const val DIR_MODEL_OUTPUT = "data/data_models"
-
-    /** Dataset **/
-    const val DATASET_TEST_RATIO = 0.0
-    const val DATASET_VALID_RATIO = 0.25
-    const val DATASET_SHUFFLE_ATTEMPTS = 100
-
-    /** Model **/
-    const val MODEL_DEFAULT_NAME = "SimpleModel"
-    const val MODEL_EPOCHS = 1
-    const val MODEL_BATCH_SIZE = 32
-    const val MODEL_EARLY_STOP = false
 }

@@ -39,22 +39,18 @@ https://github.com/ExaggeratedRumors/demooder.git
 3. Unzip Wav files in `data_audio` directory (from root it's `demooder-model/data_audio` directory).
 4. [optional] Run data augmentation task:
 ```bash
-./gradlew :model:dataAugmentation
+./gradlew :processing:dataAugmentation
 ```
 5. Run create spectrograms task:
 ```bash
-./gradlew :model:createSpectrograms
+./gradlew :processing:createSpectrograms
 ```
-6. Run model training task:
-```bash
-./gradlew :model:trainModel
-```
-7. Output model is saved in `data_models` directory.
+Output spectrograms are saved in `data/spectrograms` directory.
 
 ## Sound data
 - <a href="https://cheyneycomputerscience.github.io/CREMA-D/">CREMA-D</a>
 - <a href="https://www.kaggle.com/datasets/uwrfkaggler/ravdess-emotional-speech-audio">RAVDESS</a>
-- <a href="https://www.kaggle.com/datasets/barelydedicated/savee-database">VEESS</a>
+- <a href="https://www.kaggle.com/datasets/barelydedicated/savee-database">SAVEE</a>
 - <a href="https://www.kaggle.com/datasets/ejlok1/toronto-emotional-speech-set-tess">TESS</a>
 
 ## Audio data augmentation
