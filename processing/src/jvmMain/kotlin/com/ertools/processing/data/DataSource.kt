@@ -102,7 +102,7 @@ data object TESS : DataSource(
             "sad" to Emotion.SAD
         )
         try {
-            val features = filename.split("-")
+            val features = filename.split("_")
             if (features.size < 3) throw IllegalArgumentException()
             return features[2].let { labelsDict[it] }
         } catch (e: Exception) {
