@@ -19,10 +19,9 @@ class WavFile(file: File) {
             try {
                 filename = file.nameWithoutExtension
                 header = inputStream.readHeader()
-                print("I:\tProcessing file $filename: ")
+                println("I:\tProcessing file $filename: ")
                 validate()
                 val dataBuffer = ByteArray(header.subchunk2Size)
-                println(header)
                 inputStream.read(dataBuffer)
                 data = if(header.subchunk2Id == "data") dataBuffer
                 else dataBuffer.downSampling(ProcessingUtils.WAV_MAX_LENGTH,true, header.sampleRate, ProcessingUtils.WAV_MAX_SAMPLE_RATE)

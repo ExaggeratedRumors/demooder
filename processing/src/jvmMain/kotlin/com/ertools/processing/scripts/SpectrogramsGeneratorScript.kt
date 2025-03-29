@@ -46,7 +46,7 @@ fun main (args: Array<String>) {
         )
         IOManager.saveSpectrogramSamples(spectrogramSet, dataDir)
         metadata.update(spectrogramSet)
-        println("R:\t${"%.1f".format(Locale.ENGLISH, 100.0 * end / soundData.size)}%/100%.")
+        println("R:\tCreating spectrograms... [progress ${"%.1f".format(Locale.ENGLISH, 100.0 * end / soundData.size)}%]")
     }
     IOManager.saveSpectrogramMetadata(metadata, dataDir)
     println("R:\tSaved ${metadata.dataAmount} spectrograms image to ${ProjectPathing.DIR_SPECTROGRAMS_OUTPUT}/$dataDir")
