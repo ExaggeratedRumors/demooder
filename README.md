@@ -15,16 +15,14 @@ in progress
 
 ## Technologies
 Application:
-- Gradle 8.2 (KMP limited)
-- JVM 11
-- Android SDK 34
 - Kotlin 1.9.22
-- TensorFlow 1.15.0
-- Jetpack Compose 1.6.10
+- Java 11
+- Android SDK 34
+- Gradle 8.2 (KMP limited)
 - Kotlin Multiplatform 1.9.22
+- Jetpack Compose 1.6.10
 - Python 3.8.20
 - Numpy 1.23.3
-- TensorFlow 2.10.0
 - Keras 2.10.0
 - cuda 11.2
 - cuDNN 8.1.0
@@ -60,10 +58,13 @@ Output spectrograms are saved in `data/spectrograms` directory.
 
 ## Sound signal processing
 1. Read WAV files according to the header scheme: <a href="http://soundfile.sapp.org/doc/WaveFormat/">wav file format</a>.
-2. Convert byte data to complex.
-3. Signal windowing: <a href="https://download.ni.com/evaluation/pxi/Understanding%20FFTs%20and%20Windowing.pdf">about windowing</a>.
-4. Use Short-Time Fourier Transform (STFT): <a href="https://brianmcfee.net/dstbook-site/content/ch09-stft/STFT.html">about STFT</a>, <a href="https://www.ni.com/docs/en-US/bundle/diadem/page/genmaths/genmaths/calc_fouriertransform.html">about FFT</a>.
-5. Filter by A-weighting or C-weighting: <a href="https://www.noisemeters.com/help/faq/frequency-weighting/">about weighting</a>.
+2. Audio signal resampling (check whether the signal is big-endian or little-endian): <a href="https://en.wikipedia.org/wiki/Sample-rate_conversion">about resampling</a>.
+3. Optional gaussian noise reducing.
+4. Convert byte data to complex.
+5. Signal windowing: <a href="https://download.ni.com/evaluation/pxi/Understanding%20FFTs%20and%20Windowing.pdf">about windowing</a>.
+6. Use Short-Time Fourier Transform (STFT): <a href="https://brianmcfee.net/dstbook-site/content/ch09-stft/STFT.html">about STFT</a>, <a href="https://www.ni.com/docs/en-US/bundle/diadem/page/genmaths/genmaths/calc_fouriertransform.html">about FFT</a>.
+7. Optional filtering by A-weighting or C-weighting: <a href="https://www.noisemeters.com/help/faq/frequency-weighting/">about weighting</a>.
+8. Optional converting signal to decibels and lower spectrum.
 
 ## Predicting in JVM
 1. Read classifier model.
