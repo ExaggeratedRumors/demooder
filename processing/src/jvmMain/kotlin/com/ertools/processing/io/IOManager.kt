@@ -55,8 +55,14 @@ object IOManager {
     fun loadWavFiles(
         wavDir: String,
         maxNumberOfFiles: Int = Int.MAX_VALUE
-    ): List<WavFile> = fetchWavFiles(wavDir, maxNumberOfFiles)
-        .map { WavFile(it) }
+    ): List<WavFile> = fetchWavFiles(wavDir, maxNumberOfFiles).mapNotNull {
+        try {
+            WavFile(it)
+        } catch (e: Exception) {
+            println("E:\tSkipped file ${it.name} due to an error occurred.")
+            null
+        }
+    }
 
     fun saveWavFile(stream: AudioInputStream, dir: String, filename: String) {
         AudioSystem.write(
