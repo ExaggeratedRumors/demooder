@@ -1,0 +1,2 @@
+1. Tworzyć 3-kanałowe spektrogramy
+2. Refactor resamplingu

@@ -33,6 +33,7 @@ fun main (args: Array<String>) {
     val metadata = SpectrogramsMetadata()
     val sublistAmount = ceil(1.0f * soundData.size / spectrogramsBatchSize).toInt()
     (0 until sublistAmount).forEach {
+        println("R:\tCreating spectrograms... [progress ${"%.1f".format(Locale.ENGLISH, 100.0 * spectrogramsBatchSize * it / soundData.size)}%]")
         val start = it * spectrogramsBatchSize
         val end = min((it + 1) * spectrogramsBatchSize, soundData.size)
         val subset = soundData.subList(start, end)
@@ -46,7 +47,6 @@ fun main (args: Array<String>) {
         )
         IOManager.saveSpectrogramSamples(spectrogramSet, dataDir)
         metadata.update(spectrogramSet)
-        println("R:\tCreating spectrograms... [progress ${"%.1f".format(Locale.ENGLISH, 100.0 * end / soundData.size)}%]")
     }
     IOManager.saveSpectrogramMetadata(metadata, dataDir)
     println("R:\tSaved ${metadata.dataAmount} spectrograms image to ${ProjectPathing.DIR_SPECTROGRAMS_OUTPUT}/$dataDir")

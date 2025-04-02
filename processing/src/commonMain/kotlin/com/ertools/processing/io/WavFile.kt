@@ -29,7 +29,7 @@ class WavFile(
                 val dataBuffer = ByteArray(header.subchunk2Size)
                 inputStream.read(dataBuffer)
                 val data: ByteArray = dataBuffer.also {
-                    if (header.subchunk2Id != "data") {
+                    /*if (header.subchunk2Id != "data") {
                         try {
                             it.downSampling(
                                 ProcessingUtils.WAV_MAX_LENGTH,
@@ -40,7 +40,7 @@ class WavFile(
                         } catch (e: Exception) {
                             throw WavException("Resampling error.", e)
                         }
-                    }
+                    }*/
                 }
                 return WavFile(filename, header, data)
             }
