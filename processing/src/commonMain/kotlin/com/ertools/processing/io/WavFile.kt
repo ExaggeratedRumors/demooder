@@ -8,10 +8,18 @@ import java.nio.ByteBuffer
 import java.nio.ByteOrder
 
 class WavFile(
-    val fileName: String,
-    val header: WavHeader,
-    val data: ByteArray,
+    fileName: String,
+    header: WavHeader,
+    data: ByteArray,
 ) {
+    var fileName: String = fileName
+        private set
+    var header: WavHeader = header
+        private set
+    var data: ByteArray = data
+        private set
+
+
     companion object {
         fun fromFile(file: File): WavFile {
             FileInputStream(file).use { inputStream ->
@@ -26,22 +34,8 @@ class WavFile(
                 headerValidate(header)
 
                 /** Read and resample data **/
-                val dataBuffer = ByteArray(header.subchunk2Size)
-                inputStream.read(dataBuffer)
-                val data: ByteArray = dataBuffer.also {
-                    /*if (header.subchunk2Id != "data") {
-                        try {
-                            it.downSampling(
-                                ProcessingUtils.WAV_MAX_LENGTH,
-                                true,
-                                header.sampleRate,
-                                ProcessingUtils.WAV_MAX_SAMPLE_RATE
-                            )
-                        } catch (e: Exception) {
-                            throw WavException("Resampling error.", e)
-                        }
-                    }*/
-                }
+                val data = ByteArray(header.subchunk2Size)
+                inputStream.read(data)
                 return WavFile(filename, header, data)
             }
         }
@@ -114,6 +108,17 @@ class WavFile(
             if(header.bitsPerSample != 16.toShort())
                 throw WavException("Only 16-bits files are supported.")
         }
+    }
+
+    fun resample(targetSampleRate: Int) {
+        val resampledData = data.downSampling(
+            header.subchunk2Size,
+            header.numChannels.toInt() == 2,
+            header.sampleRate,
+            targetSampleRate
+        )
+        this.data = resampledData
+        this.header = header.copy(sampleRate = targetSampleRate)
     }
 
     /**********************/

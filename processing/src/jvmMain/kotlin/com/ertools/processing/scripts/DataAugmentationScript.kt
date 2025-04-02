@@ -15,7 +15,7 @@ fun main(args: Array<String>) {
     println("I:\tStart augmentation audio data program.")
 
     println("I:\tData augmentation - increasing dataset $augmentAmount times.")
-    val result = WavAugmentation.wavFileAugmentation(path = audioDataPath, augmentFilesAmount = augmentAmount)
+    val result = WavAugmentation.wavFilesAugmentation(path = audioDataPath, augmentFilesAmount = augmentAmount)
     println("R:\tCreated $result new wav files.")
 
     println("I:\tEnd program.")

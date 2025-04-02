@@ -1,23 +1,17 @@
-package com.ertools.processing.io
+package com.ertools.processing
 
+import com.ertools.processing.io.WavFile
 import com.ertools.processing.signal.SignalPreprocessor.downSampling
 import org.junit.Test
 import java.io.File
 
 class WavProcessingTest {
     @Test
-    fun `read test wav file`() {
-        val testDataFile = File("src/jvmTest/resources/test.wav")
+    fun `read and resample test wav file`() {
+        val targetSampleRate = 14000
+        val testDataFile = File("src/jvmTest/resources/ravdess48kHz.wav")
         val wavFile = WavFile.fromFile(testDataFile)
         println("Filename:${wavFile.fileName}\nHeader:${wavFile.header}\nSize:${wavFile.data.size}")
-    }
-
-    @Test
-    fun `resample wav file`() {
-        val targetSampleRate = 14000
-        val testDataFile = File("src/jvmTest/resources/test.wav")
-        val wavFile = WavFile.fromFile(testDataFile)
-        println("Filename:${wavFile.fileName}\nHeader:${wavFile.header}")
         val resampledData = wavFile.data.downSampling(
             wavFile.header.subchunk2Size,
             wavFile.header.numChannels.toInt() == 2,
@@ -30,6 +24,6 @@ class WavProcessingTest {
             resampledData
         )
         println("Filename:${newWavFile.fileName}\nHeader:${newWavFile.header}\nSize:${newWavFile.data.size}")
+        assert(newWavFile.header.sampleRate == targetSampleRate)
     }
-
 }

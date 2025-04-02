@@ -1,8 +1,8 @@
 ## Sound data
 
 ### <a href="https://cheyneycomputerscience.github.io/CREMA-D/">CREMA-D</a>
-- SampleRate: 14kHz
-- ByteRate: 28000
+- SampleRate: 16kHz
+- ByteRate: 32000
 - Channels: 1
 - Subchunk2Id: `data`
 

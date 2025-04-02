@@ -7,7 +7,7 @@ object ProcessingUtils {
     const val WAV_ADDITIONAL_HEADER_SIZE = 34
     const val WAV_STRING_SIZE = 4
     const val WAV_MAX_LENGTH = 300000
-    const val WAV_MAX_SAMPLE_RATE = 16000
+    const val WAV_TARGET_SAMPLE_RATE = 16000
     const val WAV_AUGMENT_AMOUNT = 3
     const val WAV_AUGMENT_AFFIX = "AUG"
 

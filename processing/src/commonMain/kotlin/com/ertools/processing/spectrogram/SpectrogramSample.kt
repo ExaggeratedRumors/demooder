@@ -1,12 +1,10 @@
 package com.ertools.processing.spectrogram
 
-import com.ertools.processing.commons.Emotion
 import com.ertools.processing.commons.Spectrogram
 
 data class SpectrogramSample(
     val data: Spectrogram,
-    val filename: String,
-    val labels: Emotion?
+    val filename: String
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -14,15 +12,13 @@ data class SpectrogramSample(
 
         other as SpectrogramSample
 
-        if (!data.contentEquals(other.data)) return false
-        if (labels != other.labels) return false
-
-        return true
+        return data.contentEquals(other.data)
     }
 
     override fun hashCode(): Int {
         var result = data.contentHashCode()
-        result = 31 * result + labels.hashCode()
+        result = 31 * result + filename.hashCode()
         return result
     }
+
 }

@@ -25,64 +25,70 @@ object SignalPreprocessor {
     /**
      * Downsample raw sound data
      */
-    fun RawData.downSampling(length: Int, inputIsStereo: Boolean, inFrequency: Int, outFrequency: Int): RawData {
-        if(inFrequency == outFrequency && this.size == length) return this
-        if(inFrequency == outFrequency) return this.copyOfRange(0, length)
+    fun RawData.downSampling(
+        length: Int,
+        isStereo: Boolean,
+        inputFrequency: Int,
+        outputFrequency: Int
+    ): RawData {
+        if(inputFrequency == outputFrequency && this.size == length) return this
+        if(inputFrequency == outputFrequency) return this.copyOfRange(0, length)
 
-        val scale = outFrequency.toDouble() / inFrequency.toDouble()
+        val factor = outputFrequency.toDouble() / inputFrequency.toDouble()
         val output: ByteArray
-        var pos = 0.0
-        var outPos = 0
+        var currentPosition = 0.0
+        var outputPosition = 0
+        var inputPosition = 0
 
-        if (!inputIsStereo) {
+        if (!isStereo) {
+            /** Mono channel - 16 bits **/
             var sum = 0.0
-            output = ByteArray((length * scale).toInt())
-            var inPos = 0
+            output = ByteArray((length * factor).toInt())
 
-            while (outPos < output.size) {
-                val firstVal = this[inPos++].toDouble()
-                var nextPos = pos + scale
-                if (nextPos >= 1) {
-                    sum += firstVal * (1 - pos)
-                    output[outPos++] = Math.round(sum).toByte()
-                    nextPos -= 1
-                    sum = nextPos * firstVal
+            while (outputPosition < output.size) {
+                val firstValue = this[inputPosition++].toDouble()
+                var nextPosition = currentPosition + factor
+                if (nextPosition >= 1) {
+                    sum += firstValue * (1 - currentPosition)
+                    output[outputPosition++] = Math.round(sum).toByte()
+                    nextPosition -= 1
+                    sum = nextPosition * firstValue
                 } else {
-                    sum += scale * firstVal
+                    sum += factor * firstValue
                 }
-                pos = nextPos
+                currentPosition = nextPosition
 
-                if (inPos >= length && outPos < output.size) {
-                    output[outPos++] = Math.round(sum / pos).toByte()
+                if (inputPosition >= length && outputPosition < output.size) {
+                    output[outputPosition++] = Math.round(sum / currentPosition).toByte()
                 }
             }
         } else {
+            /** Stereo channel - 32 bits **/
             var sum1 = 0.0
             var sum2 = 0.0
-            output = ByteArray(2 * ((length / 2) * scale).toInt())
-            var inPos = 0
+            output = ByteArray(2 * ((length / 2) * factor).toInt())
 
-            while (outPos < output.size) {
-                val firstVal = this[inPos++].toDouble()
-                val nextVal = this[inPos++].toDouble()
-                var nextPos = pos + scale
-                if (nextPos >= 1) {
-                    sum1 += firstVal * (1 - pos)
-                    sum2 += nextVal * (1 - pos)
-                    output[outPos++] = Math.round(sum1).toByte()
-                    output[outPos++] = Math.round(sum2).toByte()
-                    nextPos -= 1
-                    sum1 = nextPos * firstVal
-                    sum2 = nextPos * nextVal
+            while (outputPosition < output.size) {
+                val firstValue = this[inputPosition++].toDouble()
+                val nextValue = this[inputPosition++].toDouble()
+                var nextPosition = currentPosition + factor
+                if (nextPosition >= 1) {
+                    sum1 += firstValue * (1 - currentPosition)
+                    sum2 += nextValue * (1 - currentPosition)
+                    output[outputPosition++] = Math.round(sum1).toByte()
+                    output[outputPosition++] = Math.round(sum2).toByte()
+                    nextPosition -= 1
+                    sum1 = nextPosition * firstValue
+                    sum2 = nextPosition * nextValue
                 } else {
-                    sum1 += scale * firstVal
-                    sum2 += scale * nextVal
+                    sum1 += factor * firstValue
+                    sum2 += factor * nextValue
                 }
-                pos = nextPos
+                currentPosition = nextPosition
 
-                if (inPos >= length && outPos < output.size) {
-                    output[outPos++] = Math.round(sum1 / pos).toByte()
-                    output[outPos++] = Math.round(sum2 / pos).toByte()
+                if (inputPosition >= length && outputPosition < output.size) {
+                    output[outputPosition++] = Math.round(sum1 / currentPosition).toByte()
+                    output[outputPosition++] = Math.round(sum2 / currentPosition).toByte()
                 }
             }
         }

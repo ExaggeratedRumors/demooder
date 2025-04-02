@@ -29,9 +29,9 @@ class ClassifierPreprocessor(
     fun proceed(rawData: RawData): Pair<FloatArray, TensorShape> {
         val downSampled = rawData.downSampling(
             length = rawData.size,
-            inputIsStereo = false,
-            inFrequency = ProcessingUtils.AUDIO_SAMPLING_RATE,
-            outFrequency = ProcessingUtils.WAV_MAX_SAMPLE_RATE
+            isStereo = false,
+            inputFrequency = ProcessingUtils.AUDIO_SAMPLING_RATE,
+            outputFrequency = ProcessingUtils.WAV_TARGET_SAMPLE_RATE
         )
         val stft = SignalPreprocessor.stft(
             downSampled,

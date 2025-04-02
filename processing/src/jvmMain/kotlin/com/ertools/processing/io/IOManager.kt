@@ -74,18 +74,12 @@ object IOManager {
 
     fun convertWavFilesToSpectrogramSamples(
         wavFiles: List<WavFile>,
-        dataSource: DataSource,
         frameSize: Int = ProcessingUtils.SPECTROGRAM_FRAME_SIZE,
         stepSize: Int = ProcessingUtils.SPECTROGRAM_STEP_SIZE,
-        window: Windowing.WindowType = Windowing.WindowType.Hamming,
-        filters: (Emotion?) -> Boolean = { true }
-    ): List<SpectrogramSample> = wavFiles.map { wavFile ->
-        Pair(wavFile, dataSource.extractLabels(wavFile.fileName))
-    }.filter { (_, labels) ->
-        filters(labels)
-    }.map { (file, labels) ->
+        window: Windowing.WindowType = Windowing.WindowType.Hamming
+    ): List<SpectrogramSample> = wavFiles.map { file ->
         val stft = SignalPreprocessor.stft(file.data, frameSize, stepSize, window)
-        SpectrogramSample(stft, file.fileName, labels)
+        SpectrogramSample(stft, file.fileName)
     }
 
 

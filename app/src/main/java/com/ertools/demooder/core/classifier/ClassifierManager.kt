@@ -4,8 +4,8 @@ import android.content.Context
 import android.util.Log
 import com.ertools.demooder.utils.AppConstants
 import com.ertools.processing.ModelShape
+import com.ertools.processing.commons.Emotion
 import com.ertools.processing.commons.RawData
-import com.ertools.processing.data.LabelsExtraction
 import org.jetbrains.kotlinx.dl.impl.inference.imagerecognition.predictTopNLabels
 import org.jetbrains.kotlinx.dl.onnx.inference.OnnxInferenceModel
 import org.jetbrains.kotlinx.dl.onnx.inference.executionproviders.ExecutionProvider.CPU
@@ -20,7 +20,7 @@ class ClassifierManager {
     )
     private var model: OnnxInferenceModel? = null
     private var preprocessing: ClassifierPreprocessor? = null
-    private val labels = LabelsExtraction.Emotion.entries.associate { it.ordinal to it.name }
+    private val labels = Emotion.entries.associate { it.ordinal to it.name }
 
     fun loadClassifier(context: Context) {
         model = ClassifierIO.loadOnnxModel(context, configuration)

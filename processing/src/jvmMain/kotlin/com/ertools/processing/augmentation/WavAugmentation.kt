@@ -9,7 +9,7 @@ import kotlin.math.roundToInt
 import kotlin.random.Random
 
 object WavAugmentation {
-    fun wavFileAugmentation(
+    fun wavFilesAugmentation(
         path: String,
         numberOfFiles: Int = Integer.MAX_VALUE,
         augmentFilesAmount: Int = ProcessingUtils.WAV_AUGMENT_AMOUNT
@@ -48,6 +48,9 @@ object WavAugmentation {
         return counter
     }
 
+    /**
+     * Change signal sampleRate and frameRate by same factor.
+     */
     private fun AudioFormat.stretchAudio(speed: Float): AudioFormat {
         return AudioFormat(
             this.encoding,
@@ -60,6 +63,9 @@ object WavAugmentation {
         )
     }
 
+    /**
+     * Apply random noise on signal.
+     */
     private fun ByteArray.addNoise(audioInputStream: AudioInputStream, noiseLevel: Float): ByteArray {
         audioInputStream.read(this)
         for(i in this.indices) {
