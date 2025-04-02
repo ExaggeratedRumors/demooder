@@ -34,3 +34,4 @@ dependencyResolutionManagement {
 rootProject.name = "demooder"
 include(":app")
 include(":processing")
+include(":processing:commonTest")

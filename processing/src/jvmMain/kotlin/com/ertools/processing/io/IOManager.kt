@@ -57,9 +57,9 @@ object IOManager {
         maxNumberOfFiles: Int = Int.MAX_VALUE
     ): List<WavFile> = fetchWavFiles(wavDir, maxNumberOfFiles).mapNotNull {
         try {
-            WavFile(it)
+            WavFile.fromFile(it)
         } catch (e: Exception) {
-            println("E:\tSkipped file ${it.name} due to an error occurred.")
+            println("E:\tSkipped file ${it.name} due to an error occurred [${e.localizedMessage}].")
             null
         }
     }
@@ -80,12 +80,12 @@ object IOManager {
         window: Windowing.WindowType = Windowing.WindowType.Hamming,
         filters: (Emotion?) -> Boolean = { true }
     ): List<SpectrogramSample> = wavFiles.map { wavFile ->
-        Pair(wavFile, dataSource.extractLabels(wavFile.filename))
+        Pair(wavFile, dataSource.extractLabels(wavFile.fileName))
     }.filter { (_, labels) ->
         filters(labels)
     }.map { (file, labels) ->
         val stft = SignalPreprocessor.stft(file.data, frameSize, stepSize, window)
-        SpectrogramSample(stft, file.filename, labels)
+        SpectrogramSample(stft, file.fileName, labels)
     }
 
 

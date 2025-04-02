@@ -32,6 +32,7 @@ jackson = "2.18.1"
 slf4j = "2.0.7"
 graphicsShapesAndroid = "1.0.1"
 uiautomator = "2.3.0"
+testng = "6.9.6"
 
 [libraries]
 accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanistPermissions" }
@@ -72,6 +73,7 @@ material = { group = "com.google.android.material", name = "material", version.r
 androidx-junit-ktx = { group = "androidx.test.ext", name = "junit-ktx", version.ref = "junitKtx" }
 multik-core = { module = "org.jetbrains.kotlinx:multik-core", version.ref = "multikCore" }
 androidx-graphics-shapes-android = { group = "androidx.graphics", name = "graphics-shapes-android", version.ref = "graphicsShapesAndroid" }
+testng = { group = "org.testng", name = "testng", version.ref = "testng" }
 
 [plugins]
 android-library = { id = "com.android.library", version.ref = "agp" }

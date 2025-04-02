@@ -13,7 +13,7 @@ import kotlin.math.min
 
 fun main (args: Array<String>) {
     /** Data **/
-    val dataDir = if(args.isNotEmpty()) args[0] else ProjectPathing.DIR_DATA_TESS
+    val dataDir = if(args.isNotEmpty()) args[0] else ProjectPathing.DIR_DATA_RAVDESS
     val spectrogramsBatchSize = args.getOrNull(1)?.toInt() ?: ProcessingUtils.SPECTROGRAM_BATCH_SIZE
     val frameSize = args.getOrNull(2)?.toInt() ?: ProcessingUtils.SPECTROGRAM_FRAME_SIZE
     val stepSize = args.getOrNull(1)?.toInt() ?: ProcessingUtils.SPECTROGRAM_STEP_SIZE

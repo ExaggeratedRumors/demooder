@@ -7,78 +7,113 @@ import java.io.FileInputStream
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 
-class WavFile(file: File) {
-    var filename: String
-        private set
-    private var header: WavHeader
-    var data: ByteArray
-        private set
+class WavFile(
+    val fileName: String,
+    val header: WavHeader,
+    val data: ByteArray,
+) {
+    companion object {
+        fun fromFile(file: File): WavFile {
+            FileInputStream(file).use { inputStream ->
+                val filename = file.nameWithoutExtension
 
-    init {
-        FileInputStream(file).use { inputStream ->
-            try {
-                filename = file.nameWithoutExtension
-                header = inputStream.readHeader()
-                println("I:\tProcessing file $filename: ")
-                validate()
+                /** Read header **/
+                val header = try {
+                    inputStream.readHeader()
+                } catch (e: Exception) {
+                    throw WavException("Error reading header.", e)
+                }
+                headerValidate(header)
+
+                /** Read and resample data **/
                 val dataBuffer = ByteArray(header.subchunk2Size)
                 inputStream.read(dataBuffer)
-                data = if(header.subchunk2Id == "data") dataBuffer
-                else dataBuffer.downSampling(ProcessingUtils.WAV_MAX_LENGTH,true, header.sampleRate, ProcessingUtils.WAV_MAX_SAMPLE_RATE)
-            } catch (e: Exception) {
-                println("E: ${e.localizedMessage}")
-                throw e
+                val data: ByteArray = dataBuffer.also {
+                    if (header.subchunk2Id != "data") {
+                        try {
+                            it.downSampling(
+                                ProcessingUtils.WAV_MAX_LENGTH,
+                                true,
+                                header.sampleRate,
+                                ProcessingUtils.WAV_MAX_SAMPLE_RATE
+                            )
+                        } catch (e: Exception) {
+                            throw WavException("Resampling error.", e)
+                        }
+                    }
+                }
+                return WavFile(filename, header, data)
             }
         }
-    }
 
-    /**************/
-    /** Privates **/
-    /**************/
-    private fun FileInputStream.readHeader(): WavHeader {
-        val headerBytes = ByteArray(ProcessingUtils.WAV_HEADER_SIZE)
-        this.read(headerBytes)
+        /**************/
+        /** Privates **/
+        /**************/
+        private fun FileInputStream.readHeader(): WavHeader {
+            val headerBytes = ByteArray(ProcessingUtils.WAV_HEADER_SIZE)
+            this.read(headerBytes)
 
-        var cursor = 0
-        val stringSize = ProcessingUtils.WAV_STRING_SIZE
-        val buffer = ByteBuffer.wrap(headerBytes).order(ByteOrder.LITTLE_ENDIAN)
+            var cursor = 0
+            val stringSize = ProcessingUtils.WAV_STRING_SIZE
+            val buffer = ByteBuffer.wrap(headerBytes).order(ByteOrder.LITTLE_ENDIAN)
 
-        val chunkId = ByteArray(stringSize).apply { buffer.get(this); cursor += this.size }.decodeToString()
-        val chunkSize = buffer.int.also { cursor += Int.SIZE_BYTES }
-        val format = ByteArray(stringSize).apply { buffer.get(this); cursor += this.size }.decodeToString()
-        val subchunk1Id = ByteArray(stringSize).apply { buffer.get(this); cursor += this.size }.decodeToString()
-        val subchunk1Size = buffer.int.also { cursor += Int.SIZE_BYTES }
-        val audioFormat = buffer.short.also { cursor += Short.SIZE_BYTES }
-        val numChannels = buffer.short.also { cursor += Short.SIZE_BYTES }
-        val sampleRate = buffer.int.also { cursor += Int.SIZE_BYTES }
-        val byteRate = buffer.int.also { cursor += Int.SIZE_BYTES }
-        val blockAlign = buffer.short.also { cursor += Short.SIZE_BYTES }
-        val bitsPerSample = buffer.short.also { cursor += Short.SIZE_BYTES }
-        val subchunk2Id = ByteArray(stringSize).apply { buffer.get(this); cursor += this.size }.decodeToString()
+            val chunkId = ByteArray(stringSize).apply { buffer.get(this); cursor += this.size }.decodeToString()
+            val chunkSize = buffer.int.also { cursor += Int.SIZE_BYTES }
+            val format = ByteArray(stringSize).apply { buffer.get(this); cursor += this.size }.decodeToString()
+            val subchunk1Id = ByteArray(stringSize).apply { buffer.get(this); cursor += this.size }.decodeToString()
+            val subchunk1Size = buffer.int.also { cursor += Int.SIZE_BYTES }
+            val audioFormat = buffer.short.also { cursor += Short.SIZE_BYTES }
+            val numChannels = buffer.short.also { cursor += Short.SIZE_BYTES }
+            val sampleRate = buffer.int.also { cursor += Int.SIZE_BYTES }
+            val byteRate = buffer.int.also { cursor += Int.SIZE_BYTES }
+            val blockAlign = buffer.short.also { cursor += Short.SIZE_BYTES }
+            val bitsPerSample = buffer.short.also { cursor += Short.SIZE_BYTES }
+            val subchunk2Id = ByteArray(stringSize).apply { buffer.get(this); cursor += this.size }.decodeToString()
 
-        val subchunk2Size = if(subchunk2Id == "LIST") {
-            val additionalHeaderBytes = ByteArray(ProcessingUtils.WAV_ADDITIONAL_HEADER_SIZE)
-            this.read(additionalHeaderBytes)
-            val additionalBuffer = ByteBuffer.wrap(additionalHeaderBytes).order(ByteOrder.LITTLE_ENDIAN)
-            additionalBuffer.int.also { cursor += Int.SIZE_BYTES }
-        } else {
-            buffer.int.also { cursor += Int.SIZE_BYTES }
+            val subchunk2Size = when (subchunk2Id) {
+                "LIST" -> {
+                    val additionalHeaderBytes = ByteArray(ProcessingUtils.WAV_ADDITIONAL_HEADER_SIZE)
+                    this.read(additionalHeaderBytes)
+                    val additionalBuffer =
+                        ByteBuffer.wrap(additionalHeaderBytes).order(ByteOrder.LITTLE_ENDIAN)
+                    additionalBuffer.int
+                }
+                "FLLR" -> {
+                    val skipDataBytes = buffer.int.also { cursor += Int.SIZE_BYTES}
+                    val skipDataByteArray = ByteArray(skipDataBytes)
+                    this.read(skipDataByteArray)
+
+                    val dataInfoBytes = stringSize + Int.SIZE_BYTES
+                    val dataInfoByteArray = ByteArray(dataInfoBytes)
+                    this.read(dataInfoByteArray)
+                    val dataInfoBuffer = ByteBuffer.wrap(dataInfoByteArray).order(ByteOrder.LITTLE_ENDIAN)
+                    val id = ByteArray(stringSize).apply { dataInfoBuffer.get(this); cursor += this.size }.decodeToString()
+                    if(id != "data") throw WavException("Unknown subchunk2Id inside FLLR: $subchunk2Id.")
+                    dataInfoBuffer.int
+                }
+                "data" -> {
+                    buffer.int
+                }
+                else -> {
+                    throw WavException("Unknown subchunk2Id: $subchunk2Id.")
+                }
+            }
+
+            return WavHeader(
+                chunkId, chunkSize, format, subchunk1Id, subchunk1Size,
+                audioFormat, numChannels, sampleRate, byteRate, blockAlign,
+                bitsPerSample, subchunk2Id, subchunk2Size
+            )
         }
 
-        return WavHeader(
-            chunkId, chunkSize, format, subchunk1Id, subchunk1Size,
-            audioFormat, numChannels, sampleRate, byteRate, blockAlign,
-            bitsPerSample, subchunk2Id, subchunk2Size
-        )
-    }
-
-    private fun validate() {
-        if(header.chunkId != "RIFF" || header.format != "WAVE")
-            throw IllegalArgumentException("Incorrect file format: ${header}.")
-        if(header.audioFormat != 1.toShort())
-            throw IllegalArgumentException("Only uncompressed PCM files are supported.")
-        if(header.bitsPerSample != 16.toShort())
-            throw IllegalArgumentException("Only 16-bits files are supported.")
+        private fun headerValidate(header: WavHeader) {
+            if(header.chunkId != "RIFF" || header.format != "WAVE")
+                throw WavException("Incorrect file format: ${header}.")
+            if(header.audioFormat != 1.toShort())
+                throw WavException("Only uncompressed PCM files are supported.")
+            if(header.bitsPerSample != 16.toShort())
+                throw WavException("Only 16-bits files are supported.")
+        }
     }
 
     /**********************/
@@ -99,4 +134,9 @@ class WavFile(file: File) {
         val subchunk2Id: String,
         val subchunk2Size: Int
     )
+
+    class WavException(
+        message: String,
+        cause: Throwable? = null
+    ): Exception(message, cause)
 }

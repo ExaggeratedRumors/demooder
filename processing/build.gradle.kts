@@ -22,6 +22,10 @@ kotlin {
 
         }
 
+        jvmTest.dependencies {
+            implementation(libs.junit)
+        }
+
         commonMain.dependencies {
             implementation(libs.kotlin.fasterxml.jackson.module)
             implementation(libs.multik.core)
@@ -46,6 +50,9 @@ android {
             jvmTarget = "11"
         }
     }
+}
+dependencies {
+    testImplementation(libs.testng)
 }
 
 fun createTask(taskName: String, mainClassName: String) {
