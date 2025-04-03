@@ -1,3 +1,2 @@
 1. Tworzyć 3-kanałowe spektrogramy
-2. Dodać upsampling
-3. Utworzyć testy dla augmentacji
+2. Dodać więcej augmentacji

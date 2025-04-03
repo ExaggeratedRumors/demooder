@@ -2,6 +2,7 @@ package com.ertools.processing
 
 import com.ertools.processing.augmentation.WavAugmentation.applyNoise
 import com.ertools.processing.augmentation.WavAugmentation.applyPitchShift
+import com.ertools.processing.augmentation.WavAugmentation.applyShift
 import com.ertools.processing.commons.ProcessingUtils
 import com.ertools.processing.io.IOManager
 import org.junit.Test
@@ -17,6 +18,7 @@ class AugmentationTest {
         val testFile = File(resourcesPath, "$filename.wav")
         val pitchFactor = 0.5f
         val noiseLevel = 0.015f
+        val shift = 100
 
         val noisedAugmentation = AudioSystem.getAudioInputStream(testFile)
             .applyNoise(noiseLevel)
@@ -32,6 +34,14 @@ class AugmentationTest {
             pitchAugmentation,
             resourcesPath,
             "${filename}_${ProcessingUtils.WAV_AUGMENT_AFFIX}_pitch"
+        )
+
+        val shiftAugmentation = AudioSystem.getAudioInputStream(testFile)
+            .applyShift(shift)
+        IOManager.saveWavFile(
+            shiftAugmentation,
+            resourcesPath,
+            "${filename}_${ProcessingUtils.WAV_AUGMENT_AFFIX}_shift"
         )
 
     }

@@ -74,13 +74,13 @@ object WavAugmentation {
             audioBytes[i] = (audioBytes[i] + noise).coerceIn(Byte.MIN_VALUE.toInt(), Byte.MAX_VALUE.toInt()).toByte()
         }
 
-        /** Create output stream **/
-        val outputStream = AudioInputStream(
+        /** Create new audio input stream **/
+        val newInputStream = AudioInputStream(
             audioBytes.inputStream(),
             this.format,
             audioBytes.size.toLong() / 2
         )
-        return outputStream
+        return newInputStream
     }
 
     /**
@@ -117,12 +117,45 @@ object WavAugmentation {
             }
         }
 
-        /** Create output stream **/
-        val outputStream = AudioInputStream(
+        /** Create new audio input stream **/
+        val newInputStream = AudioInputStream(
             outputBuffer.toByteArray().inputStream(),
             format,
             outputBuffer.size.toLong() / 2
         )
-        return outputStream
+        return newInputStream
+    }
+
+    fun AudioInputStream.applyShift(shift: Int): AudioInputStream {
+        /** Calculate data size **/
+        val audioBytes = ByteArray(this.frameLength.toInt() * this.format.frameSize).let { a ->
+            this.read(a)
+            a
+        }
+        this.read(audioBytes)
+
+        /** Shift audio data **/
+        var i = 0
+        if(this.format.channels == 1) {
+            val dataSize = this.frameLength.toInt() * this.format.frameSize / 2
+            while(i + shift < dataSize) {
+                for (j in 0 until 2) audioBytes[i + j] = audioBytes[i + j + shift]
+                i += 2
+            }
+        } else {
+            val dataSize = this.frameLength.toInt() * this.format.frameSize / 4
+            while(i + shift < dataSize) {
+                for (j in 0 until 4) audioBytes[i + j] = audioBytes[i + j + shift]
+                i += 4
+            }
+        }
+
+        /** Create new audio input stream **/
+        val newInputStream = AudioInputStream(
+            audioBytes.inputStream(),
+            format,
+            audioBytes.size.toLong() / 2
+        )
+        return newInputStream
     }
 }
