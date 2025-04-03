@@ -68,7 +68,7 @@ object IOManager {
         AudioSystem.write(
             stream,
             AudioFileFormat.Type.WAVE,
-            File("${ProjectPathing.DIR_AUDIO_INPUT}/$dir", "$filename.${ProcessingUtils.EXT_WAV_FILE}")
+            File(dir, "$filename.${ProcessingUtils.EXT_WAV_FILE}")
         )
     }
 
@@ -97,17 +97,16 @@ object IOManager {
     }
 
     fun saveSpectrogramSamples(set: List<SpectrogramSample>, dir: String) {
-        set.forEach { saveSpectrogramSample(it, dir) }
+        set.forEach {
+            saveSpectrogramSample(it, "${ProjectPathing.DIR_SPECTROGRAMS_OUTPUT}/$dir")
+        }
     }
 
     fun saveSpectrogramSample(sample: SpectrogramSample, dir: String) {
         val image = complexArrayToPng(sample)
         val fileDir = File("${ProjectPathing.DIR_SPECTROGRAMS_OUTPUT}/$dir")
         if(!fileDir.exists()) fileDir.mkdir()
-        val file = File(
-            "${ProjectPathing.DIR_SPECTROGRAMS_OUTPUT}/$dir",
-            "${sample.filename}.${ProcessingUtils.EXT_SPECTROGRAM_OUTPUT}"
-        )
+        val file = File(dir, "${sample.filename}.${ProcessingUtils.EXT_SPECTROGRAM_OUTPUT}")
         ImageIO.write(image, ProcessingUtils.EXT_SPECTROGRAM_OUTPUT, file)
     }
 
