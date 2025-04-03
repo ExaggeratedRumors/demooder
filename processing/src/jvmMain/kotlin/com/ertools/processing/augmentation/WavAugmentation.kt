@@ -7,6 +7,7 @@ import java.io.File
 import javax.sound.sampled.AudioInputStream
 import javax.sound.sampled.AudioSystem
 import kotlin.math.roundToInt
+import kotlin.math.sign
 import kotlin.random.Random
 
 object WavAugmentation {
@@ -126,33 +127,34 @@ object WavAugmentation {
         return newInputStream
     }
 
+    /**
+     * Shift audio data by `shift` full samples (2 bytes for mono or 4 bytes for stereo).
+     * @param shift Number of samples to shift the audio data. Positive value shifts to the right, negative value shifts to the left.
+     * @return AudioInputStream with new format.
+     */
     fun AudioInputStream.applyShift(shift: Int): AudioInputStream {
+        if(shift == 0) return this
+
         /** Calculate data size **/
         val audioBytes = ByteArray(this.frameLength.toInt() * this.format.frameSize).let { a ->
             this.read(a)
             a
         }
         this.read(audioBytes)
+        val outputBytes = ByteArray(audioBytes.size) { 0 }
 
         /** Shift audio data **/
-        var i = 0
-        if(this.format.channels == 1) {
-            val dataSize = this.frameLength.toInt() * this.format.frameSize / 2
-            while(i + shift < dataSize) {
-                for (j in 0 until 2) audioBytes[i + j] = audioBytes[i + j + shift]
-                i += 2
-            }
-        } else {
-            val dataSize = this.frameLength.toInt() * this.format.frameSize / 4
-            while(i + shift < dataSize) {
-                for (j in 0 until 4) audioBytes[i + j] = audioBytes[i + j + shift]
-                i += 4
-            }
+        val increment = if(this.format.channels == 1) 2 else 4
+        var i = if(shift > 0) 0 else audioBytes.size
+        while(i * increment + shift < audioBytes.size && i * increment + shift >= 0) {
+            if(shift > 0) for (j in 0 until increment) outputBytes[increment * i + j] = audioBytes[increment * i + j + shift]
+            else for (j in 0 until increment) outputBytes[increment * i + j + shift] = audioBytes[increment * i + j]
+            i += increment * sign(1.0 * shift).toInt()
         }
 
         /** Create new audio input stream **/
         val newInputStream = AudioInputStream(
-            audioBytes.inputStream(),
+            outputBytes.inputStream(),
             format,
             audioBytes.size.toLong() / 2
         )

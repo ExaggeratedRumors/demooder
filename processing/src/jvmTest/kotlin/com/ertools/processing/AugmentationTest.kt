@@ -5,6 +5,7 @@ import com.ertools.processing.augmentation.WavAugmentation.applyPitchShift
 import com.ertools.processing.augmentation.WavAugmentation.applyShift
 import com.ertools.processing.commons.ProcessingUtils
 import com.ertools.processing.io.IOManager
+import com.ertools.processing.io.WavFile
 import org.junit.Test
 import java.io.File
 import javax.sound.sampled.AudioSystem
@@ -16,9 +17,7 @@ class AugmentationTest {
         val resourcesPath = "src/jvmTest/resources/"
         val filename = "cremad14kHz"
         val testFile = File(resourcesPath, "$filename.wav")
-        val pitchFactor = 0.5f
         val noiseLevel = 0.015f
-        val shift = 100
 
         val noisedAugmentation = AudioSystem.getAudioInputStream(testFile)
             .applyNoise(noiseLevel)
@@ -27,6 +26,14 @@ class AugmentationTest {
             resourcesPath,
             "${filename}_${ProcessingUtils.WAV_AUGMENT_AFFIX}_noise"
         )
+    }
+
+    @Test
+    fun `apply pitch shift test`() {
+        val resourcesPath = "src/jvmTest/resources/"
+        val filename = "cremad14kHz"
+        val testFile = File(resourcesPath, "$filename.wav")
+        val pitchFactor = 0.5f
 
         val pitchAugmentation = AudioSystem.getAudioInputStream(testFile)
             .applyPitchShift(pitchFactor)
@@ -35,14 +42,30 @@ class AugmentationTest {
             resourcesPath,
             "${filename}_${ProcessingUtils.WAV_AUGMENT_AFFIX}_pitch"
         )
+    }
 
-        val shiftAugmentation = AudioSystem.getAudioInputStream(testFile)
-            .applyShift(shift)
+    @Test
+    fun `apply shift test`() {
+        val resourcesPath = "src/jvmTest/resources/"
+        val filename = "cremad14kHz"
+        val testFile = File(resourcesPath, "$filename.wav")
+        val wavFile = WavFile.fromFile(testFile)
+        val samplesShift = wavFile.data.size / 20
+
+        val positiveShiftAugmentation = AudioSystem.getAudioInputStream(testFile)
+            .applyShift(samplesShift)
         IOManager.saveWavFile(
-            shiftAugmentation,
+            positiveShiftAugmentation,
             resourcesPath,
-            "${filename}_${ProcessingUtils.WAV_AUGMENT_AFFIX}_shift"
+            "${filename}_${ProcessingUtils.WAV_AUGMENT_AFFIX}_shift1"
         )
 
+        val negativeShiftAugmentation = AudioSystem.getAudioInputStream(testFile)
+            .applyShift(-samplesShift)
+        IOManager.saveWavFile(
+            negativeShiftAugmentation,
+            resourcesPath,
+            "${filename}_${ProcessingUtils.WAV_AUGMENT_AFFIX}_shift2"
+        )
     }
 }
