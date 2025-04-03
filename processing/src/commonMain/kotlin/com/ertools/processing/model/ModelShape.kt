@@ -1,4 +1,4 @@
-package com.ertools.processing
+package com.ertools.processing.model
 
 data class ModelShape(
     val width: Long,

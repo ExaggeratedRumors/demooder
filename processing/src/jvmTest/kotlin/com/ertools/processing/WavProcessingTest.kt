@@ -1,7 +1,7 @@
 package com.ertools.processing
 
 import com.ertools.processing.io.WavFile
-import com.ertools.processing.signal.SignalPreprocessor.downSampling
+import com.ertools.processing.signal.Resampling.downSampling
 import org.junit.Test
 import java.io.File
 

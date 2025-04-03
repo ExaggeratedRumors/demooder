@@ -3,7 +3,7 @@ package com.ertools.demooder.core.classifier
 import android.content.Context
 import android.util.Log
 import com.ertools.demooder.utils.AppConstants
-import com.ertools.processing.ModelShape
+import com.ertools.processing.model.ModelShape
 import com.ertools.processing.commons.Emotion
 import com.ertools.processing.commons.RawData
 import org.jetbrains.kotlinx.dl.impl.inference.imagerecognition.predictTopNLabels

@@ -2,7 +2,7 @@ package com.ertools.demooder.core.classifier
 
 import android.graphics.Bitmap
 import android.os.Environment
-import com.ertools.processing.ModelShape
+import com.ertools.processing.model.ModelShape
 import com.ertools.processing.commons.ProcessingUtils
 import com.ertools.processing.commons.RawData
 import com.ertools.processing.commons.ImageDim

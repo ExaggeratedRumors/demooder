@@ -1,7 +1,7 @@
 package com.ertools.processing.io
 
 import com.ertools.processing.commons.ProcessingUtils
-import com.ertools.processing.signal.SignalPreprocessor.downSampling
+import com.ertools.processing.signal.Resampling.downSampling
 import java.io.File
 import java.io.FileInputStream
 import java.nio.ByteBuffer
