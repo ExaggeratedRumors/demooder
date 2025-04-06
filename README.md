@@ -21,6 +21,8 @@ Application:
 - Gradle 8.2 (KMP limited)
 - Kotlin Multiplatform 1.9.22
 - Jetpack Compose 1.6.10
+
+Scripts:
 - Python 3.8.20
 - Numpy 1.23.3
 - Keras 2.10.0

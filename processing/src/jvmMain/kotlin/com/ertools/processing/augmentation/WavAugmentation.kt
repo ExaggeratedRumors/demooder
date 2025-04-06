@@ -42,16 +42,20 @@ object WavAugmentation {
     fun wavFileAugmentation(file: File, destinationPath: String, augmentFilesAmount: Int): Int {
         var counter = 0
         (0 until augmentFilesAmount).forEach { i ->
-            val stream = AudioSystem.getAudioInputStream(file)
-                .applyNoise(0.004f * Random.nextFloat())
-                .applyPitchShift(0.85f + 0.3f * Random.nextFloat())
+            try {
+                val stream = AudioSystem.getAudioInputStream(file)
+                    .applyNoise(0.004f * Random.nextFloat())
+                    .applyPitchShift(0.85f + 0.3f * Random.nextFloat())
 
-            IOManager.saveWavFile(
-                stream,
-                "${ProjectPathing.DIR_AUDIO_INPUT}/$destinationPath",
-                "${file.nameWithoutExtension}_${ProcessingUtils.WAV_AUGMENT_AFFIX}${i + 1}"
-            )
-            counter += 1
+                IOManager.saveWavFile(
+                    stream,
+                    "${ProjectPathing.DIR_AUDIO_INPUT}/$destinationPath",
+                    "${file.nameWithoutExtension}_${ProcessingUtils.WAV_AUGMENT_AFFIX}${i + 1}"
+                )
+                counter += 1
+            } catch (e: IllegalArgumentException) {
+                println("E:\tSkipped file ${file.name} due to an error occurred [${e.localizedMessage}].")
+            }
         }
         return counter
     }

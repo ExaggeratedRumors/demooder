@@ -7,7 +7,7 @@ plugins {
 
 android {
     namespace = "com.ertools.demooder"
-    compileSdk = libs.versions.android.compileSdk.get().toInt()
+    compileSdkPreview = "UpsideDownCake"
 
     defaultConfig {
         applicationId = "com.ertools.demooder"

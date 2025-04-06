@@ -2,7 +2,7 @@ package com.ertools.processing.commons
 
 object ProjectPathing {
     /** Data sets **/
-    const val DIR_DATA_CREMA_D = "CREMA-D/AudioWAV"
+    const val DIR_DATA_CREMA_D = "CREMA-D"
     const val DIR_DATA_RAVDESS = "RAVDESS"
     const val DIR_DATA_SAVEE = "SAVEE"
     const val DIR_DATA_TESS = "TESS"

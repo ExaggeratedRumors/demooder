@@ -17,10 +17,13 @@ Create GPU-learning environment on Windows (<a href="https://www.tensorflow.org/
 
 1. Create tensorflow-gpu enviroment:
 ```bash
+conda create --name gpu
+conda activate gpu
 conda install -c conda-forge cudatoolkit=11.2 cudnn=8.1.0
 ```
 2. Install jupyter notebook and libraries:
 ```bash
+conda install pip
 pip install tensorflow==2.10
 pip install numpy==1.23
 conda install keras

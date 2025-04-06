@@ -104,9 +104,9 @@ object IOManager {
 
     fun saveSpectrogramSample(sample: SpectrogramSample, dir: String) {
         val image = complexArrayToPng(sample)
-        val fileDir = File("${ProjectPathing.DIR_SPECTROGRAMS_OUTPUT}/$dir")
+        val fileDir = File(dir)
         if(!fileDir.exists()) fileDir.mkdir()
-        val file = File(dir, "${sample.filename}.${ProcessingUtils.EXT_SPECTROGRAM_OUTPUT}")
+        val file = File(fileDir, "${sample.filename}.${ProcessingUtils.EXT_SPECTROGRAM_OUTPUT}")
         ImageIO.write(image, ProcessingUtils.EXT_SPECTROGRAM_OUTPUT, file)
     }
 

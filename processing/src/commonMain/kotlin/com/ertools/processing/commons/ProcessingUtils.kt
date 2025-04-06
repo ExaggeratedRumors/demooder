@@ -12,7 +12,7 @@ object ProcessingUtils {
     const val WAV_AUGMENT_AFFIX = "AUG"
 
     /** Spectrogram **/
-    const val SPECTROGRAM_BATCH_SIZE = 256
+    const val SPECTROGRAM_BATCH_SIZE = 100
     const val SPECTROGRAM_FRAME_SIZE = 512
     const val SPECTROGRAM_STEP_SIZE = 256
     const val SPECTROGRAM_COLOR_RANGE = 255

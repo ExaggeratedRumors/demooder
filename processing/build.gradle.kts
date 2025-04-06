@@ -2,11 +2,12 @@ plugins {
     alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.android.library)
 }
+val projectCompileSdkVersion: Int by extra(34)
 
 kotlin {
     jvm {
-        //createTask("dataAugmentation", "com.ertools.processing.scripts.DataAugmentationScriptKt")
-        //createTask("generateSpectrograms", "com.ertools.processing.scripts.SpectrogramsGeneratorScriptKt")
+        createTask("dataAugmentation", "com.ertools.processing.scripts.DataAugmentationScriptKt")
+        createTask("generateSpectrograms", "com.ertools.processing.scripts.SpectrogramsGeneratorScriptKt")
     }
 
     androidTarget {
@@ -35,10 +36,11 @@ kotlin {
 
 android {
     namespace = "com.ertools.processing"
-    compileSdk = libs.versions.android.compileSdk.get().toInt()
+    compileSdk = projectCompileSdkVersion
 
     defaultConfig {
         minSdk = libs.versions.android.minSdk.get().toInt()
+        lint.targetSdk = 34
     }
 
     compileOptions {
@@ -60,7 +62,14 @@ fun createTask(taskName: String, mainClassName: String) {
         group = "model tasks"
         description = "Run $mainClassName"
         mainClass.set(mainClassName)
-        classpath = sourceSets["main"].runtimeClasspath
+
+        val jvmTarget = kotlin.targets.getByName("jvm")
+        val mainCompilation = jvmTarget.compilations.getByName("main")
+
+        classpath = files(mainCompilation.runtimeDependencyFiles, mainCompilation.output.classesDirs)
+
+
+        //classpath = sourceSets["main"].runtimeClasspath
         workingDir = file("$rootDir")
 
         val argsProperty = project.findProperty("args")?.toString()
