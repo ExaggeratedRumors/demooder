@@ -118,7 +118,7 @@ class WavFile(
             targetSampleRate
         )
         this.data = resampledData
-        this.header = header.copy(sampleRate = targetSampleRate)
+        //this.header = header.copy(sampleRate = targetSampleRate)
     }
 
     /**********************/

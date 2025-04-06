@@ -25,6 +25,7 @@ fun main(args: Array<String>) {
     /** Common configuration **/
     val frameSize = ProcessingUtils.SPECTROGRAM_FRAME_SIZE
     val stepSize = ProcessingUtils.SPECTROGRAM_STEP_SIZE
+    val resampling = false
 
     /** Program **/
     for(dataDir in dataDirs) {
@@ -34,9 +35,11 @@ fun main(args: Array<String>) {
         )
         println("R:\tRead ${soundData.size} samples.")
 
-        println("I:\tDown-sampling data to ${ProcessingUtils.WAV_TARGET_SAMPLE_RATE}kHz.")
-        soundData.forEach {
-            it.resample(ProcessingUtils.WAV_TARGET_SAMPLE_RATE)
+        if(resampling) {
+            println("I:\tDown-sampling data to ${ProcessingUtils.WAV_TARGET_SAMPLE_RATE}kHz.")
+            soundData.forEach {
+                it.resample(ProcessingUtils.WAV_TARGET_SAMPLE_RATE)
+            }
         }
 
         println("I:\tProcess data to spectrograms.")
