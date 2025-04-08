@@ -10,7 +10,7 @@ import com.ertools.demooder.presentation.components.AppScaffold
 import com.ertools.demooder.presentation.navigation.ScaffoldNavigation
 
 @Preview(name = "main", group = "main",
-    device = "spec:id=reference_phone,shape=Normal,width=411,height=891,unit=dp,dpi=420",
+    device = "spec:width=411dp,height=891dp,dpi=420",
     apiLevel = 34
 )
 @Composable

@@ -1,2 +1,3 @@
 1. Tworzyć 3-kanałowe spektrogramy
-2. Dodać więcej augmentacji
+2. CPU vs NNAPI inference on android
+3. Przetestować KMP 2.1.20 i Gradle 8.11 z Gradle pluginem 8.7.2

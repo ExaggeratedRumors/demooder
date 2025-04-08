@@ -5,7 +5,7 @@ import com.ertools.processing.commons.OctavesAmplitudeSpectrum
 import com.ertools.processing.commons.ThirdsAmplitudeSpectrum
 
 interface SpectrumProvider {
-    fun getOctavesAmplitudeSpectrum(): OctavesAmplitudeSpectrum
-    fun getAmplitudeSpectrum(): AmplitudeSpectrum
-    fun getThirdsAmplitudeSpectrum(): ThirdsAmplitudeSpectrum
+    suspend fun getOctavesAmplitudeSpectrum(): OctavesAmplitudeSpectrum
+    suspend fun getAmplitudeSpectrum(): AmplitudeSpectrum
+    suspend fun getThirdsAmplitudeSpectrum(): ThirdsAmplitudeSpectrum
 }

@@ -1,7 +1,9 @@
 package com.ertools.demooder.presentation.ui
 
 import android.content.Context
-import android.util.Log
+import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
@@ -47,7 +49,7 @@ import com.ertools.demooder.core.recorder.AudioRecorder
 import com.ertools.demooder.core.recorder.SpectrumProvider
 import com.ertools.demooder.presentation.viewmodel.SettingsViewModel
 import com.ertools.demooder.utils.AppConstants
-import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import java.util.Locale
@@ -58,7 +60,7 @@ fun PredictionView(
 ) {
     /** Recorder **/
     val context = LocalContext.current
-    val recorder = remember { AudioRecorder(context) }
+    val recorder = remember { AudioRecorder() }
 
     /** Buttons state **/
     val isRecording = remember { mutableStateOf(false) }
@@ -71,7 +73,15 @@ fun PredictionView(
             .padding(16.dp)
     ) {
         if (isRecording.value) {
-            recorder.startRecording()
+            val launcher = rememberLauncherForActivityResult(
+                ActivityResultContracts.RequestPermission()
+            ) { isGranted: Boolean ->
+                if(isGranted) recorder.startRecording()
+                else {
+                    Toast.makeText(context, "Record audio permission not granted", Toast.LENGTH_SHORT).show()
+                    isRecording.value = false
+                }
+            }
         } else {
             recorder.stopRecording()
         }
@@ -171,7 +181,7 @@ fun SpectrumView(
         modifier = modifier,
         verticalArrangement = Arrangement.Center,
     ){
-        var spectrum by remember { mutableStateOf(provider.getOctavesAmplitudeSpectrum()) }
+        var spectrum by remember { mutableStateOf(DoubleArray(0)) }
 
         LaunchedEffect(key1 = true) {
             while (true) {
@@ -227,7 +237,6 @@ fun EvaluationLabel(
         this.loadClassifier(context)
     }
     val prediction = remember { mutableStateOf(listOf<Pair<String, Float>>()) }
-    val counter = remember { mutableIntStateOf(0) }
     val placeholderText = stringResource(R.string.prediction_result_placeholder)
     val classificationText = remember { mutableStateOf(placeholderText) }
 
@@ -235,7 +244,7 @@ fun EvaluationLabel(
         while (true) {
             val detectionPeriod = settingsViewModel.signalDetectionPeriod.first()
             if(isRecording.value) {
-                thread {
+                coroutineScope {
                     classifier.predict(recorder.getData()) {
                         prediction.value = it
                         classificationText.value = prediction.value.joinToString("\n") {
