@@ -4,8 +4,8 @@ import com.ertools.processing.augmentation.WavAugmentation.applyNoise
 import com.ertools.processing.augmentation.WavAugmentation.applyPitchShift
 import com.ertools.processing.augmentation.WavAugmentation.applyShift
 import com.ertools.processing.commons.ProcessingUtils
-import com.ertools.processing.io.IOManager
-import com.ertools.processing.io.WavFile
+import com.ertools.processing.io.IOSoundData
+import com.ertools.processing.data.WavFile
 import org.junit.Test
 import java.io.File
 import javax.sound.sampled.AudioSystem
@@ -21,9 +21,9 @@ class AugmentationTest {
 
         val noisedAugmentation = AudioSystem.getAudioInputStream(testFile)
             .applyNoise(noiseLevel)
-        IOManager.saveWavFile(
+        IOSoundData.saveWavFile(
             noisedAugmentation,
-            resourcesPath,
+            "$resourcesPath/augmentation/",
             "${filename}_${ProcessingUtils.WAV_AUGMENT_AFFIX}_noise"
         )
     }
@@ -37,9 +37,9 @@ class AugmentationTest {
 
         val pitchAugmentation = AudioSystem.getAudioInputStream(testFile)
             .applyPitchShift(pitchFactor)
-        IOManager.saveWavFile(
+        IOSoundData.saveWavFile(
             pitchAugmentation,
-            resourcesPath,
+            "$resourcesPath/augmentation/",
             "${filename}_${ProcessingUtils.WAV_AUGMENT_AFFIX}_pitch"
         )
     }
@@ -54,15 +54,15 @@ class AugmentationTest {
 
         val positiveShiftAugmentation = AudioSystem.getAudioInputStream(testFile)
             .applyShift(samplesShift)
-        IOManager.saveWavFile(
+        IOSoundData.saveWavFile(
             positiveShiftAugmentation,
-            resourcesPath,
+            "$resourcesPath/augmentation/",
             "${filename}_${ProcessingUtils.WAV_AUGMENT_AFFIX}_shift1"
         )
 
         val negativeShiftAugmentation = AudioSystem.getAudioInputStream(testFile)
             .applyShift(-samplesShift)
-        IOManager.saveWavFile(
+        IOSoundData.saveWavFile(
             negativeShiftAugmentation,
             resourcesPath,
             "${filename}_${ProcessingUtils.WAV_AUGMENT_AFFIX}_shift2"

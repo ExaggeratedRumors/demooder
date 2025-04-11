@@ -2,7 +2,7 @@ plugins {
     alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.android.library)
 }
-val projectCompileSdkVersion: Int by extra(34)
+val projectCompileSdkVersion: Int by extra(libs.versions.android.compileSdk.get().toInt())
 
 kotlin {
     jvm {
@@ -15,7 +15,10 @@ kotlin {
 
     sourceSets {
         androidMain.dependencies {
-            implementation(libs.multik.core)
+            implementation(libs.litert)
+            implementation(libs.litert.support)
+            implementation(libs.litert.metadata)
+            implementation(libs.androidx.core.ktx)
             implementation(libs.junit)
         }
 
@@ -67,9 +70,6 @@ fun createTask(taskName: String, mainClassName: String) {
         val mainCompilation = jvmTarget.compilations.getByName("main")
 
         classpath = files(mainCompilation.runtimeDependencyFiles, mainCompilation.output.classesDirs)
-
-
-        //classpath = sourceSets["main"].runtimeClasspath
         workingDir = file("$rootDir")
 
         val argsProperty = project.findProperty("args")?.toString()

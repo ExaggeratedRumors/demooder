@@ -2,7 +2,7 @@ package com.ertools.processing.augmentation
 
 import com.ertools.processing.commons.ProcessingUtils
 import com.ertools.processing.commons.ProjectPathing
-import com.ertools.processing.io.IOManager
+import com.ertools.processing.io.IOSoundData
 import java.io.File
 import javax.sound.sampled.AudioInputStream
 import javax.sound.sampled.AudioSystem
@@ -23,7 +23,7 @@ object WavAugmentation {
         numberOfFiles: Int = Integer.MAX_VALUE,
         augmentFilesAmount: Int = ProcessingUtils.WAV_AUGMENT_AMOUNT
     ): Int {
-        val files = IOManager.fetchWavFiles(path, numberOfFiles)
+        val files = IOSoundData.fetchWavFiles(path, numberOfFiles)
         var counter = 0
         files.forEach { file ->
             if(file.name.contains(ProcessingUtils.WAV_AUGMENT_AFFIX)) return@forEach
@@ -47,7 +47,7 @@ object WavAugmentation {
                     .applyNoise(0.004f * Random.nextFloat())
                     .applyPitchShift(0.85f + 0.3f * Random.nextFloat())
 
-                IOManager.saveWavFile(
+                IOSoundData.saveWavFile(
                     stream,
                     "${ProjectPathing.DIR_AUDIO_INPUT}/$destinationPath",
                     "${file.nameWithoutExtension}_${ProcessingUtils.WAV_AUGMENT_AFFIX}${i + 1}"

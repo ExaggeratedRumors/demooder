@@ -1,5 +1,3 @@
-@file:Suppress("PropertyName")
-
 plugins {
     id("com.android.application")
     kotlin("android")
@@ -8,6 +6,7 @@ plugins {
 android {
     namespace = "com.ertools.demooder"
     compileSdkPreview = "UpsideDownCake"
+    compileSdk = libs.versions.android.compileSdk.get().toInt()
 
     defaultConfig {
         applicationId = "com.ertools.demooder"
@@ -15,7 +14,6 @@ android {
         targetSdk = libs.versions.android.targetSdk.get().toInt()
         versionCode = 1
         versionName = "1.0"
-        compileSdkPreview = "UpsideDownCake"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
@@ -73,10 +71,9 @@ dependencies {
     implementation(libs.accompanist.systemuicontroller)
 
     /** DeepLearning **/
-    implementation (libs.kotlin.deeplearning.tensorflow)
-    implementation (libs.kotlin.deeplearning.onnx)
-    implementation (libs.kotlin.deeplearning.visualization)
-    //implementation (libs.kotlin.libtensorflow.jni.gpu)
+    implementation(libs.litert)
+    implementation(libs.litert.support)
+    implementation(libs.litert.metadata)
 
     /** Complex **/
     implementation(libs.multik.core)

@@ -2,9 +2,8 @@
 accompanistSystemuicontroller = "0.36.0"
 android-compileSdk = "34"
 android-minSdk = "31"
-android-targetSdk = "31"
+android-targetSdk = "34"
 agp = "8.2.0"
-androidxJunit = "1.1.5"
 coreKtxVersion = "1.6.1"
 datastorePreferences = "1.1.1"
 kotlin = "1.9.22"
@@ -26,13 +25,12 @@ compose-plugin = "1.6.10"
 appcompat = "1.7.0"
 material = "1.12.0"
 junitKtx = "1.2.1"
-kotlinDeeplearningTensorflow = "0.5.2"
-libtensorflow = "1.15.0"
 jackson = "2.18.1"
 slf4j = "2.0.7"
 graphicsShapesAndroid = "1.0.1"
 uiautomator = "2.3.0"
 testng = "6.9.6"
+litert = "1.0.0"
 
 [libraries]
 accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanistPermissions" }
@@ -43,7 +41,6 @@ androidx-espresso-core = { module = "androidx.test.espresso:espresso-core", vers
 androidx-junit = { module = "androidx.test.ext:junit", version.ref = "junitVersion" }
 androidx-lifecycle-runtime-ktx = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "lifecycleRuntimeKtx" }
 androidx-core-ktx = { module = "androidx.core:core-ktx", version.ref = "coreKtx" }
-
 androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycleViewmodelComposeVersion" }
 androidx-material3 = { module = "androidx.compose.material3:material3", version.ref = "material3AdaptiveNavigationSuite" }
 androidx-material3-adaptive-navigation-suite = { module = "androidx.compose.material3:material3-adaptive-navigation-suite", version.ref = "material3AdaptiveNavigationSuite" }
@@ -57,29 +54,24 @@ androidx-ui-test-manifest = { module = "androidx.compose.ui:ui-test-manifest", v
 androidx-ui-tooling = { module = "androidx.compose.ui:ui-tooling", version.ref = "ui" }
 androidx-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview", version.ref = "ui" }
 androidx-uiautomator = { module = "androidx.test.uiautomator:uiautomator", version.ref = "uiautomator" }
+androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
+androidx-junit-ktx = { group = "androidx.test.ext", name = "junit-ktx", version.ref = "junitKtx" }
+androidx-graphics-shapes-android = { group = "androidx.graphics", name = "graphics-shapes-android", version.ref = "graphicsShapesAndroid" }
 core-ktx = { module = "androidx.test:core-ktx", version.ref = "coreKtxVersion" }
 junit = { module = "junit:junit", version.ref = "junit" }
-kotlin-deeplearning-onnx = { module = "org.jetbrains.kotlinx:kotlin-deeplearning-onnx", version.ref = "kotlinDeeplearningTensorflow" }
-kotlin-deeplearning-tensorflow = { module = "org.jetbrains.kotlinx:kotlin-deeplearning-tensorflow", version.ref = "kotlinDeeplearningTensorflow" }
-kotlin-deeplearning-visualization = { module = "org.jetbrains.kotlinx:kotlin-deeplearning-visualization", version.ref = "kotlinDeeplearningTensorflow" }
-kotlin-libtensorflow = { module = "org.tensorflow:libtensorflow", version.ref = "libtensorflow" }
-kotlin-libtensorflow-jni-gpu = { module = "org.tensorflow:libtensorflow_jni_gpu", version.ref = "libtensorflow" }
-androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
 kotlin-fasterxml-jackson-module = { module = "com.fasterxml.jackson.module:jackson-module-kotlin", version.ref = "jackson" }
 kotlin-org-slf4j-api = { module = "org.slf4j:slf4j-api", version.ref = "slf4j" }
 kotlin-org-slf4j-simple = { module = "org.slf4j:slf4j-simple", version.ref = "slf4j" }
-androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
-material = { group = "com.google.android.material", name = "material", version.ref = "material" }
-androidx-junit-ktx = { group = "androidx.test.ext", name = "junit-ktx", version.ref = "junitKtx" }
+litert = { group = "com.google.ai.edge.litert", name = "litert", version.ref = "litert" }
+litert-support = { group = "com.google.ai.edge.litert", name = "litert-support", version.ref = "litert" }
+litert-metadata = { group = "com.google.ai.edge.litert", name = "litert-metadata", version.ref = "litert" }
 multik-core = { module = "org.jetbrains.kotlinx:multik-core", version.ref = "multikCore" }
-androidx-graphics-shapes-android = { group = "androidx.graphics", name = "graphics-shapes-android", version.ref = "graphicsShapesAndroid" }
 testng = { group = "org.testng", name = "testng", version.ref = "testng" }
 
 [plugins]
 android-library = { id = "com.android.library", version.ref = "agp" }
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version = "1.9.21" }
-compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 jetbrains-compose = { id = "org.jetbrains.compose", version.ref = "compose-plugin" }
 jetbrains-kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }

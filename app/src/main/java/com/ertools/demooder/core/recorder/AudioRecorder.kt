@@ -45,36 +45,32 @@ class AudioRecorder (
     @Volatile
     private var isRecording = false
 
+    /*********/
     /** API **/
-    fun startRecording() {
+    /*********/
+
+    fun startRecording(callback: () -> (Unit) = {}) {
         if(isRecording) return
         Log.i("AudioRecorder", "Start recording.")
         startRecordingFlow()
         if(recorder == null) return
         isRecording = true
+        callback()
     }
 
-    fun stopRecording() {
+    fun stopRecording(callback: () -> (Unit) = {}) {
         Log.i("AudioRecorder", "Stop recording.")
-        if(recorder == null) return
         isRecording = false
+        if(recorder == null) return
         recorder?.stop()
         recorder?.release()
         recorder = null
+        callback()
     }
 
+    /*************/
     /** Private **/
-
-    @SuppressLint("MissingPermission")
-    private fun initRecorder() {
-        recorder = AudioRecord(
-            MediaRecorder.AudioSource.VOICE_RECOGNITION,
-            ProcessingUtils.AUDIO_SAMPLING_RATE,
-            AudioFormat.CHANNEL_IN_MONO,
-            AudioFormat.ENCODING_PCM_16BIT,
-            recorderBufferSize
-        )
-    }
+    /*************/
 
     @SuppressLint("MissingPermission")
     private fun startRecordingFlow() {
@@ -100,6 +96,7 @@ class AudioRecorder (
                     dataBufferSize - recorderBufferSize,
                     recorderBufferSize
                 )
+                Log.i("AudioRecorder", "Read $result bytes")
                 when(result) {
                     recorderBufferSize -> emit(dataBuffer)
                     AudioRecord.ERROR -> {
@@ -118,7 +115,6 @@ class AudioRecorder (
                 delay(recordingDelayMillis)
             }
         }
-
     }
 
     private fun shiftAudioBuffer() {
@@ -128,7 +124,10 @@ class AudioRecorder (
         }
     }
 
+    /***********************/
     /** Spectrum provider **/
+    /***********************/
+
     override suspend fun getAmplitudeSpectrum(): AmplitudeSpectrum =
         dataFlow.first().sliceArray(dataBufferSize - recorderBufferSize until dataBufferSize)
             .convertToComplex()
@@ -154,7 +153,10 @@ class AudioRecorder (
             .applyWeighting(AppConstants.RECORDER_WEIGHTING)
 
 
+    /*************************/
     /** Sound data provider **/
+    /*************************/
+
     override suspend fun getData(): ByteArray = dataFlow.first()
     override suspend fun getPeriodSeconds(): Double = recordingPeriodSeconds
 }

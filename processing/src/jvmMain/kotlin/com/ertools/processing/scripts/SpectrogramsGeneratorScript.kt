@@ -2,7 +2,8 @@ package com.ertools.processing.scripts
 
 import com.ertools.processing.commons.ProcessingUtils
 import com.ertools.processing.commons.ProjectPathing
-import com.ertools.processing.io.IOManager
+import com.ertools.processing.io.IOSoundData
+import com.ertools.processing.io.IOSpectrogram
 import com.ertools.processing.signal.Windowing
 import com.ertools.processing.spectrogram.SpectrogramSample
 import com.ertools.processing.spectrogram.SpectrogramsMetadata
@@ -30,7 +31,7 @@ fun main(args: Array<String>) {
     /** Program **/
     for(dataDir in dataDirs) {
         println("\n\nI:\tLoad sound data from directory: $dataDir")
-        val soundData = IOManager.loadWavFiles(
+        val soundData = IOSoundData.loadWavFiles(
             wavDir = dataDir
         )
         println("R:\tRead ${soundData.size} samples.")
@@ -59,17 +60,17 @@ fun main(args: Array<String>) {
             val end = min((it + 1) * spectrogramsBatchSize, soundData.size)
             val subset = soundData.subList(start, end)
             val spectrogramSet: List<SpectrogramSample> =
-                IOManager.convertWavFilesToSpectrogramSamples(
+                IOSoundData.convertWavFilesToSpectrogramSamples(
                     wavFiles = subset,
                     frameSize = frameSize,
                     stepSize = stepSize,
                     window = Windowing.WindowType.Hamming
                 )
-            IOManager.saveSpectrogramSamples(spectrogramSet, dataDir)
+            IOSpectrogram.saveSpectrogramSamples(spectrogramSet, dataDir)
             metadata.update(spectrogramSet)
         }
         println("R:\tSaved spectrograms images to ${ProjectPathing.DIR_SPECTROGRAMS_OUTPUT}/$dataDir directory.")
-        IOManager.saveSpectrogramMetadata(metadata, dataDir)
+        IOSpectrogram.saveSpectrogramMetadata(metadata, dataDir)
         println("R:\tSpectrograms metadata:\n$metadata")
     }
     println("I:\tEnd program.")

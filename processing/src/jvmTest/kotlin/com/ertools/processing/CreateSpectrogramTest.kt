@@ -1,9 +1,8 @@
 package com.ertools.processing
 
 import com.ertools.processing.commons.ProcessingUtils
-import com.ertools.processing.io.IOManager
-import com.ertools.processing.io.WavFile
-import com.ertools.processing.signal.Resampling
+import com.ertools.processing.io.IOSoundData
+import com.ertools.processing.data.WavFile
 import com.ertools.processing.signal.SignalPreprocessor
 import com.ertools.processing.signal.Windowing
 import com.ertools.processing.spectrogram.SpectrogramSample
@@ -36,9 +35,9 @@ class CreateSpectrogramTest {
             stepSize,
             window
         )
-        IOManager.saveSpectrogramSample(
+        IOSoundData.saveSpectrogramSample(
             SpectrogramSample(stft, wavFile.fileName),
-            resourcesPath
+            "$resourcesPath/spectrograms/"
         )
 
         /** Resampling **/
@@ -49,9 +48,9 @@ class CreateSpectrogramTest {
             stepSize,
             window
         )
-        IOManager.saveSpectrogramSample(
+        IOSoundData.saveSpectrogramSample(
             SpectrogramSample(stftResampled, "${wavFile.fileName}_resampled"),
-            resourcesPath
+            "$resourcesPath/spectrograms/"
         )
     }
 }

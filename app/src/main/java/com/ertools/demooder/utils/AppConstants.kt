@@ -7,10 +7,12 @@ import com.ertools.processing.signal.Windowing
 
 object AppConstants {
     /** Model **/
-    const val MODEL_NAME = "model.onnx"
+    const val MODEL_NAME = "model.tflite"
     const val MODEL_PREPROCESSING_FRAME_SIZE = ProcessingUtils.SPECTROGRAM_FRAME_SIZE
     const val MODEL_PREPROCESSING_FRAME_STEP = ProcessingUtils.SPECTROGRAM_STEP_SIZE
     val MODEL_PREPROCESSING_WINDOWING = Windowing.WindowType.Hamming
+    const val MODEL_THREAD_COUNT = 2
+    const val MODEL_USE_NNAPI = false
 
     /** Recorder **/
     const val RECORDER_DELAY_MILLIS = 1L /* 250L */

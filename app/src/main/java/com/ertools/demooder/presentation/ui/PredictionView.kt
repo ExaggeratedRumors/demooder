@@ -1,6 +1,7 @@
 package com.ertools.demooder.presentation.ui
 
 import android.content.Context
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -29,7 +30,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -53,7 +53,6 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import java.util.Locale
-import kotlin.concurrent.thread
 
 @Composable
 fun PredictionView(
@@ -64,6 +63,7 @@ fun PredictionView(
 
     /** Buttons state **/
     val isRecording = remember { mutableStateOf(false) }
+    val isRecorderInitialized = remember { mutableStateOf(false) }
     val isClear = remember { mutableStateOf(false) }
     val isSave = remember { mutableStateOf(false) }
     Column(
@@ -73,17 +73,13 @@ fun PredictionView(
             .padding(16.dp)
     ) {
         if (isRecording.value) {
-            val launcher = rememberLauncherForActivityResult(
-                ActivityResultContracts.RequestPermission()
-            ) { isGranted: Boolean ->
-                if(isGranted) recorder.startRecording()
-                else {
-                    Toast.makeText(context, "Record audio permission not granted", Toast.LENGTH_SHORT).show()
-                    isRecording.value = false
-                }
+            recorder.startRecording {
+                isRecorderInitialized.value = true
             }
         } else {
-            recorder.stopRecording()
+            recorder.stopRecording {
+                isRecorderInitialized.value = false
+            }
         }
         SpectrumView(
             modifier = Modifier
@@ -91,7 +87,7 @@ fun PredictionView(
                 .fillMaxHeight(0.7f)
                 .padding(16.dp),
             provider = recorder,
-            isRecording = isRecording
+            isRecording = isRecorderInitialized
         )
         EvaluationLabel(
             modifier = Modifier
@@ -101,7 +97,7 @@ fun PredictionView(
                 .align(Alignment.CenterHorizontally),
             context = context,
             recorder = recorder,
-            isRecording
+            isRecording = isRecorderInitialized
         )
         Row (
             modifier = Modifier
