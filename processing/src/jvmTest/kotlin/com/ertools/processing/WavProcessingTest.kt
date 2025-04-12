@@ -9,8 +9,8 @@ class WavProcessingTest {
     @Test
     fun `read and resample test wav file`() {
         /** Parameters **/
-        val targetSampleRate = 14000
-        val testDataFile = File("src/jvmTest/resources/tess.wav")
+        val targetSampleRate = 12000
+        val testDataFile = File("src/jvmTest/resources/cremad14kHz.wav")
 
         /** Read wav file **/
         val wavFile = WavFile.fromFile(testDataFile)

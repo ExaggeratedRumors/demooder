@@ -1,6 +1,5 @@
 package com.ertools.processing.model
 
-import android.graphics.Bitmap
 import com.ertools.processing.commons.RawData
 import com.ertools.processing.signal.SignalPreprocessor
 import com.ertools.processing.spectrogram.SpectrogramImage
@@ -16,7 +15,8 @@ class ModelPreprocessor(
 
     /**
      * Preprocess the raw data to a ByteBuffer.
-     *
+     * @param rawData The raw audio data to preprocess.
+     * @param debug If true, saves the spectrogram image for debugging.
      */
     fun proceed(rawData: RawData, debug: Boolean = false): ByteBuffer {
         /*  val downSampled = rawData.downSampling(

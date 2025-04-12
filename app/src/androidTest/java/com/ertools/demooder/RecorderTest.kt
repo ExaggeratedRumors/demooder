@@ -8,20 +8,12 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
-class AudioRecorderTest {
+class RecorderTest {
     private lateinit var audioRecorder: AudioRecorder
-    val samplingRate = 44100
-    private val recordingPeriodSeconds = 5.0
 
     @Before
     fun setUp() {
-        val context = InstrumentationRegistry.getInstrumentation().targetContext
-
-        audioRecorder = AudioRecorder(
-            context = context,
-            recordingPeriodSeconds = recordingPeriodSeconds,
-            recordingDelayMillis = 0
-        )
+        audioRecorder = AudioRecorder()
     }
 
     @Test

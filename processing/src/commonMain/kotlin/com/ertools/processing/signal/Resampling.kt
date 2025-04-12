@@ -84,6 +84,30 @@ object Resampling {
         return output
     }
 
+    fun RawData.downsampleWavPcm16bit(
+        originalSampleRate: Int,
+        targetSampleRate: Int
+    ): RawData {
+        require(originalSampleRate > targetSampleRate) { "Original sample rate must be greater than target sample rate." }
+        require(this.size % 2 == 0) { "Input data size must be even for 16-bit PCM." }
+
+        val factor = originalSampleRate / targetSampleRate
+        val output = ByteArray(this.size / factor)
+
+        var outputIndex = 0
+        val sampleCount = this.size / 2
+
+        for (i in 0 until sampleCount step factor) {
+            val byteIndex = i * 2
+            if (byteIndex + 1 >= this.size) break
+
+            output[outputIndex++] = this[byteIndex]
+            output[outputIndex++] = this[byteIndex + 1]
+        }
+
+        return output.copyOf(outputIndex)
+    }
+
     /**
      * Up-sample raw sound data.
      * @param length Length of the input data.

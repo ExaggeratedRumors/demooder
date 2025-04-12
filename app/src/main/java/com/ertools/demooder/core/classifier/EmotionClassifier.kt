@@ -12,7 +12,7 @@ import com.ertools.processing.model.ModelPreprocessor
 import org.tensorflow.lite.Interpreter
 import java.nio.ByteBuffer
 
-class ClassifierManager {
+class EmotionClassifier {
     private val configuration = ModelConfiguration(
         modelName = AppConstants.MODEL_NAME,
         frameSize = AppConstants.MODEL_PREPROCESSING_FRAME_SIZE,
@@ -28,31 +28,32 @@ class ClassifierManager {
     private lateinit var classifier: Interpreter
     private lateinit var preprocessor: ModelPreprocessor
 
-
     fun loadClassifier(context: Context) {
-        if (!isModelInitialized) throw IllegalStateException("Model is not initialized")
         try {
             classifier = IOModel.loadModel(context, configuration)
             shape = ModelShape.fromShapeArray(classifier.getInputTensor(0).shape())
             Log.d(
-                "ClassifierManager",
+                "EmotionClassifier",
                 "Model loaded with shape: [width=${shape.width}, height=${shape.height}, channels=${shape.channels}]"
             )
             preprocessor = ModelPreprocessor(configuration, shape)
             isModelInitialized = true
         } catch (e: Exception) {
-            Log.e("ClassifierManager", "Error loading classifier: ${e.message}")
+            Log.e("EmotionClassifier", "Error loading classifier: ${e.message}")
             isModelInitialized = false
         }
     }
 
     fun predict(rawData: RawData, callback: (List<Pair<String, Float>>) -> (Unit)) {
-        val inputBuffer: ByteBuffer = preprocessor.proceed(rawData)
-        val outputBuffer = FloatArray(labels.size) { Float.NaN }
+        if (!isModelInitialized) throw IllegalStateException("Model is not initialized")
+        val inputBuffer: ByteBuffer = preprocessor.proceed(rawData, debug = false)
+        Log.d("EmotionClassifier", "Input sum: ${inputBuffer.array().sum()}")
+        val outputBuffer = Array(1) { FloatArray(labels.size) { Float.NaN }}
         classifier.run(inputBuffer, outputBuffer)
-        Log.d("ClassifierManager", "Prediction result: $outputBuffer")
-        callback(labels.map { (id, name) ->
-            name to outputBuffer[id]
-        })
+        val result = labels.map { (id, name) ->
+            name to outputBuffer.last()[id]
+        }.sortedByDescending { it.second }
+        Log.d("EmotionClassifier", "Prediction result: $result")
+        callback(result)
     }
 }

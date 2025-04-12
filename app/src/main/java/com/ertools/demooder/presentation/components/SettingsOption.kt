@@ -16,8 +16,7 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchColors
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableDoubleStateOf
+import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -35,12 +34,11 @@ sealed class OptionData(
 
     class InputOptionData(
         optionTitle: String,
-        private val defaultValue: Double,
+        val value: State<Double>,
         val onValidate: @Composable (String) -> Boolean,
-        private val onSave: (InputOptionData) -> Unit
+        private val onSave: (Double) -> Unit
     ) : OptionData(optionTitle) {
-        val currentValue: MutableState<Double> = mutableDoubleStateOf(defaultValue)
-        override fun valueToString(): String = "${"%.1f".format(Locale.ENGLISH, currentValue.value)}"
+        override fun valueToString(): String = "%.1f".format(Locale.ENGLISH, value.value)
 
         @Composable
         override fun SettingsOption() {
@@ -95,8 +93,7 @@ sealed class OptionData(
                             showDialog.value = false
                             //if(option.onValidate(it)) {
                                 inputText.value = it
-                                option.currentValue.value = it.toDouble()
-                                option.onSave(option)
+                                option.onSave(it.toDouble())
                             //}
                             inputText.value = it
                         }
@@ -110,11 +107,10 @@ sealed class OptionData(
 
     class SwitchOptionData(
         optionTitle: String,
-        private val defaultValue: Boolean,
-        private val onSave: (SwitchOptionData) -> Unit
+        private val value: State<Boolean>,
+        private val onSave: (Boolean) -> Unit
     ) : OptionData(optionTitle) {
-        val currentValue: MutableState<Boolean> = mutableStateOf(defaultValue)
-        override fun valueToString(): String = "${currentValue.value}"
+        override fun valueToString(): String = "${value.value}"
 
         @Composable
         override fun SettingsOption() {
@@ -146,10 +142,9 @@ sealed class OptionData(
                             color = MaterialTheme.colorScheme.onSurface
                         )
                         Switch(
-                            checked = option.currentValue.value,
+                            checked = option.value.value,
                             onCheckedChange = {
-                                option.currentValue.value = it
-                                option.onSave(option)
+                                option.onSave(it)
                             },
                             colors = SwitchColors(
                                 checkedThumbColor = MaterialTheme.colorScheme.tertiary,

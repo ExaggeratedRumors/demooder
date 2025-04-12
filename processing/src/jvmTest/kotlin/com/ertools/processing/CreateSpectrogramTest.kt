@@ -1,8 +1,8 @@
 package com.ertools.processing
 
 import com.ertools.processing.commons.ProcessingUtils
-import com.ertools.processing.io.IOSoundData
 import com.ertools.processing.data.WavFile
+import com.ertools.processing.io.IOSpectrogram
 import com.ertools.processing.signal.SignalPreprocessor
 import com.ertools.processing.signal.Windowing
 import com.ertools.processing.spectrogram.SpectrogramSample
@@ -15,7 +15,7 @@ class CreateSpectrogramTest {
     fun `create and save spectrogram`() {
         /** Pathing **/
         val resourcesPath = "src/jvmTest/resources/"
-        val filename = "tess.wav"
+        val filename = "cremad14kHz.wav"
 
         /** Files **/
         val testFile = File(resourcesPath, filename)
@@ -26,7 +26,7 @@ class CreateSpectrogramTest {
         val frameSize = ProcessingUtils.SPECTROGRAM_FRAME_SIZE
         val stepSize = ProcessingUtils.SPECTROGRAM_STEP_SIZE
         val window = Windowing.WindowType.Hamming
-        val sampleRate = ProcessingUtils.WAV_TARGET_SAMPLE_RATE
+        val targetSampleRate = 8000
 
         /** Create spectrogram **/
         val stft = SignalPreprocessor.stft(
@@ -35,20 +35,20 @@ class CreateSpectrogramTest {
             stepSize,
             window
         )
-        IOSoundData.saveSpectrogramSample(
+        IOSpectrogram.saveSpectrogramSample(
             SpectrogramSample(stft, wavFile.fileName),
             "$resourcesPath/spectrograms/"
         )
 
         /** Resampling **/
-        wavFile.resample(sampleRate)
+        wavFile.downsample(targetSampleRate)
         val stftResampled = SignalPreprocessor.stft(
             wavFile.data,
             frameSize,
             stepSize,
             window
         )
-        IOSoundData.saveSpectrogramSample(
+        IOSpectrogram.saveSpectrogramSample(
             SpectrogramSample(stftResampled, "${wavFile.fileName}_resampled"),
             "$resourcesPath/spectrograms/"
         )

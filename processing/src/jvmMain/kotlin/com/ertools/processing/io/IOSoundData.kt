@@ -7,15 +7,12 @@ import com.ertools.processing.data.WavFile
 import com.ertools.processing.signal.SignalPreprocessor
 import com.ertools.processing.signal.Windowing
 import com.ertools.processing.spectrogram.SpectrogramSample
-import com.fasterxml.jackson.databind.ObjectMapper
 import java.io.File
 import javax.sound.sampled.AudioFileFormat
 import javax.sound.sampled.AudioInputStream
 import javax.sound.sampled.AudioSystem
 
 object IOSoundData {
-    private val objectMapper = ObjectMapper().apply { findAndRegisterModules() }
-
     /***************/
     /** Wav files **/
     /***************/
@@ -74,11 +71,4 @@ object IOSoundData {
         val stft = SignalPreprocessor.stft(file.data, frameSize, stepSize, window)
         SpectrogramSample(stft, file.fileName)
     }
-
-    /*************/
-    /** Private **/
-    /*************/
-    private fun <T>saveObject(file: File, data: T) = objectMapper.writeValue(file, data)
-
-    private fun <T>loadObject(file: File, objectClass: Class<T>): T = objectMapper.readValue(file, objectClass)
 }

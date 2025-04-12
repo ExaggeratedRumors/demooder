@@ -4,17 +4,18 @@ import android.graphics.Bitmap
 import android.graphics.Color
 import android.os.Environment
 import androidx.core.graphics.createBitmap
+import androidx.core.graphics.scale
 import androidx.core.graphics.set
 import com.ertools.processing.commons.AmplitudeSpectrum
 import com.ertools.processing.commons.ProcessingUtils.SPECTROGRAM_COLOR_RANGE
 import com.ertools.processing.commons.Spectrogram
+import com.ertools.processing.model.ModelShape
 import com.ertools.processing.signal.SignalPreprocessor.convertStftToAmplitude
+import org.tensorflow.lite.DataType
+import org.tensorflow.lite.support.image.TensorImage
 import java.io.File
 import java.io.FileOutputStream
 import java.nio.ByteBuffer
-import java.nio.ByteOrder
-import androidx.core.graphics.scale
-import com.ertools.processing.model.ModelShape
 
 object SpectrogramImage {
     /**
@@ -60,32 +61,10 @@ object SpectrogramImage {
      * @return A ByteBuffer containing the image data.
      */
     fun scaledByteBufferFromBitmap(image: Bitmap, shape: ModelShape): ByteBuffer {
-        val byteBuffer = ByteBuffer.allocateDirect(4 * shape.width * shape.height * shape.channels)
-        byteBuffer.order(ByteOrder.nativeOrder())
-
         val scaledBitmap = image.scale(shape.width, shape.height)
-        val intValues = IntArray(shape.width * shape.height)
-        scaledBitmap.getPixels(
-            IntArray(shape.width * shape.height),
-            0,
-            shape.width,
-            0,
-            0,
-            shape.width,
-            shape.height
-        )
-
-        for (pixel in intValues) {
-            val r = (pixel shr 16 and 0xFF) / 255.0f
-            val g = (pixel shr 8 and 0xFF) / 255.0f
-            val b = (pixel and 0xFF) / 255.0f
-            byteBuffer.putFloat(r)
-            byteBuffer.putFloat(g)
-            byteBuffer.putFloat(b)
-        }
-
-        byteBuffer.rewind()
-        return byteBuffer
+        val tensor = TensorImage(DataType.FLOAT32)
+        tensor.load(scaledBitmap)
+        return tensor.buffer
     }
 
     /**

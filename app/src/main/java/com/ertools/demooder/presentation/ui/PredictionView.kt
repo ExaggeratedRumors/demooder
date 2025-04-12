@@ -1,10 +1,5 @@
 package com.ertools.demooder.presentation.ui
 
-import android.content.Context
-import android.util.Log
-import android.widget.Toast
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
@@ -27,12 +22,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.State
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -44,50 +37,53 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ertools.demooder.R
-import com.ertools.demooder.core.classifier.ClassifierManager
+import com.ertools.demooder.core.classifier.EmotionClassifier
+import com.ertools.demooder.core.classifier.PredictionProvider
 import com.ertools.demooder.core.recorder.AudioRecorder
-import com.ertools.demooder.core.recorder.SpectrumProvider
+import com.ertools.demooder.core.spectrum.SpectrumProvider
+import com.ertools.demooder.presentation.viewmodel.RecorderViewModel
+import com.ertools.demooder.presentation.viewmodel.RecorderViewModelFactory
 import com.ertools.demooder.presentation.viewmodel.SettingsViewModel
 import com.ertools.demooder.utils.AppConstants
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.first
 import java.util.Locale
 
 @Composable
 fun PredictionView(
 ) {
+    /** Settings **/
+    val settingsViewModel: SettingsViewModel = viewModel()
+    val detectionPeriod by settingsViewModel.signalDetectionPeriod.collectAsState()
+
     /** Recorder **/
     val context = LocalContext.current
-    val recorder = remember { AudioRecorder() }
+    val classifier = EmotionClassifier().apply { this.loadClassifier(context) }
+    val recorder = AudioRecorder()
+    val recorderViewModelFactory = remember {
+        RecorderViewModelFactory(
+            recorder = recorder,
+            classifier = classifier,
+            graphUpdatePeriodMillis = AppConstants.UI_GRAPH_UPDATE_DELAY,
+            classificationPeriodMillis = detectionPeriod.toLong() * 1000
+        )
+    }
+    val recorderViewModel: RecorderViewModel = viewModel(factory = recorderViewModelFactory)
 
     /** Buttons state **/
-    val isRecording = remember { mutableStateOf(false) }
-    val isRecorderInitialized = remember { mutableStateOf(false) }
-    val isClear = remember { mutableStateOf(false) }
-    val isSave = remember { mutableStateOf(false) }
+    val isRecording = recorderViewModel.isRecording.collectAsState()
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .fillMaxHeight()
             .padding(16.dp)
     ) {
-        if (isRecording.value) {
-            recorder.startRecording {
-                isRecorderInitialized.value = true
-            }
-        } else {
-            recorder.stopRecording {
-                isRecorderInitialized.value = false
-            }
-        }
         SpectrumView(
             modifier = Modifier
                 .fillMaxWidth()
                 .fillMaxHeight(0.7f)
                 .padding(16.dp),
-            provider = recorder,
-            isRecording = isRecorderInitialized
+            provider = recorderViewModel,
+            isRecording = isRecording
         )
         EvaluationLabel(
             modifier = Modifier
@@ -95,9 +91,8 @@ fun PredictionView(
                 .fillMaxWidth(0.6f)
                 .background(MaterialTheme.colorScheme.secondary)
                 .align(Alignment.CenterHorizontally),
-            context = context,
-            recorder = recorder,
-            isRecording = isRecorderInitialized
+            provider = recorderViewModel,
+            isRecording = isRecording
         )
         Row (
             modifier = Modifier
@@ -106,16 +101,16 @@ fun PredictionView(
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            StateButton(
-                state = isSave,
-                enableIconResource = R.drawable.settings_link,
-                disableIconResource = R.drawable.settings_link,
+            ClickButton(
+                onClick = { recorderViewModel.saveRecording() },
+                iconResource = R.drawable.settings_link,
                 iconContentDescriptionResource = R.string.prediction_save_cd,
                 modifier = Modifier
                     .fillMaxHeight(0.6f)
                     .aspectRatio(1f)
             )
             StateButton(
+                onClick = { recorderViewModel.toggleRecording() },
                 state = isRecording,
                 enableIconResource = R.drawable.mic_filled,
                 disableIconResource = R.drawable.stop_filled,
@@ -124,10 +119,9 @@ fun PredictionView(
                     .fillMaxHeight(0.8f)
                     .aspectRatio(1f)
             )
-            StateButton(
-                state = isClear,
-                enableIconResource = R.drawable.records_filled,
-                disableIconResource = R.drawable.records_outline,
+            ClickButton(
+                onClick = { recorderViewModel.clearRecording() },
+                iconResource = R.drawable.records_filled,
                 iconContentDescriptionResource = R.string.prediction_clear_cd,
                 modifier = Modifier
                     .fillMaxHeight(0.6f)
@@ -140,16 +134,15 @@ fun PredictionView(
 
 @Composable
 fun StateButton(
-    state: MutableState<Boolean>,
+    onClick: () -> Unit,
+    state: State<Boolean>,
     enableIconResource: Int,
     disableIconResource: Int,
     iconContentDescriptionResource: Int,
     modifier: Modifier = Modifier
 ) {
     Button(
-        onClick = {
-            state.value = !state.value
-        },
+        onClick = { onClick() },
         modifier = modifier,
         colors = ButtonDefaults.buttonColors(
             containerColor = if (state.value) MaterialTheme.colorScheme.tertiary
@@ -166,25 +159,40 @@ fun StateButton(
     }
 }
 
+@Composable
+fun ClickButton(
+    onClick: () -> Unit,
+    iconResource: Int,
+    iconContentDescriptionResource: Int,
+    modifier: Modifier = Modifier
+) {
+    Button(
+        onClick = { onClick() },
+        modifier = modifier,
+        colors = ButtonDefaults.buttonColors(
+            containerColor = MaterialTheme.colorScheme.primary
+        ),
+        shape = MaterialTheme.shapes.extraSmall
+    ) {
+        Icon(
+            painter = painterResource(iconResource),
+            modifier = Modifier.fillMaxSize(),
+            contentDescription = stringResource(iconContentDescriptionResource)
+        )
+    }
+}
 
 @Composable
 fun SpectrumView(
     modifier: Modifier = Modifier,
     provider: SpectrumProvider,
-    isRecording: MutableState<Boolean>
+    isRecording: State<Boolean>
 ) {
     Column (
         modifier = modifier,
         verticalArrangement = Arrangement.Center,
     ){
-        var spectrum by remember { mutableStateOf(DoubleArray(0)) }
-
-        LaunchedEffect(key1 = true) {
-            while (true) {
-                if(isRecording.value) spectrum = provider.getOctavesAmplitudeSpectrum()
-                delay(AppConstants.UI_GRAPH_UPDATE_DELAY)
-            }
-        }
+        val spectrum by provider.getSpectrum().collectAsState()
 
         Surface (
             modifier = Modifier
@@ -202,19 +210,21 @@ fun SpectrumView(
                     .padding(horizontal = 16.dp),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                spectrum.forEach { sample ->
-                    val animatedHeight by animateFloatAsState(
-                        targetValue = sample.toFloat() * integerResource(R.integer.equalizer_bar_factor),
-                        animationSpec = spring(),
-                        label = "$sample"
-                    )
-                    Box(
-                        modifier = Modifier
-                            .width(dimensionResource(R.dimen.equalizer_bar_height))
-                            .height((animatedHeight).dp)
-                            .align(Alignment.Bottom)
-                            .background(MaterialTheme.colorScheme.primary)
-                    )
+                if (isRecording.value) {
+                    spectrum.forEach { sample ->
+                        val animatedHeight by animateFloatAsState(
+                            targetValue = sample.toFloat() * integerResource(R.integer.equalizer_bar_factor),
+                            animationSpec = spring(),
+                            label = "$sample"
+                        )
+                        Box(
+                            modifier = Modifier
+                                .width(dimensionResource(R.dimen.equalizer_bar_height))
+                                .height((animatedHeight).dp)
+                                .align(Alignment.Bottom)
+                                .background(MaterialTheme.colorScheme.primary)
+                        )
+                    }
                 }
             }
         }
@@ -224,41 +234,20 @@ fun SpectrumView(
 @Composable
 fun EvaluationLabel(
     modifier: Modifier = Modifier,
-    context: Context,
-    recorder: AudioRecorder,
-    isRecording: MutableState<Boolean>
+    provider: PredictionProvider,
+    isRecording: State<Boolean>
 ) {
-    val settingsViewModel: SettingsViewModel = viewModel()
-    val classifier = ClassifierManager().apply {
-        this.loadClassifier(context)
-    }
-    val prediction = remember { mutableStateOf(listOf<Pair<String, Float>>()) }
     val placeholderText = stringResource(R.string.prediction_result_placeholder)
-    val classificationText = remember { mutableStateOf(placeholderText) }
-
-    LaunchedEffect(key1 = true) {
-        while (true) {
-            val detectionPeriod = settingsViewModel.signalDetectionPeriod.first()
-            if(isRecording.value) {
-                coroutineScope {
-                    classifier.predict(recorder.getData()) {
-                        prediction.value = it
-                        classificationText.value = prediction.value.joinToString("\n") {
-                                (label, inference) -> "${label}: ${"%.2f".format(Locale.ENGLISH, inference * 100)}%"
-                        }
-                    }
-                }
-            }
-            delay(detectionPeriod.toLong() * 1000)
-        }
-    }
+    val prediction by provider.getPrediction().collectAsState(initial = emptyList())
 
     Column(
         modifier = modifier
     ) {
-
         Text(
-            text = classificationText.value,
+            text = if(!isRecording.value || prediction.isEmpty()) placeholderText
+            else prediction.joinToString("\n") { (label, inference) ->
+                "${label}: ${"%.2f".format(Locale.ENGLISH, inference * 100)}%"
+            },
             style = MaterialTheme.typography.titleMedium,
             modifier = Modifier.align(Alignment.CenterHorizontally),
             fontFamily = FontFamily.Monospace,

@@ -2,6 +2,8 @@ package com.ertools.processing.data
 
 import com.ertools.processing.commons.ProcessingUtils
 import com.ertools.processing.signal.Resampling.downSampling
+import com.ertools.processing.signal.Resampling.downsampleWavPcm16bit
+import com.ertools.processing.signal.Resampling.upSampling
 import java.io.File
 import java.io.FileInputStream
 import java.nio.ByteBuffer
@@ -110,15 +112,34 @@ class WavFile(
         }
     }
 
-    fun resample(targetSampleRate: Int) {
-        val resampledData = data.downSampling(
-            header.subchunk2Size,
-            header.numChannels.toInt() == 2,
+    fun downsample(targetSampleRate: Int) {
+        val newData = data.downsampleWavPcm16bit(
             header.sampleRate,
             targetSampleRate
         )
+        this.data = newData
+    }
+
+    fun resample(targetSampleRate: Int) {
+        if(targetSampleRate == header.sampleRate) return
+        if(targetSampleRate <= 0) throw WavException("Target sample rate must be greater than 0.")
+        val resampledData = if(targetSampleRate < header.sampleRate) {
+            data.downSampling(
+                header.subchunk2Size,
+                header.numChannels.toInt() == 2,
+                header.sampleRate,
+                targetSampleRate
+            )
+        } else {
+            data.upSampling(
+                header.subchunk2Size,
+                header.numChannels.toInt() == 2,
+                header.sampleRate,
+                targetSampleRate
+            )
+        }
         this.data = resampledData
-        //this.header = header.copy(sampleRate = targetSampleRate)
+        this.header = header.copy(sampleRate = targetSampleRate)
     }
 
     fun toFile(): File{

@@ -8,9 +8,9 @@ data class ModelShape(
     companion object {
         fun fromShapeArray(shapeArray: IntArray): ModelShape {
             return ModelShape(
-                width = shapeArray[0],
                 height = shapeArray[1],
-                channels = shapeArray[2]
+                width = shapeArray[2],
+                channels = shapeArray[3]
             )
         }
     }

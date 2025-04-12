@@ -8,6 +8,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -21,7 +22,6 @@ import com.ertools.demooder.presentation.components.OptionData
 import com.ertools.demooder.presentation.components.ReturnScaffold
 import com.ertools.demooder.presentation.viewmodel.SettingsViewModel
 import com.ertools.demooder.utils.Validation
-import kotlinx.coroutines.flow.first
 
 @Composable
 fun SettingsView(
@@ -29,32 +29,35 @@ fun SettingsView(
     settingsViewModel: SettingsViewModel = viewModel()
 ) {
     val data = remember { mutableStateOf(emptyList<OptionData>()) }
+    val deviceDamping = settingsViewModel.deviceDamping.collectAsState()
+    val signalDetectionPeriod = settingsViewModel.signalDetectionPeriod.collectAsState()
+    val enableNotifications = settingsViewModel.enableNotifications.collectAsState()
+    val angerDetectionTime = settingsViewModel.angerDetectionTime.collectAsState()
+
     LaunchedEffect(true) {
         data.value = listOf(
             OptionData.InputOptionData(
                 optionTitle = "Device damping",
-                defaultValue = settingsViewModel.deviceDamping.first(),
+                value = deviceDamping,
                 onValidate = { Validation.isNumberInRange(it, -100, 100) },
-                onSave = {
-                    settingsViewModel.saveDeviceDamping(it.currentValue.value)
-                }
+                onSave = { settingsViewModel.saveDeviceDamping(it) }
             ),
             OptionData.InputOptionData(
                 optionTitle = "Signal detection period in seconds",
-                defaultValue = settingsViewModel.signalDetectionPeriod.first(),
+                value = signalDetectionPeriod,
                 onValidate = { Validation.isNumberInRange(it, 1, 10) },
-                onSave = { settingsViewModel.saveSignalDetectionPeriod(it.currentValue.value) }
+                onSave = { settingsViewModel.saveSignalDetectionPeriod(it) }
             ),
             OptionData.SwitchOptionData(
                 optionTitle = "Enable notifications",
-                defaultValue = settingsViewModel.enableNotifications.first(),
-                onSave = { settingsViewModel.saveEnableNotifications(it.currentValue.value) }
+                value = enableNotifications,
+                onSave = { settingsViewModel.saveEnableNotifications(it) }
             ),
             OptionData.InputOptionData(
                 optionTitle = "Anger detection time in seconds before trigger notification",
-                defaultValue = settingsViewModel.angerDetectionTime.first(),
+                value = angerDetectionTime,
                 onValidate = { Validation.isNumberInRange(it, 1, 60) },
-                onSave = { settingsViewModel.saveAngerDetectionTime(it.currentValue.value) }
+                onSave = { settingsViewModel.saveAngerDetectionTime(it) }
             )
         )
     }
