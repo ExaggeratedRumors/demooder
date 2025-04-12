@@ -7,7 +7,6 @@ import androidx.core.graphics.createBitmap
 import androidx.core.graphics.scale
 import androidx.core.graphics.set
 import com.ertools.processing.commons.AmplitudeSpectrum
-import com.ertools.processing.commons.ProcessingUtils.SPECTROGRAM_COLOR_RANGE
 import com.ertools.processing.commons.Spectrogram
 import com.ertools.processing.model.ModelShape
 import com.ertools.processing.signal.SignalPreprocessor.convertStftToAmplitude
@@ -45,7 +44,7 @@ object SpectrogramImage {
         for (x in 0 until width) {
             for (y in 0 until height) {
                 val intensity = amplitudeData[x][y]
-                val normalizedIntensity = ((intensity - minIntensity) / (maxIntensity - minIntensity) * SPECTROGRAM_COLOR_RANGE).toFloat()
+                val normalizedIntensity = ((intensity - minIntensity) / (maxIntensity - minIntensity)).toFloat()
                 val color = Color.valueOf(normalizedIntensity, normalizedIntensity, normalizedIntensity)
                 bitmap[x, height - y - 1] = color.toArgb()
             }
