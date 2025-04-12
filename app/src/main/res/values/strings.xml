@@ -25,6 +25,11 @@
     <string name="prediction_result_placeholder">Waiting for session…</string>
     <string name="prediction_result_loading">Analyzing…</string>
 
+    <!-- RECORDS -->
+    <string name="records_icon_cd">Recording</string>
+    <string name="records_external_storage">External storage</string>
+    <string name="records_internal_storage">Internal storage</string>
+
     <!-- ERRORS -->
     <string name="error_number">You must input a number.</string>
     <string name="error_number_range">Number must be between %1$d and %2$d.</string>

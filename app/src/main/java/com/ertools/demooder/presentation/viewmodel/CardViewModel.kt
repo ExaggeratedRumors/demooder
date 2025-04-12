@@ -6,7 +6,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 
-class MainViewModel(application: Application) : AndroidViewModel(application) {
+class CardViewModel(application: Application) : AndroidViewModel(application) {
 
     private val _tabIndex: MutableLiveData<Int> = MutableLiveData(0)
     val tabIndex: LiveData<Int> = _tabIndex

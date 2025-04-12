@@ -99,8 +99,6 @@ sealed class OptionData(
                         }
                     )
                 }
-
-
             }
         }
     }
