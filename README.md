@@ -13,6 +13,12 @@ Android application using input sound to recognize voice.
 in progress
 `
 
+## Preview
+
+<p align="center">
+    <img src="refs/preview.gif" width="400" alt="preview"/> 
+</p>
+
 ## Technologies
 Application:
 - Kotlin 1.9.22

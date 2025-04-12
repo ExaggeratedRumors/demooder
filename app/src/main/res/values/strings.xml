@@ -23,6 +23,7 @@
     <string name="prediction_save_cd">Save</string>
     <string name="prediction_clear_cd">Clear</string>
     <string name="prediction_result_placeholder">Waiting for session…</string>
+    <string name="prediction_result_loading">Analyzing…</string>
 
     <!-- ERRORS -->
     <string name="error_number">You must input a number.</string>

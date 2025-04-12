@@ -238,14 +238,16 @@ fun EvaluationLabel(
     isRecording: State<Boolean>
 ) {
     val placeholderText = stringResource(R.string.prediction_result_placeholder)
+    val loadingText = stringResource(R.string.prediction_result_loading)
     val prediction by provider.getPrediction().collectAsState(initial = emptyList())
 
     Column(
         modifier = modifier
     ) {
         Text(
-            text = if(!isRecording.value || prediction.isEmpty()) placeholderText
-            else prediction.joinToString("\n") { (label, inference) ->
+            text = if(!isRecording.value) placeholderText
+            else if (prediction.isEmpty()) loadingText
+            else prediction.take(2).joinToString("\n") { (label, inference) ->
                 "${label}: ${"%.2f".format(Locale.ENGLISH, inference * 100)}%"
             },
             style = MaterialTheme.typography.titleMedium,

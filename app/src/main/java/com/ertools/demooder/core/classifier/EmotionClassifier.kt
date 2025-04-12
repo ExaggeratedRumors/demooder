@@ -47,7 +47,6 @@ class EmotionClassifier {
     fun predict(rawData: RawData, callback: (List<Pair<String, Float>>) -> (Unit)) {
         if (!isModelInitialized) throw IllegalStateException("Model is not initialized")
         val inputBuffer: ByteBuffer = preprocessor.proceed(rawData, debug = true)
-        Log.d("EmotionClassifier", "Input sum: ${inputBuffer.array().sum()}")
         val outputBuffer = Array(1) { FloatArray(labels.size) { Float.NaN }}
         classifier.run(inputBuffer, outputBuffer)
         val result = labels.map { (id, name) ->
