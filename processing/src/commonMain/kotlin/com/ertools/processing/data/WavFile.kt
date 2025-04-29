@@ -6,6 +6,7 @@ import com.ertools.processing.signal.Resampling.downsampleWavPcm16bit
 import com.ertools.processing.signal.Resampling.upSampling
 import java.io.File
 import java.io.FileInputStream
+import java.io.InputStream
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 
@@ -41,6 +42,7 @@ class WavFile(
                 return WavFile(filename, header, data)
             }
         }
+
 
         /**************/
         /** Privates **/
