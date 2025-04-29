@@ -14,7 +14,7 @@ import java.nio.ByteBuffer
 
 class EmotionClassifier {
     private val configuration = ModelConfiguration(
-        modelName = AppConstants.MODEL_NAME,
+        modelName = AppConstants.EMOTION_CLASSIFIER_NAME,
         frameSize = AppConstants.MODEL_PREPROCESSING_FRAME_SIZE,
         frameStep = AppConstants.MODEL_PREPROCESSING_FRAME_STEP,
         windowing = AppConstants.MODEL_PREPROCESSING_WINDOWING,

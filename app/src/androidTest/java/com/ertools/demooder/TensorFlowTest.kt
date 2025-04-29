@@ -90,4 +90,27 @@ class TensorFlowTest {
         }
     }
 
+    @Test
+    fun `detect voice from stft`() {
+        val audioFilename = "test_audio.wav"
+        val context = InstrumentationRegistry.getInstrumentation().context
+        val inputStream = context.assets.open(audioFilename)
+        val file = File.createTempFile("temp_asset_", ".wav")
+        file.deleteOnExit()
+        FileOutputStream(file).use { output ->
+            inputStream.copyTo(output)
+        }
+        val wavFile = WavFile.fromFile(file)
+        val stft = stft(
+            wavFile.data,
+            ProcessingUtils.SPECTROGRAM_FRAME_SIZE,
+            ProcessingUtils.SPECTROGRAM_STEP_SIZE,
+            Windowing.WindowType.Hamming
+        )
+
+
+        val
+
+    }
+
 }

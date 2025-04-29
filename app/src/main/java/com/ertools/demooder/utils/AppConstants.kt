@@ -7,7 +7,8 @@ import com.ertools.processing.signal.Windowing
 
 object AppConstants {
     /** Model **/
-    const val MODEL_NAME = "classifier.tflite"
+    const val EMOTION_CLASSIFIER_NAME = "classifier.tflite"
+    const val SPEECH_DETECTOR_NAME = "yamnet.tflite"
     const val MODEL_PREPROCESSING_FRAME_SIZE = ProcessingUtils.SPECTROGRAM_FRAME_SIZE
     const val MODEL_PREPROCESSING_FRAME_STEP = ProcessingUtils.SPECTROGRAM_STEP_SIZE
     val MODEL_PREPROCESSING_WINDOWING = Windowing.WindowType.Hamming
