@@ -22,7 +22,7 @@ class EmotionClassifier {
         useNNAPI = AppConstants.MODEL_USE_NNAPI
     )
     private val labels = Emotion.entries.associate { it.ordinal to it.name }
-    private var isModelInitialized = false
+    var isModelInitialized = false
 
     private lateinit var shape: ModelShape
     private lateinit var classifier: Interpreter
