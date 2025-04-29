@@ -2,11 +2,12 @@ package com.ertools.processing.model
 
 import com.ertools.processing.commons.RawData
 import com.ertools.processing.signal.SignalPreprocessor
+import com.ertools.processing.spectrogram.SpectrogramConfiguration
 import com.ertools.processing.spectrogram.SpectrogramImage
 import java.nio.ByteBuffer
 
 class ModelPreprocessor(
-    private val modelConfiguration: ModelConfiguration,
+    private val spectrogramConfiguration: SpectrogramConfiguration,
     private val modelShape: ModelShape
 ) {
     /*********/
@@ -27,9 +28,9 @@ class ModelPreprocessor(
         )*/
         val stft = SignalPreprocessor.stft(
             rawData,
-            modelConfiguration.frameSize,
-            modelConfiguration.frameStep,
-            modelConfiguration.windowing
+            spectrogramConfiguration.frameSize,
+            spectrogramConfiguration.frameStep,
+            spectrogramConfiguration.windowing
         )
         val bitmap = SpectrogramImage.fromSpectrogram(stft)
         if(debug) SpectrogramImage.saveSpectrogramImage(bitmap, "ertools")

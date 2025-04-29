@@ -9,18 +9,23 @@ import com.ertools.processing.commons.Emotion
 import com.ertools.processing.commons.RawData
 import com.ertools.processing.io.IOModel
 import com.ertools.processing.model.ModelPreprocessor
+import com.ertools.processing.spectrogram.SpectrogramConfiguration
 import org.tensorflow.lite.Interpreter
 import java.nio.ByteBuffer
 
 class EmotionClassifier {
-    private val configuration = ModelConfiguration(
+    private val modelConfiguration = ModelConfiguration(
         modelName = AppConstants.EMOTION_CLASSIFIER_NAME,
-        frameSize = AppConstants.MODEL_PREPROCESSING_FRAME_SIZE,
-        frameStep = AppConstants.MODEL_PREPROCESSING_FRAME_STEP,
-        windowing = AppConstants.MODEL_PREPROCESSING_WINDOWING,
         threadCount = AppConstants.MODEL_THREAD_COUNT,
         useNNAPI = AppConstants.MODEL_USE_NNAPI
     )
+
+    private val spectrogramConfiguration = SpectrogramConfiguration(
+        frameSize = AppConstants.MODEL_PREPROCESSING_FRAME_SIZE,
+        frameStep = AppConstants.MODEL_PREPROCESSING_FRAME_STEP,
+        windowing = AppConstants.MODEL_PREPROCESSING_WINDOWING
+    )
+
     private val labels = Emotion.entries.associate { it.ordinal to it.name }
     var isModelInitialized = false
 
@@ -30,13 +35,13 @@ class EmotionClassifier {
 
     fun loadClassifier(context: Context) {
         try {
-            classifier = IOModel.loadModel(context, configuration)
+            classifier = IOModel.loadModel(context, modelConfiguration)
             shape = ModelShape.fromShapeArray(classifier.getInputTensor(0).shape())
             Log.d(
                 "EmotionClassifier",
                 "Model loaded with shape: [width=${shape.width}, height=${shape.height}, channels=${shape.channels}]"
             )
-            preprocessor = ModelPreprocessor(configuration, shape)
+            preprocessor = ModelPreprocessor(spectrogramConfiguration, shape)
             isModelInitialized = true
         } catch (e: Exception) {
             Log.e("EmotionClassifier", "Error loading classifier: ${e.message}")

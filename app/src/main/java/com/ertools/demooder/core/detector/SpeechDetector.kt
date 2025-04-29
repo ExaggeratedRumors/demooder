@@ -8,16 +8,20 @@ import com.ertools.processing.commons.Spectrogram
 import com.ertools.processing.io.IOModel
 import com.ertools.processing.model.ModelConfiguration
 import com.ertools.processing.signal.SignalPreprocessor
+import com.ertools.processing.spectrogram.SpectrogramConfiguration
 import org.tensorflow.lite.Interpreter
 
 class SpeechDetector {
-    private val configuration = ModelConfiguration(
-        modelName = AppConstants.EMOTION_CLASSIFIER_NAME,
-        frameSize = AppConstants.MODEL_PREPROCESSING_FRAME_SIZE,
-        frameStep = AppConstants.MODEL_PREPROCESSING_FRAME_STEP,
-        windowing = AppConstants.MODEL_PREPROCESSING_WINDOWING,
+    private val modelConfiguration = ModelConfiguration(
+        modelName = AppConstants.SPEECH_DETECTOR_NAME,
         threadCount = AppConstants.MODEL_THREAD_COUNT,
         useNNAPI = AppConstants.MODEL_USE_NNAPI
+    )
+
+    private val spectrogramConfiguration = SpectrogramConfiguration(
+        frameSize = AppConstants.MODEL_PREPROCESSING_FRAME_SIZE,
+        frameStep = AppConstants.MODEL_PREPROCESSING_FRAME_STEP,
+        windowing = AppConstants.MODEL_PREPROCESSING_WINDOWING
     )
 
     private lateinit var detector: Interpreter
@@ -29,31 +33,33 @@ class SpeechDetector {
      */
     fun loadModel(context: Context) {
         try {
-            detector = IOModel.loadModel(context, configuration)
+            detector = IOModel.loadModel(context, modelConfiguration)
             isModelInitialized = true
         } catch (e: Exception) {
-            Log.e("EmotionClassifier", "Error loading classifier: ${e.message}")
+            Log.e("SpeechDetector", "Error loading detector: ${e.message}")
             isModelInitialized = false
         }
     }
 
     /**
      * Predict the speech detection result from the raw audio data.
+     * @param rawData The raw audio data to process.
+     * @param callback The callback to receive the prediction result.
      */
-    fun predict(rawData: RawData, callback: (Boolean) -> (Unit)) {
+    fun detectSpeech(rawData: RawData, callback: (Boolean) -> (Unit)) {
         if (!isModelInitialized) throw IllegalStateException("Model is not initialized")
 
         val spectrogram: Spectrogram = SignalPreprocessor.stft(
             rawData,
-            configuration.frameSize,
-            configuration.frameStep,
-            configuration.windowing
+            spectrogramConfiguration.frameSize,
+            spectrogramConfiguration.frameStep,
+            spectrogramConfiguration.windowing
         )
 
         val outputBuffer = Array(1) { FloatArray(10) { Float.NaN }}
         detector.run(spectrogram, outputBuffer)
         val result = speechThreshold(outputBuffer)
-        Log.d("SpeechDetector", "Prediction result: $result")
+        Log.d("SpeechDetector", "Detection result: $result")
         callback(result)
     }
 

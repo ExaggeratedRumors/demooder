@@ -6,6 +6,7 @@ import android.content.res.AssetManager
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.ertools.demooder.core.classifier.EmotionClassifier
+import com.ertools.demooder.core.detector.SpeechDetector
 import com.ertools.processing.commons.Emotion
 import com.ertools.processing.commons.ProcessingUtils
 import com.ertools.processing.data.WavFile
@@ -21,15 +22,6 @@ import java.io.FileOutputStream
 
 @RunWith(AndroidJUnit4::class)
 class TensorFlowTest {
-    private lateinit var assets: AssetManager
-
-    @Before
-    fun setUp() {
-        val context = InstrumentationRegistry.getInstrumentation().context
-
-        assets = context.assets
-    }
-
     @Test
     fun `print tensorflow version`() {
         assertEquals("TensorFlow version.","2.18.0", TensorFlowLite.runtimeVersion())
@@ -101,16 +93,14 @@ class TensorFlowTest {
             inputStream.copyTo(output)
         }
         val wavFile = WavFile.fromFile(file)
-        val stft = stft(
-            wavFile.data,
-            ProcessingUtils.SPECTROGRAM_FRAME_SIZE,
-            ProcessingUtils.SPECTROGRAM_STEP_SIZE,
-            Windowing.WindowType.Hamming
-        )
 
-
-        val
-
+        val speechDetector = SpeechDetector()
+        speechDetector.loadModel(context)
+        speechDetector.detectSpeech(wavFile.data) {
+            val result = it
+            println("R: Detection result: $result")
+            assertEquals(true, result)
+        }
     }
 
 }
