@@ -6,6 +6,28 @@ import com.ertools.processing.commons.RawData
  * Algorithm source: https://gist.github.com/mattmalec/6ceee1f3961ff3068727ca98ff199fab
  */
 object Resampling {
+
+    /**
+     * Resample raw sound data.
+     * @param length Length of the input data.
+     * @param isStereo True if the input data is stereo, false if mono.
+     * @param inputFrequency Input frequency of the data.
+     * @param outputFrequency Output frequency of the data.
+     * @return Resampled raw sound data.
+     */
+    fun RawData.resample(
+        length: Int,
+        isStereo: Boolean,
+        inputFrequency: Int,
+        outputFrequency: Int
+    ): RawData {
+        return if (inputFrequency > outputFrequency) {
+            downSampling(length, isStereo, inputFrequency, outputFrequency)
+        } else {
+            upSampling(length, isStereo, inputFrequency, outputFrequency)
+        }
+    }
+
     /**
      * Down-sample raw sound data.
      * @param length Length of the input data.
@@ -20,89 +42,47 @@ object Resampling {
         inputFrequency: Int,
         outputFrequency: Int
     ): RawData {
-        if(inputFrequency == outputFrequency && this.size == length) return this
-        if(inputFrequency == outputFrequency) return this.copyOfRange(0, length)
+        if (inputFrequency == outputFrequency && this.size == length) return this
+        if (inputFrequency == outputFrequency) return this.copyOfRange(0, length)
 
-        val factor = outputFrequency.toDouble() / inputFrequency.toDouble()
-        val output: ByteArray
-        var currentPosition = 0.0
-        var outputPosition = 0
-        var inputPosition = 0
+        val factor = inputFrequency.toDouble() / outputFrequency.toDouble()
+        val inputSampleSize = if (isStereo) 4 else 2
+        val outputSamplesAmount = (length / inputSampleSize / factor).toInt()
+        val output = ByteArray(outputSamplesAmount * inputSampleSize)
 
-        if (!isStereo) {
-            /** Mono channel - 16 bits **/
-            var sum = 0.0
-            output = ByteArray((length * factor).toInt())
-
-            while (outputPosition < output.size) {
-                val firstValue = this[inputPosition++].toDouble()
-                var nextPosition = currentPosition + factor
-                if (nextPosition >= 1) {
-                    sum += firstValue * (1 - currentPosition)
-                    output[outputPosition++] = Math.round(sum).toByte()
-                    nextPosition -= 1
-                    sum = nextPosition * firstValue
-                } else {
-                    sum += factor * firstValue
-                }
-                currentPosition = nextPosition
-
-                if (inputPosition >= length && outputPosition < output.size) {
-                    output[outputPosition++] = Math.round(sum / currentPosition).toByte()
-                }
-            }
-        } else {
-            /** Stereo channel - 32 bits **/
-            var sum1 = 0.0
-            var sum2 = 0.0
-            output = ByteArray(2 * ((length / 2) * factor).toInt())
-
-            while (outputPosition < output.size) {
-                val firstValue = this[inputPosition++].toDouble()
-                val nextValue = this[inputPosition++].toDouble()
-                var nextPosition = currentPosition + factor
-                if (nextPosition >= 1) {
-                    sum1 += firstValue * (1 - currentPosition)
-                    sum2 += nextValue * (1 - currentPosition)
-                    output[outputPosition++] = Math.round(sum1).toByte()
-                    output[outputPosition++] = Math.round(sum2).toByte()
-                    nextPosition -= 1
-                    sum1 = nextPosition * firstValue
-                    sum2 = nextPosition * nextValue
-                } else {
-                    sum1 += factor * firstValue
-                    sum2 += factor * nextValue
-                }
-                currentPosition = nextPosition
-
-                if (inputPosition >= length && outputPosition < output.size) {
-                    output[outputPosition++] = Math.round(sum1 / currentPosition).toByte()
-                    output[outputPosition++] = Math.round(sum2 / currentPosition).toByte()
-                }
-            }
-        }
-        return output
-    }
-
-    fun RawData.downsampleWavPcm16bit(
-        originalSampleRate: Int,
-        targetSampleRate: Int
-    ): RawData {
-        require(originalSampleRate > targetSampleRate) { "Original sample rate must be greater than target sample rate." }
-        require(this.size % 2 == 0) { "Input data size must be even for 16-bit PCM." }
-
-        val factor = originalSampleRate / targetSampleRate
-        val output = ByteArray(this.size / factor)
-
+        var inputIndex = 0.0
         var outputIndex = 0
-        val sampleCount = this.size / 2
 
-        for (i in 0 until sampleCount step factor) {
-            val byteIndex = i * 2
-            if (byteIndex + 1 >= this.size) break
+        for (i in 0 until outputSamplesAmount) {
+            val byteIndex = inputIndex.toInt() * inputSampleSize
 
-            output[outputIndex++] = this[byteIndex]
-            output[outputIndex++] = this[byteIndex + 1]
+            if (byteIndex + inputSampleSize > this.size) break
+
+            if (!isStereo) {
+                /* Mono - 2 bytes */
+                val low = this[byteIndex].toInt() and 0xFF
+                val high = this[byteIndex + 1].toInt()
+                val sample = ((high shl 8) or low).toShort()
+
+                output[outputIndex++] = (sample.toInt() and 0xFF).toByte()
+                output[outputIndex++] = ((sample.toInt() shr 8) and 0xFF).toByte()
+            } else {
+                /* Stereo - 4 bytes */
+                val leftLow = this[byteIndex].toInt() and 0xFF
+                val leftHigh = this[byteIndex + 1].toInt()
+                val rightLow = this[byteIndex + 2].toInt() and 0xFF
+                val rightHigh = this[byteIndex + 3].toInt()
+
+                val leftSample = ((leftHigh shl 8) or leftLow).toShort()
+                val rightSample = ((rightHigh shl 8) or rightLow).toShort()
+
+                output[outputIndex++] = (leftSample.toInt() and 0xFF).toByte()
+                output[outputIndex++] = ((leftSample.toInt() shr 8) and 0xFF).toByte()
+                output[outputIndex++] = (rightSample.toInt() and 0xFF).toByte()
+                output[outputIndex++] = ((rightSample.toInt() shr 8) and 0xFF).toByte()
+            }
+
+            inputIndex += factor
         }
 
         return output.copyOf(outputIndex)
@@ -122,42 +102,52 @@ object Resampling {
         inputFrequency: Int,
         outputFrequency: Int
     ): RawData {
-        if(inputFrequency == outputFrequency && this.size == length) return this
-        if(inputFrequency == outputFrequency) return this.copyOfRange(0, length)
+        if (inputFrequency == outputFrequency && this.size == length) return this
+        if (inputFrequency == outputFrequency) return this.copyOfRange(0, length)
 
-        val factor = inputFrequency.toDouble() / outputFrequency.toDouble()
-        val output: ByteArray
-        var currentPosition = 0.0
-        var inputPosition: Int
-        var diff: Double
+        val factor = outputFrequency.toDouble() / inputFrequency.toDouble()
+        val inputSampleSize = if (isStereo) 4 else 2
+        val outputSamplesAmount = (length / inputSampleSize * factor).toInt()
+        val output = ByteArray(outputSamplesAmount * inputSampleSize)
 
-        if(!isStereo) {
-            /** Mono channel - 16 bits **/
-            output = ByteArray((length / factor).toInt())
-            for(i in output.indices) {
-                inputPosition = currentPosition.toInt()
-                diff = if(inputPosition >= length - 1) {
-                    inputPosition = length - 2
-                    1.0
-                } else currentPosition - inputPosition
-                output[i] = Math.round(this[inputPosition] * (1 - diff) + this[inputPosition + 1] * diff).toByte()
-                currentPosition += factor
+        var inputIndex = 0.0
+        var outputIndex = 0
+
+        while (outputIndex < outputSamplesAmount) {
+            val frac = inputIndex - inputIndex.toInt()
+
+            if (inputIndex.toInt() >= length / inputSampleSize - 1) break
+
+            val inputByteIndex = inputIndex.toInt() * inputSampleSize
+            val nextByteIndex = (inputIndex.toInt() + 1) * inputSampleSize
+
+            if (!isStereo) {
+                val currentSample = ((this[inputByteIndex + 1].toInt() shl 8) or (this[inputByteIndex].toInt() and 0xFF)).toShort()
+                val nextSample = ((this[nextByteIndex + 1].toInt() shl 8) or (this[nextByteIndex].toInt() and 0xFF)).toShort()
+
+                val interpolated = (currentSample * (1 - frac) + nextSample * frac).toInt().toShort()
+                output[outputIndex * 2] = (interpolated.toInt() and 0xFF).toByte()
+                output[outputIndex * 2 + 1] = ((interpolated.toInt() shr 8) and 0xFF).toByte()
+            } else {
+                val left1 = ((this[inputByteIndex + 1].toInt() shl 8) or (this[inputByteIndex].toInt() and 0xFF)).toShort()
+                val right1 = ((this[inputByteIndex + 3].toInt() shl 8) or (this[inputByteIndex + 2].toInt() and 0xFF)).toShort()
+
+                val left2 = ((this[nextByteIndex + 1].toInt() shl 8) or (this[nextByteIndex].toInt() and 0xFF)).toShort()
+                val right2 = ((this[nextByteIndex + 3].toInt() shl 8) or (this[nextByteIndex + 2].toInt() and 0xFF)).toShort()
+
+                val leftInterpolation = (left1 * (1 - frac) + left2 * frac).toInt().toShort()
+                val rightInterpolation = (right1 * (1 - frac) + right2 * frac).toInt().toShort()
+
+                output[outputIndex * 4] = (leftInterpolation.toInt() and 0xFF).toByte()
+                output[outputIndex * 4 + 1] = ((leftInterpolation.toInt() shr 8) and 0xFF).toByte()
+                output[outputIndex * 4 + 2] = (rightInterpolation.toInt() and 0xFF).toByte()
+                output[outputIndex * 4 + 3] = ((rightInterpolation.toInt() shr 8) and 0xFF).toByte()
             }
-        } else {
-            /** Stereo channel - 32 bits **/
-            output = ByteArray(2 * (length / 2 / factor).toInt())
-            for(i in 0 until output.size / 2) {
-                inputPosition = currentPosition.toInt()
-                var inputRealPosition = inputPosition * 2
-                diff = if(inputRealPosition >= length - 3) {
-                    inputRealPosition = length - 4
-                    1.0
-                } else currentPosition - inputRealPosition
-                output[i * 2] = Math.round(this[inputRealPosition] * (1 - diff) + this[inputRealPosition + 2] * diff).toByte()
-                output[i * 2 + 1] = Math.round(this[inputRealPosition + 1] * (1 - diff) + this[inputRealPosition + 3] * diff).toByte()
-                currentPosition += factor
-            }
+
+            outputIndex++
+            inputIndex += 1.0 / factor
         }
-        return output
+
+        return output.copyOf(outputIndex * inputSampleSize)
     }
 }

@@ -1,12 +1,14 @@
-package com.ertools.processing.model
+package com.ertools.demooder.core.classifier
 
+import com.ertools.demooder.utils.AppConstants.APP_DIR_NAME
 import com.ertools.processing.commons.RawData
+import com.ertools.processing.model.ModelShape
 import com.ertools.processing.signal.SignalPreprocessor
 import com.ertools.processing.spectrogram.SpectrogramConfiguration
 import com.ertools.processing.spectrogram.SpectrogramImage
 import java.nio.ByteBuffer
 
-class ModelPreprocessor(
+class ClassifierPreprocessor(
     private val spectrogramConfiguration: SpectrogramConfiguration,
     private val modelShape: ModelShape
 ) {
@@ -33,7 +35,7 @@ class ModelPreprocessor(
             spectrogramConfiguration.windowing
         )
         val bitmap = SpectrogramImage.fromSpectrogram(stft)
-        if(debug) SpectrogramImage.saveSpectrogramImage(bitmap, "ertools")
+        if(debug) SpectrogramImage.saveSpectrogramImage(bitmap, APP_DIR_NAME)
         val inputBuffer = SpectrogramImage.scaledByteBufferFromBitmap(bitmap, modelShape)
         return inputBuffer
     }

@@ -8,22 +8,21 @@ import com.ertools.processing.model.ModelConfiguration
 import com.ertools.processing.commons.Emotion
 import com.ertools.processing.commons.RawData
 import com.ertools.processing.io.IOModel
-import com.ertools.processing.model.ModelPreprocessor
 import com.ertools.processing.spectrogram.SpectrogramConfiguration
 import org.tensorflow.lite.Interpreter
 import java.nio.ByteBuffer
 
 class EmotionClassifier {
     private val modelConfiguration = ModelConfiguration(
-        modelName = AppConstants.EMOTION_CLASSIFIER_NAME,
-        threadCount = AppConstants.MODEL_THREAD_COUNT,
-        useNNAPI = AppConstants.MODEL_USE_NNAPI
+        modelName = AppConstants.CLASSIFIER_NAME,
+        threadCount = AppConstants.CLASSIFIER_THREAD_COUNT,
+        useNNAPI = AppConstants.CLASSIFIER_USE_NNAPI
     )
 
     private val spectrogramConfiguration = SpectrogramConfiguration(
-        frameSize = AppConstants.MODEL_PREPROCESSING_FRAME_SIZE,
-        frameStep = AppConstants.MODEL_PREPROCESSING_FRAME_STEP,
-        windowing = AppConstants.MODEL_PREPROCESSING_WINDOWING
+        frameSize = AppConstants.CLASSIFIER_PREPROCESSING_FRAME_SIZE,
+        frameStep = AppConstants.CLASSIFIER_PREPROCESSING_FRAME_STEP,
+        windowing = AppConstants.CLASSIFIER_PREPROCESSING_WINDOWING
     )
 
     private val labels = Emotion.entries.associate { it.ordinal to it.name }
@@ -31,7 +30,7 @@ class EmotionClassifier {
 
     private lateinit var shape: ModelShape
     private lateinit var classifier: Interpreter
-    private lateinit var preprocessor: ModelPreprocessor
+    private lateinit var preprocessor: ClassifierPreprocessor
 
     fun loadClassifier(context: Context) {
         try {
@@ -41,7 +40,7 @@ class EmotionClassifier {
                 "EmotionClassifier",
                 "Model loaded with shape: [width=${shape.width}, height=${shape.height}, channels=${shape.channels}]"
             )
-            preprocessor = ModelPreprocessor(spectrogramConfiguration, shape)
+            preprocessor = ClassifierPreprocessor(spectrogramConfiguration, shape)
             isModelInitialized = true
         } catch (e: Exception) {
             Log.e("EmotionClassifier", "Error loading classifier: ${e.message}")

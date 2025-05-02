@@ -15,7 +15,7 @@ class CreateSpectrogramTest {
     fun `create and save spectrogram`() {
         /** Pathing **/
         val resourcesPath = "src/jvmTest/resources/"
-        val filename = "ravdess48kHz.wav"
+        val filename = "tess.wav"
 
         /** Files **/
         val testFile = File(resourcesPath, filename)
@@ -26,7 +26,7 @@ class CreateSpectrogramTest {
         val frameSize = ProcessingUtils.SPECTROGRAM_FRAME_SIZE
         val stepSize = ProcessingUtils.SPECTROGRAM_STEP_SIZE
         val window = Windowing.WindowType.Hamming
-        val targetSampleRate = 8000
+        val targetSampleRate = 16000
 
         /** Create spectrogram **/
         val stft = SignalPreprocessor.stft(
@@ -41,7 +41,7 @@ class CreateSpectrogramTest {
         )
 
         /** Resampling **/
-        wavFile.downsample(targetSampleRate)
+        wavFile.resample(targetSampleRate)
         val stftResampled = SignalPreprocessor.stft(
             wavFile.data,
             frameSize,

@@ -1,19 +1,13 @@
 package com.ertools.demooder
 
-import androidx.test.platform.app.InstrumentationRegistry
-import android.content.Context
-import android.content.res.AssetManager
-import androidx.test.core.app.ApplicationProvider.getApplicationContext
+import android.util.Log
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.platform.app.InstrumentationRegistry
 import com.ertools.demooder.core.classifier.EmotionClassifier
 import com.ertools.demooder.core.detector.SpeechDetector
 import com.ertools.processing.commons.Emotion
-import com.ertools.processing.commons.ProcessingUtils
 import com.ertools.processing.data.WavFile
-import com.ertools.processing.signal.SignalPreprocessor.stft
-import com.ertools.processing.signal.Windowing
 import junit.framework.TestCase.assertEquals
-import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.tensorflow.lite.TensorFlowLite
@@ -36,29 +30,8 @@ class TensorFlowTest {
    }
 
     @Test
-    fun `read stft from audio data`() {
-        val audioFilename = "test_audio.wav"
-        val context = InstrumentationRegistry.getInstrumentation().context
-        val inputStream = context.assets.open(audioFilename)
-        val file = File.createTempFile("temp_asset_", ".wav")
-        file.deleteOnExit()
-        FileOutputStream(file).use { output ->
-            inputStream.copyTo(output)
-        }
-        val wavFile = WavFile.fromFile(file)
-
-        val stft = stft(
-            wavFile.data,
-            ProcessingUtils.SPECTROGRAM_FRAME_SIZE,
-            ProcessingUtils.SPECTROGRAM_STEP_SIZE,
-            Windowing.WindowType.Hamming
-        )
-        assertEquals(283, stft.size)
-    }
-
-    @Test
     fun `predict emotion from audio data`() {
-        val audioFilename = "test_audio.wav"
+        val audioFilename = "cremad14kHz.wav"
         val context = InstrumentationRegistry.getInstrumentation().context
         val inputStream = context.assets.open(audioFilename)
         val file = File.createTempFile("temp_asset_", ".wav")
@@ -77,29 +50,50 @@ class TensorFlowTest {
         classifier.predict(wavFile.data) { result ->
             val endTime = System.currentTimeMillis()
             assertEquals(result.size, Emotion.entries.size)
-            println("R: Prediction result: $result")
-            println("R: Prediction time: ${endTime - startTime} ms")
+            Log.i("TensorFlowTest", "Prediction result: $result")
+            Log.i("TensorFlowTest", "Prediction time: ${endTime - startTime} ms")
         }
     }
 
-    @Test
-    fun `detect voice from stft`() {
-        val audioFilename = "test_audio.wav"
-        val context = InstrumentationRegistry.getInstrumentation().context
-        val inputStream = context.assets.open(audioFilename)
-        val file = File.createTempFile("temp_asset_", ".wav")
-        file.deleteOnExit()
-        FileOutputStream(file).use { output ->
-            inputStream.copyTo(output)
-        }
-        val wavFile = WavFile.fromFile(file)
 
-        val speechDetector = SpeechDetector()
+    @Test
+    fun `read speech detection model`() {
+        val context = InstrumentationRegistry.getInstrumentation().context
+        val sampleRate = 16000
+        val speechDetector = SpeechDetector(sampleRate)
         speechDetector.loadModel(context)
-        speechDetector.detectSpeech(wavFile.data) {
-            val result = it
-            println("R: Detection result: $result")
-            assertEquals(true, result)
+        assertEquals(true, speechDetector.isModelInitialized)
+    }
+
+    @Test
+    fun `detect voice from audio data`() {
+        val audioFiles = mapOf(
+            Pair("cremad14kHz.wav", 14000) to true,
+            Pair("ravdess48kHz.wav", 48000) to true,
+            Pair("tess24414Hz.wav", 24414) to true,
+            Pair("horn44100Hz.wav", 44100) to false,
+            Pair("noise44100Hz.wav", 44100) to false,
+            Pair("bonfire44100Hz.wav", 44100) to false
+        )
+
+        audioFiles.forEach { (audioPair, expected) ->
+            val context = InstrumentationRegistry.getInstrumentation().context
+            val inputStream = context.assets.open(audioPair.first)
+            val file = File.createTempFile("temp_asset_", ".wav")
+            file.deleteOnExit()
+            FileOutputStream(file).use { output ->
+                inputStream.copyTo(output)
+            }
+            val wavFile = WavFile.fromFile(file)
+            Log.i("TensorFlowTest", "WavFile header: ${wavFile.header}")
+
+            val speechDetector = SpeechDetector(audioPair.second)
+            speechDetector.loadModel(context)
+            speechDetector.detectSpeech(wavFile.data) {
+                val result = it
+                Log.i("TensorFlowTest", "Detection result: $result")
+                assertEquals(expected, result)
+            }
         }
     }
 

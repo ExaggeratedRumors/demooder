@@ -4,28 +4,31 @@ import android.content.Context
 import android.util.Log
 import com.ertools.demooder.utils.AppConstants
 import com.ertools.processing.commons.RawData
-import com.ertools.processing.commons.Spectrogram
 import com.ertools.processing.io.IOModel
 import com.ertools.processing.model.ModelConfiguration
-import com.ertools.processing.signal.SignalPreprocessor
-import com.ertools.processing.spectrogram.SpectrogramConfiguration
+import com.ertools.processing.model.ModelShape
 import org.tensorflow.lite.Interpreter
+import kotlin.math.roundToInt
 
-class SpeechDetector {
+/**
+ * Class for speech detection using a TensorFlow Lite model.
+ */
+class SpeechDetector(
+    private val recordingSampleRate: Int
+) {
     private val modelConfiguration = ModelConfiguration(
         modelName = AppConstants.SPEECH_DETECTOR_NAME,
-        threadCount = AppConstants.MODEL_THREAD_COUNT,
-        useNNAPI = AppConstants.MODEL_USE_NNAPI
+        threadCount = AppConstants.CLASSIFIER_THREAD_COUNT,
+        useNNAPI = AppConstants.CLASSIFIER_USE_NNAPI
     )
 
-    private val spectrogramConfiguration = SpectrogramConfiguration(
-        frameSize = AppConstants.MODEL_PREPROCESSING_FRAME_SIZE,
-        frameStep = AppConstants.MODEL_PREPROCESSING_FRAME_STEP,
-        windowing = AppConstants.MODEL_PREPROCESSING_WINDOWING
-    )
-
-    private lateinit var detector: Interpreter
+    private val detectorClassesAmount = AppConstants.DETECTOR_CLASSES_AMOUNT
+    private val detectorSpeechClassId = AppConstants.DETECTOR_SPEECH_CLASS_ID
     var isModelInitialized = false
+
+    private lateinit var shape: ModelShape
+    private lateinit var detector: Interpreter
+    private lateinit var preprocessor: DetectorPreprocessor
 
     /**
      * Load the speech detection model.
@@ -34,6 +37,15 @@ class SpeechDetector {
     fun loadModel(context: Context) {
         try {
             detector = IOModel.loadModel(context, modelConfiguration)
+            shape = ModelShape.fromShapeArray(detector.getInputTensor(0).shape())
+            Log.d(
+                "SpeechDetector",
+                "Model loaded with shape: [batch=${shape.batch}, width=${shape.width}, height=${shape.height}, channels=${shape.channels}]"
+            )
+            preprocessor = DetectorPreprocessor(
+                targetSampleRate = shape.batch,
+                targetDataSize = shape.batch
+            )
             isModelInitialized = true
         } catch (e: Exception) {
             Log.e("SpeechDetector", "Error loading detector: ${e.message}")
@@ -48,23 +60,32 @@ class SpeechDetector {
      */
     fun detectSpeech(rawData: RawData, callback: (Boolean) -> (Unit)) {
         if (!isModelInitialized) throw IllegalStateException("Model is not initialized")
-
-        val spectrogram: Spectrogram = SignalPreprocessor.stft(
+        val inputBufferList = preprocessor.proceed(
             rawData,
-            spectrogramConfiguration.frameSize,
-            spectrogramConfiguration.frameStep,
-            spectrogramConfiguration.windowing
+            sampleRate = this.recordingSampleRate
         )
 
-        val outputBuffer = Array(1) { FloatArray(10) { Float.NaN }}
-        detector.run(spectrogram, outputBuffer)
-        val result = speechThreshold(outputBuffer)
-        Log.d("SpeechDetector", "Detection result: $result")
+        val predictions: MutableList<Boolean> = mutableListOf()
+        for(i in inputBufferList.indices) {
+            val inputBuffer = inputBufferList[i]
+            val outputBuffer = Array(1) { FloatArray(this.detectorClassesAmount) { Float.NaN }}
+            detector.run(inputBuffer, outputBuffer)
+            /* Index of max value */
+            val index = outputBuffer[0].indexOfFirst { it == outputBuffer[0].max() }
+            predictions.add(index == this.detectorSpeechClassId)
+        }
+        Log.d("SpeechDetector", "Detection result of ${predictions.size} attempts: $predictions")
+        val result = isSpeechVoting(predictions)
         callback(result)
     }
 
-    private fun speechThreshold(output: Array<FloatArray>): Boolean {
-        val threshold = 0.5f
-        return output[0][0] > threshold
+    /**
+     * For each prediction, check if the speech class is the most voted.
+     * @param predictions The list of predictions from the model.
+     * @return True if speech is detected, false otherwise.
+     */
+    private fun isSpeechVoting(predictions: List<Boolean>): Boolean {
+        val voting = predictions.count { it }
+        return voting >= (predictions.size / 2.0).roundToInt()
     }
 }

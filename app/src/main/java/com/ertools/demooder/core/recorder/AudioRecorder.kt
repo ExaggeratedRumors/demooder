@@ -5,11 +5,11 @@ import android.media.AudioFormat
 import android.media.AudioRecord
 import android.media.MediaRecorder
 import android.util.Log
-import com.ertools.processing.commons.ProcessingUtils
+import com.ertools.demooder.utils.AppConstants
 
 class AudioRecorder {
     val recorderBufferSize = AudioRecord.getMinBufferSize(
-        ProcessingUtils.AUDIO_SAMPLING_RATE,
+        AppConstants.RECORDER_SAMPLE_RATE,
         AudioFormat.CHANNEL_IN_MONO,
         AudioFormat.ENCODING_PCM_16BIT
     ).let {
@@ -26,7 +26,7 @@ class AudioRecorder {
         if(isInitialized) return
         recorder = AudioRecord(
             MediaRecorder.AudioSource.MIC,
-            ProcessingUtils.AUDIO_SAMPLING_RATE,
+            AppConstants.RECORDER_SAMPLE_RATE,
             AudioFormat.CHANNEL_IN_MONO,
             AudioFormat.ENCODING_PCM_16BIT,
             recorderBufferSize

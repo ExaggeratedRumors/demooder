@@ -10,5 +10,3 @@ typealias DecibelsSpectrum = DoubleArray
 typealias ThirdsAmplitudeSpectrum = DoubleArray
 typealias OctavesAmplitudeSpectrum = DoubleArray
 typealias Spectrogram = Array<ComplexDoubleArray>
-
-
