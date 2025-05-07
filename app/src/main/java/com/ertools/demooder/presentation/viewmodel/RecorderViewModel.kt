@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.ertools.demooder.core.classifier.EmotionClassifier
 import com.ertools.demooder.core.classifier.PredictionProvider
+import com.ertools.demooder.core.detector.SpeechDetector
 import com.ertools.demooder.core.recorder.AudioRecorder
 import com.ertools.demooder.core.spectrum.SpectrumBuilder
 import com.ertools.demooder.core.spectrum.SpectrumProvider
@@ -22,6 +23,7 @@ import kotlinx.coroutines.launch
 class RecorderViewModel(
     private val recorder: AudioRecorder,
     private val classifier: EmotionClassifier,
+    private val detector: SpeechDetector,
     private val graphUpdatePeriodMillis: Long,
     private val classificationPeriodMillis: Long
 ) : ViewModel(), PredictionProvider, SpectrumProvider {
@@ -59,7 +61,7 @@ class RecorderViewModel(
 
     override fun onCleared() {
         super.onCleared()
-        if(_isRecording.value) recorder.stop()
+        if(isRecording.value) recorder.stop()
     }
 
 
@@ -80,7 +82,7 @@ class RecorderViewModel(
         }
 
         viewModelScope.launch {
-            while(isActive && _isRecording.value) {
+            while(isActive && isRecording.value) {
                 delay(graphUpdatePeriodMillis)
                 val data = dataBuffer.sliceArray(dataBufferSize - recorder.recorderBufferSize until dataBufferSize)
                 _spectrum.value = SpectrumBuilder.build(data)
@@ -88,17 +90,26 @@ class RecorderViewModel(
         }
 
         viewModelScope.launch(Dispatchers.IO) {
-            while(isActive && _isRecording.value) {
+            while(isActive && isRecording.value) {
                 delay(classificationPeriodMillis)
-                classifier.predict(dataBuffer) {
-                    _prediction.value = it
+                detector.detectSpeech(dataBuffer, recorder.sampleRate) { isSpeech ->
+                    if(isSpeech) {
+                        classifier.predict(dataBuffer, recorder.sampleRate) { prediction ->
+                            val votes = prediction.entries.sumOf { it.value }
+                            _prediction.value = prediction.map {
+                                it.key.toString() to it.value.toFloat() / votes
+                            }.sortedByDescending { it.second }
+                        }
+                    } else {
+                        _prediction.value = emptyList()
+                    }
                 }
             }
         }
     }
 
     private fun stopRecording() {
-        if(_isRecording.value) recorder.stop()
+        if(isRecording.value) recorder.stop()
         _isRecording.value = false
     }
 
@@ -114,6 +125,7 @@ class RecorderViewModel(
 class RecorderViewModelFactory(
     private val recorder: AudioRecorder,
     private val classifier: EmotionClassifier,
+    private val detector: SpeechDetector,
     private val graphUpdatePeriodMillis: Long,
     private val classificationPeriodMillis: Long
 ) : ViewModelProvider.Factory {
@@ -124,6 +136,7 @@ class RecorderViewModelFactory(
             return RecorderViewModel(
                 recorder,
                 classifier,
+                detector,
                 graphUpdatePeriodMillis,
                 classificationPeriodMillis
             ) as T

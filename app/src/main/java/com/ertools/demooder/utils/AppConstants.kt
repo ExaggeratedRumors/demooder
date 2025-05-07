@@ -11,6 +11,7 @@ object AppConstants {
 
     /** Classifier **/
     const val CLASSIFIER_NAME = "classifier.tflite"
+    const val CLASSIFIER_INPUT_SAMPLE_RATE = ProcessingUtils.WAV_TARGET_SAMPLE_RATE
     const val CLASSIFIER_PREPROCESSING_FRAME_SIZE = ProcessingUtils.SPECTROGRAM_FRAME_SIZE
     const val CLASSIFIER_PREPROCESSING_FRAME_STEP = ProcessingUtils.SPECTROGRAM_STEP_SIZE
     val CLASSIFIER_PREPROCESSING_WINDOWING = Windowing.WindowType.Hamming

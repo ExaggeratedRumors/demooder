@@ -18,7 +18,7 @@ class DetectorPreprocessor(
      * @param rawData The raw 16-bits PCM audio data to preprocess.
      */
     fun proceed(rawData: RawData, sampleRate: Int): List<FloatArray> {
-        require(rawData.size % 2 == 0) { "Input data must be 16-bits or 32-bits PCM signal." }
+        require(rawData.size % 2 == 0) { "Input data must be 16-bits PCM signal." }
 
         /* Resample to model input sample rate */
         val resampledData = rawData.resample(

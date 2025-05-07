@@ -32,6 +32,7 @@ class TensorFlowTest {
     @Test
     fun `predict emotion from audio data`() {
         val audioFilename = "cremad14kHz.wav"
+
         val context = InstrumentationRegistry.getInstrumentation().context
         val inputStream = context.assets.open(audioFilename)
         val file = File.createTempFile("temp_asset_", ".wav")
@@ -47,7 +48,7 @@ class TensorFlowTest {
         assertEquals(true, classifier.isModelInitialized)
 
         val startTime = System.currentTimeMillis()
-        classifier.predict(wavFile.data) { result ->
+        classifier.predict(wavFile.data, wavFile.header.sampleRate) { result ->
             val endTime = System.currentTimeMillis()
             assertEquals(result.size, Emotion.entries.size)
             Log.i("TensorFlowTest", "Prediction result: $result")
@@ -59,8 +60,7 @@ class TensorFlowTest {
     @Test
     fun `read speech detection model`() {
         val context = InstrumentationRegistry.getInstrumentation().context
-        val sampleRate = 16000
-        val speechDetector = SpeechDetector(sampleRate)
+        val speechDetector = SpeechDetector()
         speechDetector.loadModel(context)
         assertEquals(true, speechDetector.isModelInitialized)
     }
@@ -68,17 +68,17 @@ class TensorFlowTest {
     @Test
     fun `detect voice from audio data`() {
         val audioFiles = mapOf(
-            Pair("cremad14kHz.wav", 14000) to true,
-            Pair("ravdess48kHz.wav", 48000) to true,
-            Pair("tess24414Hz.wav", 24414) to true,
-            Pair("horn44100Hz.wav", 44100) to false,
-            Pair("noise44100Hz.wav", 44100) to false,
-            Pair("bonfire44100Hz.wav", 44100) to false
+            "cremad14kHz.wav" to true,
+            "ravdess48kHz.wav" to true,
+            "tess24414Hz.wav" to true,
+            "horn44100Hz.wav" to false,
+            "noise44100Hz.wav" to false,
+            "bonfire44100Hz.wav" to false
         )
 
-        audioFiles.forEach { (audioPair, expected) ->
+        audioFiles.forEach { (audioFileName, expected) ->
             val context = InstrumentationRegistry.getInstrumentation().context
-            val inputStream = context.assets.open(audioPair.first)
+            val inputStream = context.assets.open(audioFileName)
             val file = File.createTempFile("temp_asset_", ".wav")
             file.deleteOnExit()
             FileOutputStream(file).use { output ->
@@ -87,11 +87,14 @@ class TensorFlowTest {
             val wavFile = WavFile.fromFile(file)
             Log.i("TensorFlowTest", "WavFile header: ${wavFile.header}")
 
-            val speechDetector = SpeechDetector(audioPair.second)
+            val speechDetector = SpeechDetector()
             speechDetector.loadModel(context)
-            speechDetector.detectSpeech(wavFile.data) {
+
+            val startTime = System.currentTimeMillis()
+            speechDetector.detectSpeech(wavFile.data, wavFile.header.sampleRate) {
                 val result = it
-                Log.i("TensorFlowTest", "Detection result: $result")
+                val endTime = System.currentTimeMillis()
+                Log.i("TensorFlowTest", "Detection result: $result, expected result: $expected, detection time: ${endTime - startTime}ms")
                 assertEquals(expected, result)
             }
         }

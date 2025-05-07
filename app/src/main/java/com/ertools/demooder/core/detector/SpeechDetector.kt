@@ -13,9 +13,7 @@ import kotlin.math.roundToInt
 /**
  * Class for speech detection using a TensorFlow Lite model.
  */
-class SpeechDetector(
-    private val recordingSampleRate: Int
-) {
+class SpeechDetector {
     private val modelConfiguration = ModelConfiguration(
         modelName = AppConstants.SPEECH_DETECTOR_NAME,
         threadCount = AppConstants.CLASSIFIER_THREAD_COUNT,
@@ -58,22 +56,21 @@ class SpeechDetector(
      * @param rawData The raw audio data to process.
      * @param callback The callback to receive the prediction result.
      */
-    fun detectSpeech(rawData: RawData, callback: (Boolean) -> (Unit)) {
+    fun detectSpeech(rawData: RawData, recordingSampleRate: Int, callback: (Boolean) -> (Unit)) {
         if (!isModelInitialized) throw IllegalStateException("Model is not initialized")
         val inputBufferList = preprocessor.proceed(
             rawData,
-            sampleRate = this.recordingSampleRate
+            sampleRate = recordingSampleRate
         )
 
-        val predictions: MutableList<Boolean> = mutableListOf()
-        for(i in inputBufferList.indices) {
-            val inputBuffer = inputBufferList[i]
+        val predictions = inputBufferList.map { inputBuffer ->
             val outputBuffer = Array(1) { FloatArray(this.detectorClassesAmount) { Float.NaN }}
             detector.run(inputBuffer, outputBuffer)
             /* Index of max value */
             val index = outputBuffer[0].indexOfFirst { it == outputBuffer[0].max() }
-            predictions.add(index == this.detectorSpeechClassId)
+            index == this.detectorSpeechClassId
         }
+
         Log.d("SpeechDetector", "Detection result of ${predictions.size} attempts: $predictions")
         val result = isSpeechVoting(predictions)
         callback(result)

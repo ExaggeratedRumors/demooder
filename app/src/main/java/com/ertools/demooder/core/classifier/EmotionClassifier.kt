@@ -12,6 +12,9 @@ import com.ertools.processing.spectrogram.SpectrogramConfiguration
 import org.tensorflow.lite.Interpreter
 import java.nio.ByteBuffer
 
+/**
+ * Class for classifying emotions from audio data using a TensorFlow Lite model.
+ */
 class EmotionClassifier {
     private val modelConfiguration = ModelConfiguration(
         modelName = AppConstants.CLASSIFIER_NAME,
@@ -25,13 +28,17 @@ class EmotionClassifier {
         windowing = AppConstants.CLASSIFIER_PREPROCESSING_WINDOWING
     )
 
-    private val labels = Emotion.entries.associate { it.ordinal to it.name }
+    private val labels = Emotion.entries.associateBy { it.ordinal }
     var isModelInitialized = false
 
     private lateinit var shape: ModelShape
     private lateinit var classifier: Interpreter
     private lateinit var preprocessor: ClassifierPreprocessor
 
+    /**
+     * Load the emotion classification model.
+     * @param context The application context.
+     */
     fun loadClassifier(context: Context) {
         try {
             classifier = IOModel.loadModel(context, modelConfiguration)
@@ -40,7 +47,12 @@ class EmotionClassifier {
                 "EmotionClassifier",
                 "Model loaded with shape: [width=${shape.width}, height=${shape.height}, channels=${shape.channels}]"
             )
-            preprocessor = ClassifierPreprocessor(spectrogramConfiguration, shape)
+            preprocessor = ClassifierPreprocessor(
+                spectrogramConfiguration,
+                shape,
+                AppConstants.CLASSIFIER_INPUT_SAMPLE_RATE,
+                debugMode = true
+            )
             isModelInitialized = true
         } catch (e: Exception) {
             Log.e("EmotionClassifier", "Error loading classifier: ${e.message}")
@@ -48,15 +60,24 @@ class EmotionClassifier {
         }
     }
 
-    fun predict(rawData: RawData, callback: (List<Pair<String, Float>>) -> (Unit)) {
+    /**
+     * Predict the list of emotion voting from the raw audio data.
+     * @param rawData The raw audio data to process.
+     * @param recordingSampleRate The sample rate of the input audio data.
+     * @param callback The callback to receive the prediction result - emotion mapped to amount of votes for this emotion.
+     */
+    fun predict(rawData: RawData, recordingSampleRate: Int, callback: (Map<Emotion, Int>) -> (Unit)) {
         if (!isModelInitialized) throw IllegalStateException("Model is not initialized")
-        val inputBuffer: ByteBuffer = preprocessor.proceed(rawData, debug = true)
-        val outputBuffer = Array(1) { FloatArray(labels.size) { Float.NaN }}
-        classifier.run(inputBuffer, outputBuffer)
-        val result = labels.map { (id, name) ->
-            name to outputBuffer.last()[id]
-        }.sortedByDescending { it.second }
-        Log.d("EmotionClassifier", "Prediction result: $result")
+        val inputBuffers: List<ByteBuffer> = preprocessor.proceed(rawData, recordingSampleRate)
+        val result = inputBuffers.map { inputBuffer ->
+            val outputBuffer = Array(1) { FloatArray(labels.size) { Float.NaN }}
+            classifier.run(inputBuffer, outputBuffer)
+            labels.map { (id, name) ->
+                name to outputBuffer.last()[id]
+            }.maxBy { it.second }.first
+        }.groupingBy { it }.eachCount()
+
+        Log.d("EmotionClassifier", "Prediction of ${inputBuffers.size} classifications result: $result")
         callback(result)
     }
 }

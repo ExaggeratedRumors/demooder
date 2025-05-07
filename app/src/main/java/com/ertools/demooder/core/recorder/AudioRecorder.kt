@@ -7,9 +7,13 @@ import android.media.MediaRecorder
 import android.util.Log
 import com.ertools.demooder.utils.AppConstants
 
+/**
+ * Class for recording audio using the Android AudioRecord API.
+ */
 class AudioRecorder {
+    val sampleRate = AppConstants.RECORDER_SAMPLE_RATE
     val recorderBufferSize = AudioRecord.getMinBufferSize(
-        AppConstants.RECORDER_SAMPLE_RATE,
+        sampleRate,
         AudioFormat.CHANNEL_IN_MONO,
         AudioFormat.ENCODING_PCM_16BIT
     ).let {
@@ -21,12 +25,15 @@ class AudioRecorder {
     private lateinit var recorder: AudioRecord
     private var isInitialized = false
 
+    /**
+     * Initialize the AudioRecord instance and start recording.
+     */
     @SuppressLint("MissingPermission")
     fun start() {
         if(isInitialized) return
         recorder = AudioRecord(
             MediaRecorder.AudioSource.MIC,
-            AppConstants.RECORDER_SAMPLE_RATE,
+            sampleRate,
             AudioFormat.CHANNEL_IN_MONO,
             AudioFormat.ENCODING_PCM_16BIT,
             recorderBufferSize
@@ -40,6 +47,9 @@ class AudioRecorder {
         Log.i("AudioRecorder", "Recording started.")
     }
 
+    /**
+     * Stop the recording and release the AudioRecord instance.
+     */
     fun stop() {
         if(!isInitialized) throw IllegalStateException("Recorder is not initialized.")
         recorder.stop()
@@ -48,6 +58,9 @@ class AudioRecorder {
         Log.i("AudioRecorder", "Recording stopped.")
     }
 
+    /**
+     * Read audio data from the recorder into the provided buffer.
+     */
     fun read(dataBuffer: ByteArray) {
         if(!isInitialized) throw IllegalStateException("Recorder is not initialized.")
         shiftAudioBuffer(dataBuffer, recorderBufferSize)

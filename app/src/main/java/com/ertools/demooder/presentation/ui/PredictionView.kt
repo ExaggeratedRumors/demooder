@@ -39,6 +39,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ertools.demooder.R
 import com.ertools.demooder.core.classifier.EmotionClassifier
 import com.ertools.demooder.core.classifier.PredictionProvider
+import com.ertools.demooder.core.detector.SpeechDetector
 import com.ertools.demooder.core.recorder.AudioRecorder
 import com.ertools.demooder.core.spectrum.SpectrumProvider
 import com.ertools.demooder.presentation.viewmodel.RecorderViewModel
@@ -57,11 +58,13 @@ fun PredictionView(
     /** Recorder **/
     val context = LocalContext.current
     val classifier = EmotionClassifier().apply { this.loadClassifier(context) }
+    val detector = SpeechDetector().apply { this.loadModel(context) }
     val recorder = AudioRecorder()
     val recorderViewModelFactory = remember {
         RecorderViewModelFactory(
             recorder = recorder,
             classifier = classifier,
+            detector = detector,
             graphUpdatePeriodMillis = AppConstants.UI_GRAPH_UPDATE_DELAY,
             classificationPeriodMillis = detectionPeriod.toLong() * 1000
         )
