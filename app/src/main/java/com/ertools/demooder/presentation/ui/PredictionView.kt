@@ -1,10 +1,14 @@
 package com.ertools.demooder.presentation.ui
 
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -22,10 +26,13 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -46,14 +53,16 @@ import com.ertools.demooder.presentation.viewmodel.RecorderViewModel
 import com.ertools.demooder.presentation.viewmodel.RecorderViewModelFactory
 import com.ertools.demooder.presentation.viewmodel.SettingsViewModel
 import com.ertools.demooder.utils.AppConstants
+import kotlinx.coroutines.delay
 import java.util.Locale
+import kotlin.math.roundToInt
 
 @Composable
 fun PredictionView(
 ) {
     /** Settings **/
     val settingsViewModel: SettingsViewModel = viewModel()
-    val detectionPeriod by settingsViewModel.signalDetectionPeriod.collectAsState()
+    val detectionPeriodSeconds by settingsViewModel.signalDetectionPeriod.collectAsState()
 
     /** Recorder **/
     val context = LocalContext.current
@@ -66,7 +75,7 @@ fun PredictionView(
             classifier = classifier,
             detector = detector,
             graphUpdatePeriodMillis = AppConstants.UI_GRAPH_UPDATE_DELAY,
-            classificationPeriodMillis = detectionPeriod.toLong() * 1000
+            classificationPeriodMillis = detectionPeriodSeconds.toLong() * 1000
         )
     }
     val recorderViewModel: RecorderViewModel = viewModel(factory = recorderViewModelFactory)
@@ -95,6 +104,7 @@ fun PredictionView(
                 .background(MaterialTheme.colorScheme.secondary)
                 .align(Alignment.CenterHorizontally),
             provider = recorderViewModel,
+            detectionPeriodSeconds = detectionPeriodSeconds,
             isRecording = isRecording
         )
         Row (
@@ -238,15 +248,35 @@ fun SpectrumView(
 fun EvaluationLabel(
     modifier: Modifier = Modifier,
     provider: PredictionProvider,
+    detectionPeriodSeconds: Double,
     isRecording: State<Boolean>
 ) {
     val placeholderText = stringResource(R.string.prediction_result_placeholder)
     val loadingText = stringResource(R.string.prediction_result_loading)
     val prediction by provider.getPrediction().collectAsState(initial = emptyList())
 
-    Column(
+    BoxWithConstraints(
         modifier = modifier
-    ) {
+    ){
+        val animationTimeMillis = (1000 * detectionPeriodSeconds).roundToInt()
+        var progressBarWidth by remember { mutableStateOf(0.dp) }
+        val progressBarAnimatedWidth by animateDpAsState(
+            targetValue = maxWidth,
+            animationSpec = tween(durationMillis = animationTimeMillis, easing = LinearEasing),
+            label = stringResource(R.string.prediction_animation_cd)
+        )
+        if(isRecording.value) {
+            LaunchedEffect(Unit) {
+                progressBarWidth = maxWidth
+                delay(animationTimeMillis.toLong())
+                progressBarWidth = 0.dp
+            }
+            Box(
+                modifier = Modifier.height(1.dp)
+                    .width(progressBarAnimatedWidth)
+                    .background(MaterialTheme.colorScheme.secondary)
+            )
+        }
         Text(
             text = if(!isRecording.value) placeholderText
             else if (prediction.isEmpty()) loadingText
@@ -254,7 +284,7 @@ fun EvaluationLabel(
                 "${label}: ${"%.2f".format(Locale.ENGLISH, inference * 100)}%"
             },
             style = MaterialTheme.typography.titleMedium,
-            modifier = Modifier.align(Alignment.CenterHorizontally),
+            modifier = Modifier.align(Alignment.Center),
             fontFamily = FontFamily.Monospace,
             color = MaterialTheme.colorScheme.onSecondary
         )

@@ -50,7 +50,8 @@ class TensorFlowTest {
         val startTime = System.currentTimeMillis()
         classifier.predict(wavFile.data, wavFile.header.sampleRate) { result ->
             val endTime = System.currentTimeMillis()
-            assertEquals(result.size, Emotion.entries.size)
+
+            assertEquals(2, result.size)
             Log.i("TensorFlowTest", "Prediction result: $result")
             Log.i("TensorFlowTest", "Prediction time: ${endTime - startTime} ms")
         }

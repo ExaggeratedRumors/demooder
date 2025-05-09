@@ -24,6 +24,7 @@
     <string name="prediction_clear_cd">Clear</string>
     <string name="prediction_result_placeholder">Waiting for session…</string>
     <string name="prediction_result_loading">Analyzing…</string>
+    <string name="prediction_animation_cd">Classification animation box</string>
 
     <!-- RECORDS -->
     <string name="records_icon_cd">Recording</string>

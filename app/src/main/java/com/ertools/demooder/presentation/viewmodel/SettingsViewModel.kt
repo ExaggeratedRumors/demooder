@@ -22,7 +22,7 @@ class  SettingsViewModel(application: Application): AndroidViewModel(application
     private val _deviceDamping = MutableStateFlow(AppConstants.SETTINGS_DEFAULT_DEVICE_DAMPING)
     val deviceDamping: StateFlow<Double> = _deviceDamping
 
-    private val _signalDetectionPeriod = MutableStateFlow(AppConstants.SETTINGS_DEFAULT_SIGNAL_DETECTION_PERIOD)
+    private val _signalDetectionPeriod = MutableStateFlow(AppConstants.SETTINGS_DEFAULT_SIGNAL_DETECTION_SECONDS)
     val signalDetectionPeriod: StateFlow<Double> = _signalDetectionPeriod
 
     private val _enableNotifications = MutableStateFlow(value = AppConstants.SETTINGS_DEFAULT_ENABLE_NOTIFICATIONS)
@@ -38,7 +38,7 @@ class  SettingsViewModel(application: Application): AndroidViewModel(application
                 _deviceDamping.value = preferences[SettingsPreferences.DEVICE_DAMPING]
                     ?: AppConstants.SETTINGS_DEFAULT_DEVICE_DAMPING
                 _signalDetectionPeriod.value = preferences[SettingsPreferences.SIGNAL_DETECTION_PERIOD]
-                    ?: AppConstants.SETTINGS_DEFAULT_SIGNAL_DETECTION_PERIOD
+                    ?: AppConstants.SETTINGS_DEFAULT_SIGNAL_DETECTION_SECONDS
                 _enableNotifications.value = preferences[SettingsPreferences.ENABLE_NOTIFICATIONS]
                     ?: AppConstants.SETTINGS_DEFAULT_ENABLE_NOTIFICATIONS
                 _angerDetectionTime.value = preferences[SettingsPreferences.ANGER_DETECTION_TIME]
@@ -95,7 +95,7 @@ class  SettingsViewModel(application: Application): AndroidViewModel(application
                 preferences.clear()
             }
             _deviceDamping.value = AppConstants.SETTINGS_DEFAULT_DEVICE_DAMPING
-            _signalDetectionPeriod.value = AppConstants.SETTINGS_DEFAULT_SIGNAL_DETECTION_PERIOD
+            _signalDetectionPeriod.value = AppConstants.SETTINGS_DEFAULT_SIGNAL_DETECTION_SECONDS
             _enableNotifications.value = AppConstants.SETTINGS_DEFAULT_ENABLE_NOTIFICATIONS
             _angerDetectionTime.value = AppConstants.SETTINGS_DEFAULT_ANGER_DETECTION_TIME
         }
