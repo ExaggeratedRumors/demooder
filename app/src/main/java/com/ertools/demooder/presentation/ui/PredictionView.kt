@@ -256,24 +256,6 @@ fun EvaluationLabel(
         modifier = modifier
     ){
         val progressAnimation = remember { Animatable(0f) }
-        if(isRecording.value) {
-            LaunchedEffect(Unit) {
-                while(isRecording.value) {
-                    progressAnimation.animateTo(
-                        targetValue = 1f,
-                        animationSpec = tween(
-                            durationMillis = (1000 * detectionPeriodSeconds).roundToInt(),
-                            easing = LinearEasing
-                        )
-                    )
-                    progressAnimation.snapTo(0f)
-                }
-            }
-            Box(modifier = Modifier.height(5.dp)
-                    .width(maxWidth * progressAnimation.value)
-                    .background(MaterialTheme.colorScheme.primary)
-            )
-        }
         Text(
             text = if(!isRecording.value) placeholderText
             else if (prediction.isEmpty()) loadingText
@@ -284,6 +266,24 @@ fun EvaluationLabel(
             modifier = Modifier.align(Alignment.Center),
             fontFamily = FontFamily.Monospace,
             color = MaterialTheme.colorScheme.onSecondary
+        )
+        if(!isRecording.value) return@BoxWithConstraints
+        LaunchedEffect(Unit) {
+            while(isRecording.value) {
+                progressAnimation.animateTo(
+                    targetValue = 1f,
+                    animationSpec = tween(
+                        durationMillis = (1000 * detectionPeriodSeconds).roundToInt(),
+                        easing = LinearEasing
+                    )
+                )
+                progressAnimation.snapTo(0f)
+            }
+        }
+        Box(modifier = Modifier.height(5.dp)
+            .width(maxWidth * progressAnimation.value)
+            .background(MaterialTheme.colorScheme.primary)
+            .align(Alignment.BottomStart)
         )
     }
 }
