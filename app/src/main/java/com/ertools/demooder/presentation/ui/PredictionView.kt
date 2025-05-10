@@ -1,5 +1,7 @@
 package com.ertools.demooder.presentation.ui
 
+import android.util.Log
+import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
@@ -258,23 +260,23 @@ fun EvaluationLabel(
     BoxWithConstraints(
         modifier = modifier
     ){
-        val animationTimeMillis = (1000 * detectionPeriodSeconds).roundToInt()
-        var progressBarWidth by remember { mutableStateOf(0.dp) }
-        val progressBarAnimatedWidth by animateDpAsState(
-            targetValue = maxWidth,
-            animationSpec = tween(durationMillis = animationTimeMillis, easing = LinearEasing),
-            label = stringResource(R.string.prediction_animation_cd)
-        )
+        val progressAnimation = remember { Animatable(0f) }
         if(isRecording.value) {
             LaunchedEffect(Unit) {
-                progressBarWidth = maxWidth
-                delay(animationTimeMillis.toLong())
-                progressBarWidth = 0.dp
+                while(isRecording.value) {
+                    progressAnimation.animateTo(
+                        targetValue = 1f,
+                        animationSpec = tween(
+                            durationMillis = (1000 * detectionPeriodSeconds).roundToInt(),
+                            easing = LinearEasing
+                        )
+                    )
+                    progressAnimation.snapTo(0f)
+                }
             }
-            Box(
-                modifier = Modifier.height(1.dp)
-                    .width(progressBarAnimatedWidth)
-                    .background(MaterialTheme.colorScheme.secondary)
+            Box(modifier = Modifier.height(5.dp)
+                    .width(maxWidth * progressAnimation.value)
+                    .background(MaterialTheme.colorScheme.primary)
             )
         }
         Text(
