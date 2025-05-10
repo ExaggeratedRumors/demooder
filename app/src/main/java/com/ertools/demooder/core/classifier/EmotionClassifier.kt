@@ -39,7 +39,7 @@ class EmotionClassifier {
      * Load the emotion classification model.
      * @param context The application context.
      */
-    fun loadClassifier(context: Context) {
+    fun loadClassifier(context: Context, debugMode: Boolean = false) {
         try {
             classifier = IOModel.loadModel(context, modelConfiguration)
             shape = ModelShape.fromShapeArray(classifier.getInputTensor(0).shape())
@@ -51,7 +51,7 @@ class EmotionClassifier {
                 spectrogramConfiguration,
                 shape,
                 AppConstants.CLASSIFIER_INPUT_SAMPLE_RATE,
-                debugMode = true
+                debugMode = debugMode
             )
             isModelInitialized = true
         } catch (e: Exception) {

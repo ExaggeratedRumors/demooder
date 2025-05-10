@@ -44,7 +44,7 @@ class TensorFlowTest {
         assertEquals(wavFile.data.size, wavFile.header.subchunk2Size)
 
         val classifier = EmotionClassifier()
-        classifier.loadClassifier(context)
+        classifier.loadClassifier(context, false)
         assertEquals(true, classifier.isModelInitialized)
 
         val startTime = System.currentTimeMillis()
