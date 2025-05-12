@@ -50,6 +50,7 @@ import com.ertools.demooder.core.spectrum.SpectrumProvider
 import com.ertools.demooder.presentation.viewmodel.RecorderViewModel
 import com.ertools.demooder.presentation.viewmodel.RecorderViewModelFactory
 import com.ertools.demooder.presentation.viewmodel.SettingsViewModel
+import com.ertools.demooder.presentation.viewmodel.StatisticsViewModel
 import com.ertools.demooder.utils.AppConstants
 import java.util.Locale
 import kotlin.math.roundToInt
@@ -71,7 +72,6 @@ fun PredictionView(
             recorder = recorder,
             classifier = classifier,
             detector = detector,
-            graphUpdatePeriodMillis = AppConstants.UI_GRAPH_UPDATE_DELAY,
             classificationPeriodMillis = detectionPeriodSeconds.toLong() * 1000
         )
     }
@@ -248,9 +248,11 @@ fun EvaluationLabel(
     detectionPeriodSeconds: Double,
     isRecording: State<Boolean>
 ) {
+    val prediction by provider.getPrediction().collectAsState(initial = emptyList())
+    val statisticsViewModel: StatisticsViewModel = viewModel()
+
     val placeholderText = stringResource(R.string.prediction_result_placeholder)
     val loadingText = stringResource(R.string.prediction_result_loading)
-    val prediction by provider.getPrediction().collectAsState(initial = emptyList())
 
     BoxWithConstraints(
         modifier = modifier
@@ -260,7 +262,7 @@ fun EvaluationLabel(
             text = if(!isRecording.value) placeholderText
             else if (prediction.isEmpty()) loadingText
             else prediction.take(2).joinToString("\n") { (label, inference) ->
-                "${label}: ${"%.2f".format(Locale.ENGLISH, inference * 100)}%"
+                "$label: ${"%.2f".format(Locale.ENGLISH, inference * 100)}%"
             },
             style = MaterialTheme.typography.titleMedium,
             modifier = Modifier.align(Alignment.Center),

@@ -32,6 +32,9 @@ object AppConstants {
     /** Interface **/
     const val UI_GRAPH_UPDATE_DELAY = 100L
 
+    /** History **/
+    const val HISTORY_MAX_SIZE = 100
+
     /* Default settings */
     const val SETTINGS_DEFAULT_DEVICE_DAMPING = 0.0
     const val SETTINGS_DEFAULT_SIGNAL_DETECTION_SECONDS = 2.0

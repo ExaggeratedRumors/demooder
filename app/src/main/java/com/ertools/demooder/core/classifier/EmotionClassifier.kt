@@ -66,18 +66,23 @@ class EmotionClassifier {
      * @param recordingSampleRate The sample rate of the input audio data.
      * @param callback The callback to receive the prediction result - emotion mapped to amount of votes for this emotion.
      */
-    fun predict(rawData: RawData, recordingSampleRate: Int, callback: (Map<Emotion, Int>) -> (Unit)) {
+    fun predict(rawData: RawData, recordingSampleRate: Int, callback: (List<Prediction>) -> (Unit)) {
         if (!isModelInitialized) throw IllegalStateException("Model is not initialized")
         val inputBuffers: List<ByteBuffer> = preprocessor.proceed(rawData, recordingSampleRate)
-        val result = inputBuffers.map { inputBuffer ->
+        val labelsHistogram = inputBuffers.map { inputBuffer ->
             val outputBuffer = Array(1) { FloatArray(labels.size) { Float.NaN }}
             classifier.run(inputBuffer, outputBuffer)
             labels.map { (id, name) ->
                 name to outputBuffer.last()[id]
             }.maxBy { it.second }.first
         }.groupingBy { it }.eachCount()
+        Log.d("EmotionClassifier", "Prediction of ${inputBuffers.size} classifications result: $labelsHistogram")
 
-        Log.d("EmotionClassifier", "Prediction of ${inputBuffers.size} classifications result: $result")
-        callback(result)
+        val votes = labelsHistogram.entries.sumOf { it.value }
+        val predictionsList = labelsHistogram.map {
+            Prediction(it.key, it.value.toFloat() / votes)
+        }.sortedByDescending { it.confidence }
+
+        callback(predictionsList)
     }
 }

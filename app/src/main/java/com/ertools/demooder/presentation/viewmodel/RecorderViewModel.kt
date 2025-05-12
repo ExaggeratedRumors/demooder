@@ -1,12 +1,17 @@
 package com.ertools.demooder.presentation.viewmodel
 
+import android.app.Application
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.ertools.demooder.core.classifier.EmotionClassifier
 import com.ertools.demooder.core.classifier.PredictionProvider
 import com.ertools.demooder.core.detector.SpeechDetector
+import com.ertools.demooder.core.classifier.Prediction
+import com.ertools.demooder.core.classifier.PredictionHistory
 import com.ertools.demooder.core.recorder.AudioRecorder
+import com.ertools.demooder.core.settings.SettingsPreferences
+import com.ertools.demooder.core.settings.datastore
 import com.ertools.demooder.core.spectrum.SpectrumBuilder
 import com.ertools.demooder.core.spectrum.SpectrumProvider
 import com.ertools.demooder.utils.AppConstants
@@ -17,25 +22,28 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 
 class RecorderViewModel(
+    application: Application,
     private val recorder: AudioRecorder,
     private val classifier: EmotionClassifier,
     private val detector: SpeechDetector,
-    private val graphUpdatePeriodMillis: Long,
-    private val classificationPeriodMillis: Long
 ) : ViewModel(), PredictionProvider, SpectrumProvider {
+    private val dataStore = application.datastore
+
     /** Parameters **/
     private val recordingDelayMillis: Long = AppConstants.RECORDER_DELAY_MILLIS
     private val recordingPeriodSeconds: Double = AppConstants.SETTINGS_DEFAULT_SIGNAL_DETECTION_SECONDS
+    private val graphUpdatePeriodMillis: Long = AppConstants.UI_GRAPH_UPDATE_DELAY
     private val dataBufferSize = (recordingPeriodSeconds * ProcessingUtils.AUDIO_SAMPLING_RATE * 2).toInt()
     private val dataBuffer = ByteArray(dataBufferSize)
 
     /** Data flows **/
-    private val _prediction = MutableStateFlow(emptyList<Pair<String, Float>>())
-    private val prediction: StateFlow<List<Pair<String, Float>>> = _prediction.asStateFlow()
+    private val _prediction = MutableStateFlow(emptyList<Prediction>())
+    private val prediction: StateFlow<List<Prediction>> = _prediction.asStateFlow()
 
     private val _spectrum = MutableStateFlow(OctavesAmplitudeSpectrum(ProcessingUtils.AUDIO_OCTAVES_AMOUNT))
     private val spectrum: StateFlow<OctavesAmplitudeSpectrum> = _spectrum.asStateFlow()
@@ -90,15 +98,16 @@ class RecorderViewModel(
         }
 
         viewModelScope.launch(Dispatchers.IO) {
+            val classificationPeriodMillis = (
+                1000 * dataStore.data.first()[SettingsPreferences.SIGNAL_DETECTION_PERIOD]!!
+            ).toLong()
+
             while(isActive && isRecording.value) {
                 delay(classificationPeriodMillis)
                 detector.detectSpeech(dataBuffer, recorder.sampleRate) { isSpeech ->
                     if(isSpeech) {
                         classifier.predict(dataBuffer, recorder.sampleRate) { prediction ->
-                            val votes = prediction.entries.sumOf { it.value }
-                            _prediction.value = prediction.map {
-                                it.key.toString() to it.value.toFloat() / votes
-                            }.sortedByDescending { it.second }
+                            PredictionHistory.updatePredictions(prediction)
                         }
                     } else {
                         _prediction.value = emptyList()
@@ -116,29 +125,27 @@ class RecorderViewModel(
     /********************/
     /** Implementation **/
     /********************/
-    override fun getPrediction(): StateFlow<List<Pair<String, Float>>> = prediction
+    override fun getPrediction(): StateFlow<List<Prediction>> = prediction
     override fun getSpectrum(): StateFlow<OctavesAmplitudeSpectrum> = spectrum
 }
 
 
 /** ViewModel Factory **/
 class RecorderViewModelFactory(
+    private val application: Application,
     private val recorder: AudioRecorder,
     private val classifier: EmotionClassifier,
     private val detector: SpeechDetector,
-    private val graphUpdatePeriodMillis: Long,
-    private val classificationPeriodMillis: Long
 ) : ViewModelProvider.Factory {
 
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(RecorderViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
             return RecorderViewModel(
+                application,
                 recorder,
                 classifier,
-                detector,
-                graphUpdatePeriodMillis,
-                classificationPeriodMillis
+                detector
             ) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")

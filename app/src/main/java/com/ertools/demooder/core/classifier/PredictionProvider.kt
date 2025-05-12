@@ -4,5 +4,5 @@ import kotlinx.coroutines.flow.StateFlow
 
 
 interface PredictionProvider {
-    fun getPrediction(): StateFlow<List<Pair<String, Float>>>
+    fun getPrediction(): StateFlow<List<Prediction>>
 }

@@ -3,20 +3,16 @@ package com.ertools.demooder.presentation.viewmodel
 import android.app.Application
 import android.util.Log
 import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.preferencesDataStore
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import com.ertools.demooder.core.data.SettingsPreferences
+import com.ertools.demooder.core.settings.SettingsPreferences
+import com.ertools.demooder.core.settings.datastore
 import com.ertools.demooder.utils.AppConstants
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-private val Application.datastore by preferencesDataStore(
-    name = SettingsPreferences.PREFERENCES_NAME
-)
-
-class  SettingsViewModel(application: Application): AndroidViewModel(application) {
+class SettingsViewModel(application: Application): AndroidViewModel(application) {
     private val dataStore = application.datastore
 
     private val _deviceDamping = MutableStateFlow(AppConstants.SETTINGS_DEFAULT_DEVICE_DAMPING)
@@ -32,7 +28,6 @@ class  SettingsViewModel(application: Application): AndroidViewModel(application
     val angerDetectionTime: StateFlow<Double> = _angerDetectionTime
 
     init {
-        Log.d("SettingsViewModel", "init")
         viewModelScope.launch {
             dataStore.data.collect { preferences ->
                 _deviceDamping.value = preferences[SettingsPreferences.DEVICE_DAMPING]
@@ -43,9 +38,7 @@ class  SettingsViewModel(application: Application): AndroidViewModel(application
                     ?: AppConstants.SETTINGS_DEFAULT_ENABLE_NOTIFICATIONS
                 _angerDetectionTime.value = preferences[SettingsPreferences.ANGER_DETECTION_TIME]
                     ?: AppConstants.SETTINGS_DEFAULT_ANGER_DETECTION_TIME
-                Log.d("SettingsViewModel", "pref: ${preferences[SettingsPreferences.ENABLE_NOTIFICATIONS]}")
-                Log.d("SettingsViewModel", "state: ${_enableNotifications.value}")
-
+                Log.d("SettingsViewModel", "pref: ${preferences[SettingsPreferences.ENABLE_NOTIFICATIONS]} state ${_enableNotifications.value}")
             }
         }
     }

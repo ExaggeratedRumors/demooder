@@ -1,4 +1,4 @@
-package com.ertools.demooder.core.data
+package com.ertools.demooder.core.settings
 
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.doublePreferencesKey
