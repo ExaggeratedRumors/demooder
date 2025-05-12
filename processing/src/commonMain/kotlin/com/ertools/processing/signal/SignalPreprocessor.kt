@@ -8,7 +8,6 @@ import com.ertools.processing.commons.ProcessingUtils
 import com.ertools.processing.commons.RawData
 import com.ertools.processing.commons.Spectrogram
 import com.ertools.processing.commons.Spectrum
-import com.ertools.processing.commons.ThirdsAmplitudeSpectrum
 import org.jetbrains.kotlinx.multik.ndarray.complex.*
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
@@ -123,12 +122,7 @@ object SignalPreprocessor {
      */
     fun Spectrogram.convertStftToAmplitude(): Array<AmplitudeSpectrum> =
         Array(this.size) { frameIndex ->
-            DoubleArray(this[frameIndex].size) { freqIndex ->
-                val real = this[frameIndex][freqIndex].re
-                val imaginary = this[frameIndex][freqIndex].im
-                val result = 10 * log10(hypot(real, imaginary) + 1e-10)
-                result
-            }
+            this[frameIndex].convertSpectrumToAmplitude()
         }
 
     /**
@@ -166,33 +160,4 @@ object SignalPreprocessor {
         }
         return octaves
     }
-
-    /**
-     * Convert spectrum to thirds amplitude spectrum
-     */
-    fun Spectrum.convectSpectrumToThirdsAmplitude(): ThirdsAmplitudeSpectrum {
-        val amplitudeData = DoubleArray(ProcessingUtils.AUDIO_THIRDS_AMOUNT) { 0.0 }
-        val cutoffFreq33 = FrequencyOperation.cutoffFrequency(ProcessingUtils.AUDIO_THIRDS_AMOUNT)
-        val freqWindow = ProcessingUtils.AUDIO_SAMPLING_RATE.toFloat() / ProcessingUtils.AUDIO_FFT_SIZE
-
-        var terce = 1
-        var iterator = 0
-        var accumulated = ComplexDouble(0, 0)
-        while (iterator < this.size) {
-            if((iterator * freqWindow) > cutoffFreq33 || terce > ProcessingUtils.AUDIO_THIRDS_AMOUNT) break
-            accumulated += this[iterator]
-            if((iterator + 1) * freqWindow > FrequencyOperation.cutoffFrequency(terce) &&
-                iterator * freqWindow < ProcessingUtils.AUDIO_SAMPLING_RATE / 2f) {
-                terce += 1
-                continue
-            }
-            val absDoubledValue = accumulated.re.pow(2) + accumulated.im.pow(2)
-            if(absDoubledValue > amplitudeData[terce - 1])
-                amplitudeData[terce - 1] = absDoubledValue
-            accumulated = ComplexDouble(0, 0)
-            iterator += 1
-        }
-        return amplitudeData
-    }
-
 }

@@ -7,6 +7,5 @@ typealias ComplexData = ComplexDoubleArray
 typealias Spectrum = ComplexDoubleArray
 typealias AmplitudeSpectrum = DoubleArray
 typealias DecibelsSpectrum = DoubleArray
-typealias ThirdsAmplitudeSpectrum = DoubleArray
 typealias OctavesAmplitudeSpectrum = DoubleArray
 typealias Spectrogram = Array<ComplexDoubleArray>
