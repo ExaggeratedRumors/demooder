@@ -4,7 +4,7 @@ import android.Manifest
 import android.content.Context
 import androidx.core.content.ContextCompat
 
-object PERMISSIONS {
+object Permissions {
     internal val REQUIRED_PERMISSIONS = listOf (
         if(android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU)
             Manifest.permission.READ_MEDIA_AUDIO

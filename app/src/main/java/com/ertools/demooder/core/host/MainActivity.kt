@@ -8,7 +8,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.ertools.demooder.presentation.navigation.AppNavigation
 import com.ertools.demooder.presentation.theme.Theme
-import com.ertools.demooder.utils.PERMISSIONS.REQUIRED_PERMISSIONS
+import com.ertools.demooder.utils.Permissions.REQUIRED_PERMISSIONS
 
 class MainActivity : ComponentActivity() {
     override fun onStart() {

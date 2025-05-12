@@ -5,10 +5,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.ertools.demooder.core.classifier.EmotionClassifier
-import com.ertools.demooder.core.classifier.PredictionProvider
 import com.ertools.demooder.core.detector.SpeechDetector
-import com.ertools.demooder.core.classifier.Prediction
-import com.ertools.demooder.core.classifier.PredictionHistory
+import com.ertools.demooder.core.classifier.PredictionRepository
+import com.ertools.demooder.core.detector.DetectionProvider
 import com.ertools.demooder.core.recorder.AudioRecorder
 import com.ertools.demooder.core.settings.SettingsPreferences
 import com.ertools.demooder.core.settings.datastore
@@ -31,7 +30,7 @@ class RecorderViewModel(
     private val recorder: AudioRecorder,
     private val classifier: EmotionClassifier,
     private val detector: SpeechDetector,
-) : ViewModel(), PredictionProvider, SpectrumProvider {
+) : ViewModel(), SpectrumProvider, DetectionProvider {
     private val dataStore = application.datastore
 
     /** Parameters **/
@@ -42,14 +41,15 @@ class RecorderViewModel(
     private val dataBuffer = ByteArray(dataBufferSize)
 
     /** Data flows **/
-    private val _prediction = MutableStateFlow(emptyList<Prediction>())
-    private val prediction: StateFlow<List<Prediction>> = _prediction.asStateFlow()
-
     private val _spectrum = MutableStateFlow(OctavesAmplitudeSpectrum(ProcessingUtils.AUDIO_OCTAVES_AMOUNT))
     private val spectrum: StateFlow<OctavesAmplitudeSpectrum> = _spectrum.asStateFlow()
 
+    private var _isSpeech = MutableStateFlow(false)
+    private val isSpeech: StateFlow<Boolean> = _isSpeech.asStateFlow()
+
     private var _isRecording = MutableStateFlow(false)
     val isRecording: StateFlow<Boolean> = _isRecording.asStateFlow()
+
 
     /**********/
     /** API **/
@@ -106,11 +106,12 @@ class RecorderViewModel(
                 delay(classificationPeriodMillis)
                 detector.detectSpeech(dataBuffer, recorder.sampleRate) { isSpeech ->
                     if(isSpeech) {
+                        _isSpeech.value = true
                         classifier.predict(dataBuffer, recorder.sampleRate) { prediction ->
-                            PredictionHistory.updatePredictions(prediction)
+                            PredictionRepository.updatePredictions(prediction)
                         }
                     } else {
-                        _prediction.value = emptyList()
+                        _isSpeech.value = false
                     }
                 }
             }
@@ -125,8 +126,8 @@ class RecorderViewModel(
     /********************/
     /** Implementation **/
     /********************/
-    override fun getPrediction(): StateFlow<List<Prediction>> = prediction
     override fun getSpectrum(): StateFlow<OctavesAmplitudeSpectrum> = spectrum
+    override fun isSpeech(): StateFlow<Boolean> = isSpeech
 }
 
 

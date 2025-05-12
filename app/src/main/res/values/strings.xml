@@ -23,7 +23,7 @@
     <string name="prediction_save_cd">Save</string>
     <string name="prediction_clear_cd">Clear</string>
     <string name="prediction_result_placeholder">Waiting for session…</string>
-    <string name="prediction_result_loading">Analyzing…</string>
+    <string name="prediction_result_loading">No speech</string>
     <string name="prediction_animation_cd">Classification animation box</string>
 
     <!-- RECORDS -->

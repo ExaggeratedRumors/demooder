@@ -1,5 +1,6 @@
 package com.ertools.demooder.presentation.ui
 
+import android.app.Application
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateFloatAsState
@@ -44,6 +45,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ertools.demooder.R
 import com.ertools.demooder.core.classifier.EmotionClassifier
 import com.ertools.demooder.core.classifier.PredictionProvider
+import com.ertools.demooder.core.detector.DetectionProvider
 import com.ertools.demooder.core.detector.SpeechDetector
 import com.ertools.demooder.core.recorder.AudioRecorder
 import com.ertools.demooder.core.spectrum.SpectrumProvider
@@ -51,7 +53,7 @@ import com.ertools.demooder.presentation.viewmodel.RecorderViewModel
 import com.ertools.demooder.presentation.viewmodel.RecorderViewModelFactory
 import com.ertools.demooder.presentation.viewmodel.SettingsViewModel
 import com.ertools.demooder.presentation.viewmodel.StatisticsViewModel
-import com.ertools.demooder.utils.AppConstants
+import com.ertools.processing.commons.Emotion
 import java.util.Locale
 import kotlin.math.roundToInt
 
@@ -69,13 +71,14 @@ fun PredictionView(
     val recorder = AudioRecorder()
     val recorderViewModelFactory = remember {
         RecorderViewModelFactory(
+            application = context.applicationContext as Application,
             recorder = recorder,
             classifier = classifier,
-            detector = detector,
-            classificationPeriodMillis = detectionPeriodSeconds.toLong() * 1000
+            detector = detector
         )
     }
     val recorderViewModel: RecorderViewModel = viewModel(factory = recorderViewModelFactory)
+    val statisticsViewModel: StatisticsViewModel = viewModel()
 
     /** Buttons state **/
     val isRecording = recorderViewModel.isRecording.collectAsState()
@@ -100,7 +103,8 @@ fun PredictionView(
                 .fillMaxWidth(0.6f)
                 .background(MaterialTheme.colorScheme.secondary)
                 .align(Alignment.CenterHorizontally),
-            provider = recorderViewModel,
+            predictionProvider = statisticsViewModel,
+            detectionProvider = recorderViewModel,
             detectionPeriodSeconds = detectionPeriodSeconds,
             isRecording = isRecording
         )
@@ -241,15 +245,25 @@ fun SpectrumView(
     }
 }
 
+/**
+ * Displays the prediction result of the classifier.
+ * @param modifier Modifier to be applied to the view.
+ * @param predictionProvider PredictionProvider giving information about predictions history.
+ * @param detectionProvider DetectionProvider giving information about speech detection.
+ * @param detectionPeriodSeconds Duration of the detection period in seconds.
+ * @param isRecording State indicating if the recorder is currently recording.
+ */
 @Composable
 fun EvaluationLabel(
     modifier: Modifier = Modifier,
-    provider: PredictionProvider,
+    predictionProvider: PredictionProvider,
+    detectionProvider: DetectionProvider,
     detectionPeriodSeconds: Double,
     isRecording: State<Boolean>
 ) {
-    val prediction by provider.getPrediction().collectAsState(initial = emptyList())
-    val statisticsViewModel: StatisticsViewModel = viewModel()
+    val lastTwoPredictions by predictionProvider.last(2).collectAsState()
+    val angryDuration by predictionProvider.proportion(Emotion.ANG).collectAsState()
+    val isSpeech by detectionProvider.isSpeech().collectAsState()
 
     val placeholderText = stringResource(R.string.prediction_result_placeholder)
     val loadingText = stringResource(R.string.prediction_result_loading)
@@ -260,8 +274,8 @@ fun EvaluationLabel(
         val progressAnimation = remember { Animatable(0f) }
         Text(
             text = if(!isRecording.value) placeholderText
-            else if (prediction.isEmpty()) loadingText
-            else prediction.take(2).joinToString("\n") { (label, inference) ->
+            else if (!isSpeech) loadingText
+            else lastTwoPredictions.joinToString("\n") { (label, inference) ->
                 "$label: ${"%.2f".format(Locale.ENGLISH, inference * 100)}%"
             },
             style = MaterialTheme.typography.titleMedium,
