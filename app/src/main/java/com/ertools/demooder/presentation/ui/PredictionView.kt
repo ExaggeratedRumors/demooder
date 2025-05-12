@@ -116,31 +116,29 @@ fun PredictionView(
             verticalAlignment = Alignment.CenterVertically
         ) {
             ClickButton(
-                onClick = { recorderViewModel.saveRecording() },
-                iconResource = R.drawable.settings_link,
-                iconContentDescriptionResource = R.string.prediction_save_cd,
                 modifier = Modifier
                     .fillMaxHeight(0.6f)
-                    .aspectRatio(1f)
-            )
+                    .aspectRatio(1f),
+                iconResource = R.drawable.settings_link,
+                iconContentDescriptionResource = R.string.prediction_save_cd
+
+            ) { recorderViewModel.saveRecording() }
             StateButton(
-                onClick = { recorderViewModel.toggleRecording() },
+                modifier = Modifier
+                    .fillMaxHeight(0.8f)
+                    .aspectRatio(1f),
                 state = isRecording,
                 enableIconResource = R.drawable.mic_filled,
                 disableIconResource = R.drawable.stop_filled,
-                iconContentDescriptionResource = R.string.prediction_record_cd,
-                modifier = Modifier
-                    .fillMaxHeight(0.8f)
-                    .aspectRatio(1f)
-            )
+                iconContentDescriptionResource = R.string.prediction_record_cd
+            ) { recorderViewModel.toggleRecording() }
             ClickButton(
-                onClick = { recorderViewModel.clearRecording() },
-                iconResource = R.drawable.records_filled,
-                iconContentDescriptionResource = R.string.prediction_clear_cd,
                 modifier = Modifier
                     .fillMaxHeight(0.6f)
-                    .aspectRatio(1f)
-            )
+                    .aspectRatio(1f),
+                iconResource = R.drawable.records_filled,
+                iconContentDescriptionResource = R.string.prediction_clear_cd
+            ) { recorderViewModel.clearRecording() }
         }
         Spacer(modifier = Modifier.fillMaxHeight())
     }
@@ -148,12 +146,12 @@ fun PredictionView(
 
 @Composable
 fun StateButton(
-    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
     state: State<Boolean>,
     enableIconResource: Int,
     disableIconResource: Int,
     iconContentDescriptionResource: Int,
-    modifier: Modifier = Modifier
+    onClick: () -> Unit
 ) {
     Button(
         onClick = { onClick() },
@@ -173,12 +171,19 @@ fun StateButton(
     }
 }
 
+/**
+ * Displays a button with an icon.
+ * @param onClick Action to be performed when the button is clicked.
+ * @param iconResource Resource ID of the icon to be displayed.
+ * @param iconContentDescriptionResource Resource ID of the content description for the icon.
+ * @param modifier Modifier to be applied to the button.
+ */
 @Composable
 fun ClickButton(
-    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
     iconResource: Int,
     iconContentDescriptionResource: Int,
-    modifier: Modifier = Modifier
+    onClick: () -> Unit
 ) {
     Button(
         onClick = { onClick() },
@@ -196,6 +201,12 @@ fun ClickButton(
     }
 }
 
+/**
+ * Displays the spectrum of the audio signal.
+ * @param modifier Modifier to be applied to the view.
+ * @param provider SpectrumProvider giving information about the audio spectrum.
+ * @param isRecording State indicating if the recorder is currently recording.
+ */
 @Composable
 fun SpectrumView(
     modifier: Modifier = Modifier,
