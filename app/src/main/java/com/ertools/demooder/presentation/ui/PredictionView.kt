@@ -48,33 +48,41 @@ import com.ertools.demooder.core.classifier.PredictionProvider
 import com.ertools.demooder.core.detector.DetectionProvider
 import com.ertools.demooder.core.detector.SpeechDetector
 import com.ertools.demooder.core.recorder.AudioRecorder
+import com.ertools.demooder.core.settings.SettingsStore
 import com.ertools.demooder.core.spectrum.SpectrumProvider
 import com.ertools.demooder.presentation.viewmodel.RecorderViewModel
 import com.ertools.demooder.presentation.viewmodel.RecorderViewModelFactory
 import com.ertools.demooder.presentation.viewmodel.SettingsViewModel
+import com.ertools.demooder.presentation.viewmodel.SettingsViewModelFactory
 import com.ertools.demooder.presentation.viewmodel.StatisticsViewModel
 import com.ertools.processing.commons.Emotion
 import java.util.Locale
 import kotlin.math.roundToInt
 
 @Composable
-fun PredictionView(
-) {
+fun PredictionView() {
+    val context = LocalContext.current
+
     /** Settings **/
-    val settingsViewModel: SettingsViewModel = viewModel()
+    val settingsStore = SettingsStore(context)
+    val settingsViewModelFactory = remember {
+        SettingsViewModelFactory(
+            settingsStore = settingsStore
+        )
+    }
+    val settingsViewModel: SettingsViewModel = viewModel(factory = settingsViewModelFactory)
     val detectionPeriodSeconds by settingsViewModel.signalDetectionPeriod.collectAsState()
 
     /** Recorder **/
-    val context = LocalContext.current
     val classifier = EmotionClassifier().apply { this.loadClassifier(context) }
     val detector = SpeechDetector().apply { this.loadModel(context) }
     val recorder = AudioRecorder()
     val recorderViewModelFactory = remember {
         RecorderViewModelFactory(
-            application = context.applicationContext as Application,
             recorder = recorder,
             classifier = classifier,
-            detector = detector
+            detector = detector,
+            settingsStore = settingsStore
         )
     }
     val recorderViewModel: RecorderViewModel = viewModel(factory = recorderViewModelFactory)
