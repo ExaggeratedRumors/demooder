@@ -2,18 +2,18 @@ package com.ertools.demooder.presentation.viewmodel
 
 import android.app.Application
 import android.util.Log
-import androidx.datastore.preferences.core.edit
-import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.ertools.demooder.core.settings.SettingsPreferences
-import com.ertools.demooder.core.settings.datastore
+import com.ertools.demooder.core.settings.SettingsStore
 import com.ertools.demooder.utils.AppConstants
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-class SettingsViewModel(application: Application): AndroidViewModel(application) {
-    private val dataStore = application.datastore
+class SettingsViewModel(
+    private val settingsStore: SettingsStore
+): ViewModel() {
 
     private val _deviceDamping = MutableStateFlow(AppConstants.SETTINGS_DEFAULT_DEVICE_DAMPING)
     val deviceDamping: StateFlow<Double> = _deviceDamping
@@ -29,68 +29,67 @@ class SettingsViewModel(application: Application): AndroidViewModel(application)
 
     init {
         viewModelScope.launch {
-            dataStore.data.collect { preferences ->
-                _deviceDamping.value = preferences[SettingsPreferences.DEVICE_DAMPING]
-                    ?: AppConstants.SETTINGS_DEFAULT_DEVICE_DAMPING
-                _signalDetectionPeriod.value = preferences[SettingsPreferences.SIGNAL_DETECTION_PERIOD]
-                    ?: AppConstants.SETTINGS_DEFAULT_SIGNAL_DETECTION_SECONDS
-                _enableNotifications.value = preferences[SettingsPreferences.ENABLE_NOTIFICATIONS]
-                    ?: AppConstants.SETTINGS_DEFAULT_ENABLE_NOTIFICATIONS
-                _angerDetectionTime.value = preferences[SettingsPreferences.ANGER_DETECTION_TIME]
-                    ?: AppConstants.SETTINGS_DEFAULT_ANGER_DETECTION_TIME
-                Log.d("SettingsViewModel", "pref: ${preferences[SettingsPreferences.ENABLE_NOTIFICATIONS]} state ${_enableNotifications.value}")
+            settingsStore.deviceDamping.collect {
+                _deviceDamping.value = it
             }
+            settingsStore.signalDetectionPeriod.collect {
+                _signalDetectionPeriod.value = it
+            }
+            settingsStore.angerDetectionTime.collect {
+                _angerDetectionTime.value = it
+            }
+            settingsStore.enableNotifications.collect {
+                _enableNotifications.value = it
+            }
+            Log.d("SettingsViewModel", "Data: $deviceDamping, $signalDetectionPeriod, $enableNotifications, $angerDetectionTime")
         }
     }
 
     fun saveDeviceDamping(value: Double) {
         viewModelScope.launch {
-            dataStore.edit { preferences ->
-                preferences[SettingsPreferences.DEVICE_DAMPING] = value
-            }
+            settingsStore.saveDeviceDamping(value)
             _deviceDamping.value = value
         }
     }
 
     fun saveSignalDetectionPeriod(value: Double) {
         viewModelScope.launch {
-            dataStore.edit { preferences ->
-                preferences[SettingsPreferences.SIGNAL_DETECTION_PERIOD] = value
-            }
+            settingsStore.saveSignalDetectionPeriod(value)
             _signalDetectionPeriod.value = value
         }
     }
 
     fun saveEnableNotifications(value: Boolean) {
-        Log.d("SettingsViewModel", "111: $value")
         viewModelScope.launch {
-            dataStore.edit { preferences ->
-                Log.d("SettingsViewModel", "222: $value")
-                preferences[SettingsPreferences.ENABLE_NOTIFICATIONS] = value
-            }
-            Log.d("SettingsViewModel", "333: $value")
+            settingsStore.saveEnableNotifications(value)
             _enableNotifications.value = value
         }
     }
 
     fun saveAngerDetectionTime(value: Double) {
         viewModelScope.launch {
-            dataStore.edit { preferences ->
-                preferences[SettingsPreferences.ANGER_DETECTION_TIME] = value
-            }
+            settingsStore.saveAngerDetectionTime(value)
             _angerDetectionTime.value = value
         }
     }
 
     fun resetSettings() {
         viewModelScope.launch {
-            dataStore.edit { preferences ->
-                preferences.clear()
-            }
+            settingsStore.saveDeviceDamping(AppConstants.SETTINGS_DEFAULT_DEVICE_DAMPING)
             _deviceDamping.value = AppConstants.SETTINGS_DEFAULT_DEVICE_DAMPING
             _signalDetectionPeriod.value = AppConstants.SETTINGS_DEFAULT_SIGNAL_DETECTION_SECONDS
             _enableNotifications.value = AppConstants.SETTINGS_DEFAULT_ENABLE_NOTIFICATIONS
             _angerDetectionTime.value = AppConstants.SETTINGS_DEFAULT_ANGER_DETECTION_TIME
         }
+    }
+}
+
+class SettingsViewModelFactory(private val application: Application) : ViewModelProvider.Factory {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        if (modelClass.isAssignableFrom(SettingsViewModel::class.java)) {
+            @Suppress("UNCHECKED_CAST")
+            return SettingsViewModel(SettingsStore(application)) as T
+        }
+        throw IllegalArgumentException("Unknown ViewModel class")
     }
 }

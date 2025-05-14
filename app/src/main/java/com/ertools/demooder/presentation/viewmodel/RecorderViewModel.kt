@@ -1,6 +1,5 @@
 package com.ertools.demooder.presentation.viewmodel
 
-import android.app.Application
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -9,8 +8,7 @@ import com.ertools.demooder.core.detector.SpeechDetector
 import com.ertools.demooder.core.classifier.PredictionRepository
 import com.ertools.demooder.core.detector.DetectionProvider
 import com.ertools.demooder.core.recorder.AudioRecorder
-import com.ertools.demooder.core.settings.SettingsPreferences
-import com.ertools.demooder.core.settings.datastore
+import com.ertools.demooder.core.settings.SettingsStore
 import com.ertools.demooder.core.spectrum.SpectrumBuilder
 import com.ertools.demooder.core.spectrum.SpectrumProvider
 import com.ertools.demooder.utils.AppConstants
@@ -26,13 +24,11 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 
 class RecorderViewModel(
-    application: Application,
     private val recorder: AudioRecorder,
     private val classifier: EmotionClassifier,
     private val detector: SpeechDetector,
+    private val settingsStore: SettingsStore
 ) : ViewModel(), SpectrumProvider, DetectionProvider {
-    private val dataStore = application.datastore
-
     /** Parameters **/
     private val recordingDelayMillis: Long = AppConstants.RECORDER_DELAY_MILLIS
     private val recordingPeriodSeconds: Double = AppConstants.SETTINGS_DEFAULT_SIGNAL_DETECTION_SECONDS
@@ -98,10 +94,7 @@ class RecorderViewModel(
         }
 
         viewModelScope.launch(Dispatchers.IO) {
-            val classificationPeriodMillis = (
-                1000 * dataStore.data.first()[SettingsPreferences.SIGNAL_DETECTION_PERIOD]!!
-            ).toLong()
-
+            val classificationPeriodMillis = (1000 * settingsStore.deviceDamping.first()).toLong()
             while(isActive && isRecording.value) {
                 delay(classificationPeriodMillis)
                 detector.detectSpeech(dataBuffer, recorder.sampleRate) { isSpeech ->
@@ -133,20 +126,20 @@ class RecorderViewModel(
 
 /** ViewModel Factory **/
 class RecorderViewModelFactory(
-    private val application: Application,
     private val recorder: AudioRecorder,
     private val classifier: EmotionClassifier,
     private val detector: SpeechDetector,
+    private val settingsStore: SettingsStore
 ) : ViewModelProvider.Factory {
 
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(RecorderViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
             return RecorderViewModel(
-                application,
                 recorder,
                 classifier,
-                detector
+                detector,
+                settingsStore
             ) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")

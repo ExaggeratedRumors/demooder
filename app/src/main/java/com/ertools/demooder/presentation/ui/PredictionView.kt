@@ -285,32 +285,46 @@ fun EvaluationLabel(
         val progressAnimation = remember { Animatable(0f) }
         Text(
             text = if(!isRecording.value) placeholderText
-            else if (!isSpeech) loadingText
-            else lastTwoPredictions.joinToString("\n") { (label, inference) ->
-                "$label: ${"%.2f".format(Locale.ENGLISH, inference * 100)}%"
+            else if (!isSpeech || lastTwoPredictions.isEmpty()) loadingText
+            else lastTwoPredictions[0].let { prediction ->
+                "${prediction.label}: ${"%.2f".format(Locale.ENGLISH, prediction.confidence * 100)}%"
             },
             style = MaterialTheme.typography.titleMedium,
             modifier = Modifier.align(Alignment.Center),
             fontFamily = FontFamily.Monospace,
             color = MaterialTheme.colorScheme.onSecondary
         )
-        if(!isRecording.value) return@BoxWithConstraints
-        LaunchedEffect(Unit) {
-            while(isRecording.value) {
-                progressAnimation.animateTo(
-                    targetValue = 1f,
-                    animationSpec = tween(
-                        durationMillis = (1000 * detectionPeriodSeconds).roundToInt(),
-                        easing = LinearEasing
+
+        if(isRecording.value) {
+            LaunchedEffect(Unit) {
+                while (isRecording.value) {
+                    progressAnimation.animateTo(
+                        targetValue = 1f,
+                        animationSpec = tween(
+                            durationMillis = (1000 * detectionPeriodSeconds).roundToInt(),
+                            easing = LinearEasing
+                        )
                     )
-                )
-                progressAnimation.snapTo(0f)
+                    progressAnimation.snapTo(0f)
+                }
             }
+            Box(
+                modifier = Modifier.height(5.dp)
+                    .width(maxWidth * progressAnimation.value)
+                    .background(MaterialTheme.colorScheme.primary)
+                //.align(Alignment.BottomStart)
+            )
+
+            Text(
+                text = if(!isSpeech || lastTwoPredictions.size < 2) ""
+                else lastTwoPredictions[1].let { prediction ->
+                    "${prediction.label}: ${"%.2f".format(Locale.ENGLISH, prediction.confidence * 100)}%"
+                },
+                style = MaterialTheme.typography.titleMedium,
+                modifier = Modifier.align(Alignment.Center),
+                fontFamily = FontFamily.Monospace,
+                color = MaterialTheme.colorScheme.secondary
+            )
         }
-        Box(modifier = Modifier.height(5.dp)
-            .width(maxWidth * progressAnimation.value)
-            .background(MaterialTheme.colorScheme.primary)
-            .align(Alignment.BottomStart)
-        )
     }
 }
