@@ -1,5 +1,7 @@
 package com.ertools.demooder.core.host
 
+import android.annotation.SuppressLint
+import android.content.pm.ActivityInfo
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -22,9 +24,11 @@ class MainActivity : ComponentActivity() {
             ActivityCompat.requestPermissions(this, REQUIRED_PERMISSIONS, 1)
     }
 
+    @SuppressLint("SourceLockedOrientationActivity")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
         setContent {
             Theme.MainTheme {
                 AppNavigation()
