@@ -1,6 +1,5 @@
 package com.ertools.demooder.presentation.ui
 
-import android.app.Application
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateFloatAsState
@@ -40,6 +39,7 @@ import androidx.compose.ui.res.integerResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ertools.demooder.R
@@ -100,14 +100,14 @@ fun PredictionView() {
         SpectrumView(
             modifier = Modifier
                 .fillMaxWidth()
-                .fillMaxHeight(0.7f)
+                .fillMaxHeight(0.6f)
                 .padding(16.dp),
             provider = recorderViewModel,
             isRecording = isRecording
         )
-        EvaluationLabel(
+        PredictionView(
             modifier = Modifier
-                .fillMaxHeight(0.3f)
+                .fillMaxHeight(0.5f)
                 .fillMaxWidth(0.6f)
                 .background(MaterialTheme.colorScheme.secondary)
                 .align(Alignment.CenterHorizontally),
@@ -273,7 +273,7 @@ fun SpectrumView(
  * @param isRecording State indicating if the recorder is currently recording.
  */
 @Composable
-fun EvaluationLabel(
+fun PredictionView(
     modifier: Modifier = Modifier,
     predictionProvider: PredictionProvider,
     detectionProvider: DetectionProvider,
@@ -284,55 +284,143 @@ fun EvaluationLabel(
     val angryDuration by predictionProvider.proportion(Emotion.ANG).collectAsState()
     val isSpeech by detectionProvider.isSpeech().collectAsState()
 
-    val placeholderText = stringResource(R.string.prediction_result_placeholder)
+    val placeholderText = stringResource(R.string.prediction_placeholder)
+    val predictionLabel = stringResource(R.string.prediction_result_label)
     val loadingText = stringResource(R.string.prediction_result_loading)
-
+    val previousPredictionLabel = stringResource(R.string.prediction_previous_label)
+    val previousPredictionPlaceholderText = stringResource(R.string.prediction_previous_placeholder)
+    val angerLabel = stringResource(R.string.prediction_anger_label)
     BoxWithConstraints(
         modifier = modifier
     ){
         val progressAnimation = remember { Animatable(0f) }
-        Text(
-            text = if(!isRecording.value) placeholderText
-            else if (!isSpeech || lastTwoPredictions.isEmpty()) loadingText
-            else lastTwoPredictions[0].let { prediction ->
-                "${prediction.label}: ${"%.2f".format(Locale.ENGLISH, prediction.confidence * 100)}%"
-            },
-            style = MaterialTheme.typography.titleMedium,
-            modifier = Modifier.align(Alignment.Center),
-            fontFamily = FontFamily.Monospace,
-            color = MaterialTheme.colorScheme.onSecondary
-        )
+        val maxWidth = constraints.maxWidth.dp
 
-        if(isRecording.value) {
-            LaunchedEffect(Unit) {
-                while (isRecording.value) {
-                    progressAnimation.animateTo(
-                        targetValue = 1f,
-                        animationSpec = tween(
-                            durationMillis = (1000 * detectionPeriodSeconds).roundToInt(),
-                            easing = LinearEasing
-                        )
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(dimensionResource(R.dimen.prediction_padding))
+        ) {
+            if (isRecording.value) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .fillMaxHeight(0.5f),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = predictionLabel,
+                        style = MaterialTheme.typography.titleMedium,
+                        modifier = Modifier,
+                        fontFamily = FontFamily.Monospace,
+                        color = MaterialTheme.colorScheme.onSecondary
                     )
-                    progressAnimation.snapTo(0f)
+                    Text(
+                        text = if (!isSpeech || lastTwoPredictions.isEmpty()) loadingText
+                        else lastTwoPredictions[0].let { prediction ->
+                            "${prediction.label}: ${
+                                "%.2f".format(
+                                    Locale.ENGLISH,
+                                    prediction.confidence * 100
+                                )
+                            }%"
+                        },
+                        style = MaterialTheme.typography.titleMedium,
+                        modifier = Modifier,
+                        fontFamily = FontFamily.Monospace,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
+                LaunchedEffect(Unit) {
+                    while (isRecording.value) {
+                        progressAnimation.animateTo(
+                            targetValue = 1f,
+                            animationSpec = tween(
+                                durationMillis = (1000 * detectionPeriodSeconds).roundToInt(),
+                                easing = LinearEasing
+                            )
+                        )
+                        progressAnimation.snapTo(0f)
+                    }
+                }
+                Box(
+                    modifier = Modifier.fillMaxHeight(0.1f)
+                        .width(maxWidth * progressAnimation.value)
+                        .background(MaterialTheme.colorScheme.primary)
+                )
+                Row (
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .fillMaxHeight(0.5f),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = previousPredictionLabel,
+                        style = MaterialTheme.typography.titleSmall,
+                        modifier = Modifier,
+                        fontFamily = FontFamily.Monospace,
+                        color = MaterialTheme.colorScheme.onSecondary
+                    )
+                    Text(
+                        text = if (!isSpeech || lastTwoPredictions.size < 2) previousPredictionPlaceholderText
+                        else lastTwoPredictions[1].let { prediction ->
+                            "${prediction.label}: ${
+                                "%.2f".format(
+                                    Locale.ENGLISH,
+                                    prediction.confidence * 100
+                                )
+                            }%"
+                        },
+                        style = MaterialTheme.typography.titleSmall,
+                        modifier = Modifier,
+                        fontFamily = FontFamily.Monospace,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .fillMaxHeight()
+                        .align(Alignment.Start),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = angerLabel,
+                        style = MaterialTheme.typography.titleSmall,
+                        modifier = Modifier,
+                        fontFamily = FontFamily.Monospace,
+                        color = MaterialTheme.colorScheme.onSecondary
+                    )
+                    Text(
+                        text = "%.2f".format(
+                            Locale.ENGLISH,
+                            angryDuration
+                        ),
+                        style = MaterialTheme.typography.titleSmall,
+                        modifier = Modifier,
+                        fontFamily = FontFamily.Monospace,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
+            } else {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize(),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = placeholderText,
+                        modifier = Modifier,
+                        style = MaterialTheme.typography.titleMedium,
+                        fontFamily = FontFamily.Monospace,
+                        color = MaterialTheme.colorScheme.onSecondary,
+                        textAlign = TextAlign.Center
+                    )
                 }
             }
-            Box(
-                modifier = Modifier.height(5.dp)
-                    .width(maxWidth * progressAnimation.value)
-                    .background(MaterialTheme.colorScheme.primary)
-                //.align(Alignment.BottomStart)
-            )
-
-            Text(
-                text = if(!isSpeech || lastTwoPredictions.size < 2) ""
-                else lastTwoPredictions[1].let { prediction ->
-                    "${prediction.label}: ${"%.2f".format(Locale.ENGLISH, prediction.confidence * 100)}%"
-                },
-                style = MaterialTheme.typography.titleMedium,
-                modifier = Modifier.align(Alignment.Center),
-                fontFamily = FontFamily.Monospace,
-                color = MaterialTheme.colorScheme.secondary
-            )
         }
     }
 }

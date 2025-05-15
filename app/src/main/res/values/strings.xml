@@ -22,9 +22,15 @@
     <string name="prediction_record_cd">Record</string>
     <string name="prediction_save_cd">Save</string>
     <string name="prediction_clear_cd">Clear</string>
-    <string name="prediction_result_placeholder">Waiting for session…</string>
-    <string name="prediction_result_loading">No speech</string>
+    <string name="prediction_placeholder">Waiting for session…</string>
+
+    <string name="prediction_result_label">Prediction:</string>
+    <string name="prediction_result_loading">No speech detected</string>
     <string name="prediction_animation_cd">Classification animation box</string>
+    <string name="prediction_previous_label">Previous:</string>
+    <string name="prediction_previous_placeholder">not detected</string>
+    <string name="prediction_anger_label">Anger time:</string>
+
 
     <!-- RECORDS -->
     <string name="records_icon_cd">Recording</string>

@@ -1,11 +1,9 @@
 1. CPU vs NNAPI inference on android
 2. Przetestować KMP 2.1.20 i Gradle 8.11 z Gradle pluginem 8.7.2
-3. Dodać opcję "preferowanego" okresu nagrywania dźwięku
-4. Dodanie metadanych do tflite https://ai.google.dev/edge/litert/models/metadata?hl=pl
-5. Implementacja paska ładowania następnej predykcji, widoku ustawień, widoku zapisanych nagrań
-6. Poprawki widoku ustawień
-7. Implementacja funkcji zapisu nagrania wraz ze ścieżką klasyfikacji oraz odtworzenia nagrania
-8. Implementacja funkcji powiadamiania poprzez e-mail oraz sms
-9. Implementacja notyfikacji rozszerzonej z predykcją w tle
-
+3. Dodanie metadanych do tflite https://ai.google.dev/edge/litert/models/metadata?hl=pl
+4. Poprawić reaktywność UI w widoku horyzontalnym
+5. Poprawki widoku ustawień
+6. Implementacja funkcji zapisu nagrania wraz ze ścieżką klasyfikacji oraz odtworzenia nagrania
+7. Implementacja funkcji powiadamiania poprzez e-mail oraz sms
+8. Implementacja notyfikacji rozszerzonej z predykcją w tle
 
