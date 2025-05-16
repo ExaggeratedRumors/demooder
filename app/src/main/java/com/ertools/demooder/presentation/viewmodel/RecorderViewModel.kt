@@ -31,10 +31,7 @@ class RecorderViewModel(
 ) : ViewModel(), SpectrumProvider, DetectionProvider {
     /** Parameters **/
     private val recordingDelayMillis: Long = AppConstants.RECORDER_DELAY_MILLIS
-    private val recordingPeriodSeconds: Double = AppConstants.SETTINGS_DEFAULT_SIGNAL_DETECTION_SECONDS
     private val graphUpdatePeriodMillis: Long = AppConstants.UI_GRAPH_UPDATE_DELAY
-    private val dataBufferSize = (recordingPeriodSeconds * ProcessingUtils.AUDIO_SAMPLING_RATE * 2).toInt()
-    private val dataBuffer = ByteArray(dataBufferSize)
 
     /** Data flows **/
     private val _spectrum = MutableStateFlow(OctavesAmplitudeSpectrum(ProcessingUtils.AUDIO_OCTAVES_AMOUNT))
@@ -52,7 +49,7 @@ class RecorderViewModel(
     /**********/
     fun toggleRecording() {
         if (isRecording.value) stopRecording()
-        else startRecording()
+        else viewModelScope.launch(Dispatchers.Main) { startRecording() }
     }
 
     fun saveRecording() {
@@ -72,7 +69,9 @@ class RecorderViewModel(
     /*********************/
     /** Private methods **/
     /*********************/
-    private fun startRecording() {
+    private suspend fun startRecording() {
+        val dataBufferSize = (settingsStore.signalDetectionPeriod.first() * ProcessingUtils.AUDIO_SAMPLING_RATE * 2).toInt()
+        val dataBuffer = ByteArray(dataBufferSize)
         recorder.start()
         _isRecording.value = true
 
@@ -94,7 +93,7 @@ class RecorderViewModel(
         }
 
         viewModelScope.launch(Dispatchers.IO) {
-            val classificationPeriodMillis = (1000 * settingsStore.deviceDamping.first()).toLong()
+            val classificationPeriodMillis = (1000 * settingsStore.signalDetectionPeriod.first()).toLong()
             while(isActive && isRecording.value) {
                 delay(classificationPeriodMillis)
                 detector.detectSpeech(dataBuffer, recorder.sampleRate) { isSpeech ->

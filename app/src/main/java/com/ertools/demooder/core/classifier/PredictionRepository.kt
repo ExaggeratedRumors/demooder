@@ -12,7 +12,7 @@ object PredictionRepository {
     fun updatePredictions(newPredictions: List<Prediction>) {
         val prediction = newPredictions.maxBy { it.confidence }
         if(_predictionHistory.value.size == HISTORY_MAX_SIZE)
-            _predictionHistory.value.removeFirst()
+            _predictionHistory.value.removeAt(0)
         _predictionHistory.value.add(prediction)
     }
 

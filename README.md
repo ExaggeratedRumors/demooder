@@ -24,7 +24,7 @@ Application:
 - Kotlin 1.9.22
 - Java 11
 - Android SDK 34
-- Gradle 8.2 (KMP limited)
+- Gradle 8.9.1
 - Kotlin Multiplatform 1.9.22
 - Jetpack Compose 1.6.10
 - LiteRT 1.0.0

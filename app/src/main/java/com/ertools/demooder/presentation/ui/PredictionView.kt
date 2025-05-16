@@ -19,9 +19,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -36,7 +33,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.integerResource
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextAlign
@@ -50,6 +46,8 @@ import com.ertools.demooder.core.detector.SpeechDetector
 import com.ertools.demooder.core.recorder.AudioRecorder
 import com.ertools.demooder.core.settings.SettingsStore
 import com.ertools.demooder.core.spectrum.SpectrumProvider
+import com.ertools.demooder.presentation.components.ClickButton
+import com.ertools.demooder.presentation.components.StateButton
 import com.ertools.demooder.presentation.viewmodel.RecorderViewModel
 import com.ertools.demooder.presentation.viewmodel.RecorderViewModelFactory
 import com.ertools.demooder.presentation.viewmodel.SettingsViewModel
@@ -105,7 +103,7 @@ fun PredictionView() {
             provider = recorderViewModel,
             isRecording = isRecording
         )
-        PredictionView(
+        EvaluationView(
             modifier = Modifier
                 .fillMaxHeight(0.5f)
                 .fillMaxWidth(0.6f)
@@ -149,63 +147,6 @@ fun PredictionView() {
             ) { recorderViewModel.clearRecording() }
         }
         Spacer(modifier = Modifier.fillMaxHeight())
-    }
-}
-
-@Composable
-fun StateButton(
-    modifier: Modifier = Modifier,
-    state: State<Boolean>,
-    enableIconResource: Int,
-    disableIconResource: Int,
-    iconContentDescriptionResource: Int,
-    onClick: () -> Unit
-) {
-    Button(
-        onClick = { onClick() },
-        modifier = modifier,
-        colors = ButtonDefaults.buttonColors(
-            containerColor = if (state.value) MaterialTheme.colorScheme.tertiary
-            else MaterialTheme.colorScheme.primary
-        ),
-        shape = MaterialTheme.shapes.extraSmall
-    ) {
-        Icon(
-            painter = if(state.value) painterResource(disableIconResource)
-            else painterResource(enableIconResource),
-            modifier = Modifier.fillMaxSize(),
-            contentDescription = stringResource(iconContentDescriptionResource)
-        )
-    }
-}
-
-/**
- * Displays a button with an icon.
- * @param onClick Action to be performed when the button is clicked.
- * @param iconResource Resource ID of the icon to be displayed.
- * @param iconContentDescriptionResource Resource ID of the content description for the icon.
- * @param modifier Modifier to be applied to the button.
- */
-@Composable
-fun ClickButton(
-    modifier: Modifier = Modifier,
-    iconResource: Int,
-    iconContentDescriptionResource: Int,
-    onClick: () -> Unit
-) {
-    Button(
-        onClick = { onClick() },
-        modifier = modifier,
-        colors = ButtonDefaults.buttonColors(
-            containerColor = MaterialTheme.colorScheme.primary
-        ),
-        shape = MaterialTheme.shapes.extraSmall
-    ) {
-        Icon(
-            painter = painterResource(iconResource),
-            modifier = Modifier.fillMaxSize(),
-            contentDescription = stringResource(iconContentDescriptionResource)
-        )
     }
 }
 
@@ -273,7 +214,7 @@ fun SpectrumView(
  * @param isRecording State indicating if the recorder is currently recording.
  */
 @Composable
-fun PredictionView(
+fun EvaluationView(
     modifier: Modifier = Modifier,
     predictionProvider: PredictionProvider,
     detectionProvider: DetectionProvider,
