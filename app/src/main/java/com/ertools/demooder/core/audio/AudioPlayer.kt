@@ -1,4 +1,4 @@
-package com.ertools.demooder.core.player
+package com.ertools.demooder.core.audio
 
 import android.media.MediaPlayer
 import android.util.Log
@@ -8,11 +8,13 @@ import java.io.File
 /**
  * Class for playing audio using the Android MediaPlayer API.
  */
-class AudioPlayer {
+class AudioPlayer(
+    private val audioFilePath: String
+): AudioProvider {
     private var mediaPlayer: MediaPlayer? = null
     private var wavFile: WavFile? = null
 
-    fun start(audioFilePath: String) {
+    override fun start() {
         if(mediaPlayer == null) {
             try {
                 wavFile = WavFile.fromFile(File(audioFilePath))
@@ -33,18 +35,12 @@ class AudioPlayer {
         }
     }
 
-    fun pause() {
+    override fun stop() {
         if(mediaPlayer?.isPlaying == false) return
         mediaPlayer?.pause()
     }
 
-    fun stop() {
-        if(mediaPlayer == null) return
-        mediaPlayer?.release()
-        mediaPlayer = null
-    }
-
-    fun getCurrentAudio(buffer: ByteArray) {
+    override fun read(buffer: ByteArray) {
         if(mediaPlayer == null || wavFile == null) throw IllegalStateException("MediaPlayer is not initialized.")
         val currentMillis = mediaPlayer!!.currentPosition
         val bytesPerSample = 2 * wavFile!!.header.numChannels
@@ -59,7 +55,7 @@ class AudioPlayer {
        // return wavFile!!.data.copyOfRange(startPosition, endPosition)
     }
 
-    fun getSampleRate(): Int {
+    override fun getSampleRate(): Int {
         if(mediaPlayer == null || wavFile == null) throw IllegalStateException("MediaPlayer is not initialized.")
         return wavFile!!.header.sampleRate
     }

@@ -3,11 +3,12 @@ package com.ertools.demooder.presentation.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.ertools.demooder.core.audio.AudioProvider
 import com.ertools.demooder.core.classifier.EmotionClassifier
 import com.ertools.demooder.core.detector.SpeechDetector
 import com.ertools.demooder.core.classifier.PredictionRepository
 import com.ertools.demooder.core.detector.DetectionProvider
-import com.ertools.demooder.core.recorder.AudioRecorder
+import com.ertools.demooder.core.audio.AudioRecorder
 import com.ertools.demooder.core.settings.SettingsStore
 import com.ertools.demooder.core.spectrum.SpectrumBuilder
 import com.ertools.demooder.core.spectrum.SpectrumProvider
@@ -22,9 +23,10 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import kotlin.math.min
 
 class RecorderViewModel(
-    private val recorder: AudioRecorder,
+    private val audioProvider: AudioProvider,
     private val classifier: EmotionClassifier,
     private val detector: SpeechDetector,
     private val settingsStore: SettingsStore
@@ -62,7 +64,7 @@ class RecorderViewModel(
 
     override fun onCleared() {
         super.onCleared()
-        if(isRecording.value) recorder.stop()
+        if(isRecording.value) audioProvider.stop()
     }
 
 
@@ -70,15 +72,16 @@ class RecorderViewModel(
     /** Private methods **/
     /*********************/
     private suspend fun startRecording() {
+        PredictionRepository.reset()
         val dataBufferSize = (settingsStore.signalDetectionPeriod.first() * ProcessingUtils.AUDIO_SAMPLING_RATE * 2).toInt()
         val dataBuffer = ByteArray(dataBufferSize)
-        recorder.start()
+        audioProvider.start()
         _isRecording.value = true
 
         viewModelScope.launch(Dispatchers.IO) {
             while(isActive && _isRecording.value) {
                 synchronized(dataBuffer) {
-                    recorder.read(dataBuffer)
+                    audioProvider.read(dataBuffer)
                 }
                 delay(recordingDelayMillis)
             }
@@ -87,7 +90,8 @@ class RecorderViewModel(
         viewModelScope.launch {
             while(isActive && isRecording.value) {
                 delay(graphUpdatePeriodMillis)
-                val data = dataBuffer.sliceArray(dataBufferSize - recorder.recorderBufferSize until dataBufferSize)
+                val lastSampleSize = min(dataBuffer.size, audioProvider.getSampleRate())
+                val data = dataBuffer.sliceArray(dataBufferSize - lastSampleSize until dataBufferSize)
                 _spectrum.value = SpectrumBuilder.build(data)
             }
         }
@@ -96,10 +100,10 @@ class RecorderViewModel(
             val classificationPeriodMillis = (1000 * settingsStore.signalDetectionPeriod.first()).toLong()
             while(isActive && isRecording.value) {
                 delay(classificationPeriodMillis)
-                detector.detectSpeech(dataBuffer, recorder.sampleRate) { isSpeech ->
+                detector.detectSpeech(dataBuffer, audioProvider.getSampleRate()) { isSpeech ->
                     if(isSpeech) {
                         _isSpeech.value = true
-                        classifier.predict(dataBuffer, recorder.sampleRate) { prediction ->
+                        classifier.predict(dataBuffer, audioProvider.getSampleRate()) { prediction ->
                             PredictionRepository.updatePredictions(prediction)
                         }
                     } else {
@@ -111,7 +115,7 @@ class RecorderViewModel(
     }
 
     private fun stopRecording() {
-        if(isRecording.value) recorder.stop()
+        if(isRecording.value) audioProvider.stop()
         _isRecording.value = false
     }
 

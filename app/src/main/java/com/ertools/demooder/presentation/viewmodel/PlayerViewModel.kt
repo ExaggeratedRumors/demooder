@@ -6,8 +6,9 @@ import com.ertools.demooder.core.classifier.EmotionClassifier
 import com.ertools.demooder.core.classifier.PredictionRepository
 import com.ertools.demooder.core.detector.DetectionProvider
 import com.ertools.demooder.core.detector.SpeechDetector
-import com.ertools.demooder.core.player.AudioPlayer
-import com.ertools.demooder.core.player.PlayerState
+import com.ertools.demooder.core.audio.AudioPlayer
+import com.ertools.demooder.core.audio.AudioProvider
+import com.ertools.demooder.core.audio.PlayerState
 import com.ertools.demooder.core.settings.SettingsStore
 import com.ertools.processing.commons.ProcessingUtils
 import kotlinx.coroutines.Dispatchers
@@ -20,7 +21,7 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 
 class PlayerViewModel(
-    private val audioPlayer: AudioPlayer,
+    private val audioProvider: AudioProvider,
     private val classifier: EmotionClassifier,
     private val detector: SpeechDetector,
     private val settingsStore: SettingsStore
@@ -36,18 +37,13 @@ class PlayerViewModel(
     /**********/
 
     fun play(audioFilePath: String) {
-
-        audioPlayer.start(audioFilePath)
-        _isPlaying.value = PlayerState.PLAYING
-    }
-
-    fun pause() {
-        audioPlayer.pause()
-        _isPlaying.value = PlayerState.PAUSED
+        viewModelScope.launch {
+            startPlayer()
+        }
     }
 
     fun stop() {
-        audioPlayer.stop()
+        audioProvider.stop()
         _isPlaying.value = PlayerState.STOPPED
     }
 
@@ -56,16 +52,17 @@ class PlayerViewModel(
     /*********************/
 
 
-    private suspend fun startPlayer(audioFilePath: String) {
+    private suspend fun startPlayer() {
+        PredictionRepository.reset()
         val dataBufferSize = (settingsStore.signalDetectionPeriod.first() * ProcessingUtils.AUDIO_SAMPLING_RATE * 2).toInt()
         val dataBuffer = ByteArray(dataBufferSize)
-        audioPlayer.start(audioFilePath)
+        audioProvider.start()
         _isPlaying.value = PlayerState.PLAYING
 
         viewModelScope.launch(Dispatchers.IO) {
             while(isActive && isPlaying.value == PlayerState.PLAYING) {
                 synchronized(dataBuffer) {
-                    audioPlayer.getCurrentAudio(dataBuffer)
+                    audioProvider.read(dataBuffer)
                 }
             }
         }
@@ -74,10 +71,10 @@ class PlayerViewModel(
             val classificationPeriodMillis = (1000 * settingsStore.signalDetectionPeriod.first()).toLong()
             while(isActive && isPlaying.value == PlayerState.PLAYING) {
                 delay(classificationPeriodMillis)
-                detector.detectSpeech(dataBuffer, audioPlayer.getSampleRate()) { isSpeech ->
+                detector.detectSpeech(dataBuffer, audioProvider.getSampleRate()) { isSpeech ->
                     if(isSpeech) {
                         _isSpeech.value = true
-                        classifier.predict(dataBuffer, audioPlayer.getSampleRate()) { prediction ->
+                        classifier.predict(dataBuffer, audioProvider.getSampleRate()) { prediction ->
                             PredictionRepository.updatePredictions(prediction)
                         }
                     } else {

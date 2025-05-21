@@ -1,4 +1,4 @@
-package com.ertools.demooder.core.player
+package com.ertools.demooder.core.audio
 
 enum class PlayerState {
     PLAYING,

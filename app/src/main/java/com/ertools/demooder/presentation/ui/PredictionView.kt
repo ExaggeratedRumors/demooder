@@ -39,11 +39,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ertools.demooder.R
+import com.ertools.demooder.core.audio.AudioProvider
 import com.ertools.demooder.core.classifier.EmotionClassifier
 import com.ertools.demooder.core.classifier.PredictionProvider
 import com.ertools.demooder.core.detector.DetectionProvider
 import com.ertools.demooder.core.detector.SpeechDetector
-import com.ertools.demooder.core.recorder.AudioRecorder
+import com.ertools.demooder.core.audio.AudioRecorder
 import com.ertools.demooder.core.settings.SettingsStore
 import com.ertools.demooder.core.spectrum.SpectrumProvider
 import com.ertools.demooder.presentation.components.ClickButton
@@ -58,7 +59,9 @@ import java.util.Locale
 import kotlin.math.roundToInt
 
 @Composable
-fun PredictionView() {
+fun PredictionView(
+    audioProvider: AudioProvider
+) {
     val context = LocalContext.current
 
     /** Settings **/
