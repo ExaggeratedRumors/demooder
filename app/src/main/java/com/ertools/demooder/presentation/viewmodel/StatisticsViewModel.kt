@@ -13,6 +13,10 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.take
 
+/**
+ * VieModel for calculating and providing statistics based on predictions.
+ */
+
 class StatisticsViewModel(
     application: Application
 ): AndroidViewModel(application), PredictionProvider {
@@ -22,6 +26,7 @@ class StatisticsViewModel(
     /********************/
     /** Implementation **/
     /********************/
+
     override fun last(amount: Int): StateFlow<List<Prediction>> {
         return predictionHistory.take(amount).stateIn(
             viewModelScope,

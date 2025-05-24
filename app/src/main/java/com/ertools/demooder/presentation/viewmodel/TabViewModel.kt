@@ -6,7 +6,11 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 
-class CardViewModel(application: Application) : AndroidViewModel(application) {
+
+/**
+ * ViewModel for managing the state of the card view, including tab index and swipe gestures.
+ */
+class TabViewModel(application: Application) : AndroidViewModel(application) {
 
     private val _tabIndex: MutableLiveData<Int> = MutableLiveData(0)
     val tabIndex: LiveData<Int> = _tabIndex

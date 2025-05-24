@@ -1,7 +1,8 @@
 package com.ertools.demooder.presentation.ui
 
+import android.util.Log
 import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
@@ -18,6 +19,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -37,9 +39,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ertools.demooder.R
-import com.ertools.demooder.core.audio.AudioProvider
 import com.ertools.demooder.core.classifier.EmotionClassifier
 import com.ertools.demooder.core.classifier.PredictionProvider
 import com.ertools.demooder.core.detector.DetectionProvider
@@ -49,8 +51,9 @@ import com.ertools.demooder.core.spectrum.SpectrumProvider
 import com.ertools.demooder.presentation.components.ClickButton
 import com.ertools.demooder.presentation.components.StateButton
 import com.ertools.demooder.presentation.components.TitleValue
-import com.ertools.demooder.presentation.viewmodel.RecorderViewModel
-import com.ertools.demooder.presentation.viewmodel.PredictionViewModelFactory
+import com.ertools.demooder.presentation.viewmodel.AudioViewModel
+import com.ertools.demooder.presentation.viewmodel.AudioViewModelFactory
+import com.ertools.demooder.presentation.viewmodel.ProviderViewModel
 import com.ertools.demooder.presentation.viewmodel.SettingsViewModel
 import com.ertools.demooder.presentation.viewmodel.SettingsViewModelFactory
 import com.ertools.demooder.presentation.viewmodel.StatisticsViewModel
@@ -60,8 +63,9 @@ import kotlin.math.roundToInt
 
 @Composable
 fun PredictionView(
-    audioProvider: AudioProvider
+    providerViewModel: ProviderViewModel
 ) {
+    val audioProvider = providerViewModel.currentProvider.collectAsState().value
     val context = LocalContext.current
 
     /** Settings **/
@@ -72,20 +76,20 @@ fun PredictionView(
         )
     }
     val settingsViewModel: SettingsViewModel = viewModel(factory = settingsViewModelFactory)
-    val detectionPeriodSeconds by settingsViewModel.signalDetectionPeriod.collectAsState()
+    val detectionPeriodSeconds = settingsViewModel.signalDetectionPeriod.collectAsState()
 
     /** Recorder **/
     val classifier = EmotionClassifier().apply { this.loadClassifier(context) }
     val detector = SpeechDetector().apply { this.loadModel(context) }
     val recorderViewModelFactory = remember {
-        PredictionViewModelFactory(
+        AudioViewModelFactory(
             audioProvider = audioProvider,
             classifier = classifier,
             detector = detector,
             settingsStore = settingsStore
         )
     }
-    val recorderViewModel: RecorderViewModel = viewModel(factory = recorderViewModelFactory)
+    val recorderViewModel: AudioViewModel = viewModel(factory = recorderViewModelFactory)
     val statisticsViewModel: StatisticsViewModel = viewModel()
 
     /** Buttons state **/
@@ -168,7 +172,8 @@ fun SpectrumView(
         modifier = modifier,
         verticalArrangement = Arrangement.Center,
     ){
-        val spectrum by provider.getSpectrum().collectAsState()
+        val spectrumFlow = remember(provider) { provider.getSpectrum() }
+        val spectrum by spectrumFlow.collectAsStateWithLifecycle()
 
         Surface (
             modifier = Modifier
@@ -220,7 +225,7 @@ fun EvaluationView(
     modifier: Modifier = Modifier,
     predictionProvider: PredictionProvider,
     detectionProvider: DetectionProvider,
-    detectionPeriodSeconds: Double,
+    detectionPeriodSeconds: State<Double>,
     isRecording: State<Boolean>
 ) {
     val lastTwoPredictions by predictionProvider.last(2).collectAsState()
@@ -233,11 +238,14 @@ fun EvaluationView(
     val previousPredictionLabel = stringResource(R.string.prediction_previous_label)
     val previousPredictionPlaceholderText = stringResource(R.string.prediction_previous_placeholder)
     val angerLabel = stringResource(R.string.prediction_anger_label)
+
     BoxWithConstraints(
         modifier = modifier
     ){
         val progressAnimation = remember { Animatable(0f) }
-        val maxWidth = constraints.maxWidth.dp
+        val maxWidth = constraints.minWidth.dp
+
+        Log.d("PredictionView", "maxWidth: $maxWidth, progressAnimation: ${progressAnimation.value}")
 
         Column(
             modifier = Modifier
@@ -266,8 +274,8 @@ fun EvaluationView(
                         progressAnimation.animateTo(
                             targetValue = 1f,
                             animationSpec = tween(
-                                durationMillis = (1000 * detectionPeriodSeconds).roundToInt(),
-                                easing = LinearEasing
+                                durationMillis = (1000 * detectionPeriodSeconds.value).roundToInt(),
+                                easing = LinearOutSlowInEasing
                             )
                         )
                         progressAnimation.snapTo(0f)
@@ -275,7 +283,7 @@ fun EvaluationView(
                 }
                 Box(
                     modifier = Modifier.fillMaxHeight(0.1f)
-                        .width(maxWidth * progressAnimation.value)
+                        .requiredWidth(maxWidth * progressAnimation.value)
                         .background(MaterialTheme.colorScheme.primary)
                 )
                 TitleValue(

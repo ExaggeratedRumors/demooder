@@ -13,9 +13,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
-import com.ertools.demooder.presentation.navigation.AppNavigationItem
-import com.ertools.demooder.presentation.navigation.ScaffoldNavigationItem
-import com.ertools.demooder.presentation.navigation.ScaffoldNavigationRoutes
+import com.ertools.demooder.presentation.navigation.OutsideNavigationItem
+import com.ertools.demooder.presentation.navigation.InsideNavigationItem
+import com.ertools.demooder.presentation.navigation.InsideNavigationRoutes
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -24,16 +24,16 @@ fun AppScaffold(
     parentNavController: NavController,
     content: @Composable (PaddingValues) -> Unit
 ) {
-    val navbarItems = ScaffoldNavigationRoutes.list
+    val navbarItems = InsideNavigationRoutes.list
 
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
 
     /* Selected view */
     val navbarStack by navController.currentBackStackEntryAsState()
     val selectedView = remember { mutableStateOf(navbarItems[0]) }
-    selectedView.value = ScaffoldNavigationRoutes.list.firstOrNull {
+    selectedView.value = InsideNavigationRoutes.list.firstOrNull {
         it.route == navbarStack?.destination?.route
-    } ?: ScaffoldNavigationItem.Home
+    } ?: InsideNavigationItem.Home
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -45,7 +45,7 @@ fun AppScaffold(
                     MenuItem(
                         text = "Settings",
                         onClick = {
-                            parentNavController.navigate(AppNavigationItem.Settings.route)
+                            parentNavController.navigate(OutsideNavigationItem.Settings.route)
                         }
                     )
                 )

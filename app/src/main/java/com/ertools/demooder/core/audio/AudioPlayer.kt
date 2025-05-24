@@ -51,8 +51,6 @@ class AudioPlayer(
             startIndex = startPosition,
             endIndex = endPosition
         )
-        //val startPosition = (endPosition - (bytesPerSample * periodMilliseconds) / 1000).coerceAtLeast(0)
-       // return wavFile!!.data.copyOfRange(startPosition, endPosition)
     }
 
     override fun getSampleRate(): Int {

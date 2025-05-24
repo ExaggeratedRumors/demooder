@@ -7,7 +7,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.ertools.demooder.presentation.components.AppScaffold
-import com.ertools.demooder.presentation.navigation.ScaffoldNavigation
+import com.ertools.demooder.presentation.navigation.InsideNavigation
 
 @Preview(name = "main", group = "main",
     device = "spec:width=411dp,height=891dp,dpi=420",
@@ -25,7 +25,7 @@ fun MainView (parentNavController: NavController) {
         navController = navController,
         parentNavController = parentNavController
     ) { contentPadding ->
-        ScaffoldNavigation(
+        InsideNavigation(
             modifier = Modifier.padding(contentPadding),
             navController = navController
         )

@@ -20,12 +20,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.ertools.demooder.R
-import com.ertools.demooder.presentation.navigation.ScaffoldNavigationItem
+import com.ertools.demooder.presentation.navigation.InsideNavigationItem
 
 @Composable
 fun NavBar(
-    selectedView: MutableState<ScaffoldNavigationItem>,
-    navigationItems: List<ScaffoldNavigationItem>,
+    selectedView: MutableState<InsideNavigationItem>,
+    navigationItems: List<InsideNavigationItem>,
     navController: NavController,
 ) {
     val navigationItemColors = NavigationBarItemDefaults.colors(

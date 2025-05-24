@@ -12,22 +12,30 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.ertools.demooder.R
+import com.ertools.demooder.core.settings.SettingsStore
 import com.ertools.demooder.presentation.components.OptionData
 import com.ertools.demooder.presentation.components.ReturnScaffold
 import com.ertools.demooder.presentation.viewmodel.SettingsViewModel
+import com.ertools.demooder.presentation.viewmodel.SettingsViewModelFactory
 import com.ertools.demooder.utils.Validation
 
 @Composable
 fun SettingsView(
-    navController: NavHostController,
-    settingsViewModel: SettingsViewModel = viewModel()
+    navController: NavHostController
 ) {
+    val context = LocalContext.current.applicationContext
+    val settingsStore = SettingsStore(context)
+    val settingsViewModelFactory = remember { SettingsViewModelFactory(settingsStore) }
+    val settingsViewModel: SettingsViewModel = viewModel(factory = settingsViewModelFactory)
+
+
     val data = remember { mutableStateOf(emptyList<OptionData>()) }
     val deviceDamping = settingsViewModel.deviceDamping.collectAsState()
     val signalDetectionPeriod = settingsViewModel.signalDetectionPeriod.collectAsState()

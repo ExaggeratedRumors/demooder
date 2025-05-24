@@ -26,12 +26,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.ertools.demooder.R
-import com.ertools.demooder.presentation.navigation.ScaffoldNavigationItem
+import com.ertools.demooder.presentation.navigation.InsideNavigationItem
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppBar(
-    selectedView: MutableState<ScaffoldNavigationItem>,
+    selectedView: MutableState<InsideNavigationItem>,
     scrollBehavior: TopAppBarScrollBehavior,
     menuItems: List<MenuItem>
 ) {

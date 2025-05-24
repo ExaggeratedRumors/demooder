@@ -3,7 +3,7 @@ accompanistSystemuicontroller = "0.36.0"
 android-compileSdk = "34"
 android-minSdk = "31"
 android-targetSdk = "34"
-agp = "8.9.1"
+agp = "8.2.0"
 coreKtxVersion = "1.6.1"
 datastorePreferences = "1.1.1"
 kotlin = "1.9.22"
@@ -69,7 +69,8 @@ testng = { group = "org.testng", name = "testng", version.ref = "testng" }
 [plugins]
 android-library = { id = "com.android.library", version.ref = "agp" }
 android-application = { id = "com.android.application", version.ref = "agp" }
-kotlin-android = { id = "org.jetbrains.kotlin.android", version = "1.9.21" }
+compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 jetbrains-compose = { id = "org.jetbrains.compose", version.ref = "compose-plugin" }
 jetbrains-kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }

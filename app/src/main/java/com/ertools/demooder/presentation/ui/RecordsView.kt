@@ -3,69 +3,62 @@ package com.ertools.demooder.presentation.ui
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.draggable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.ertools.demooder.R
+import com.ertools.demooder.core.audio.AudioPlayer
 import com.ertools.demooder.presentation.components.TabLayout
-import com.ertools.demooder.presentation.navigation.AppNavigationItem
-import com.ertools.demooder.presentation.navigation.ScaffoldNavigationItem
-import com.ertools.demooder.presentation.navigation.ScaffoldNavigationRoutes
-import com.ertools.demooder.presentation.viewmodel.CardViewModel
+import com.ertools.demooder.presentation.navigation.InsideNavigationItem
 import com.ertools.demooder.presentation.viewmodel.FilesViewModel
-import com.ertools.demooder.presentation.viewmodel.FilesViewModelFactory
+import com.ertools.demooder.presentation.viewmodel.ProviderViewModel
+import com.ertools.demooder.presentation.viewmodel.TabViewModel
 
 @Composable
 fun RecordsView(
-    navController: NavController
+    navController: NavController,
+    providerViewModel: ProviderViewModel
 ) {
-    val viewModel = viewModel<CardViewModel>()
     val context = LocalContext.current.applicationContext
-    val filesViewModelFactory = remember {
-        FilesViewModelFactory()
-    }
-    val filesViewModel: FilesViewModel = viewModel<FilesViewModel>(
-        factory = filesViewModelFactory
-    ).apply {
-        this.loadExternalRecordings(context)
+    val tabViewModel = viewModel<TabViewModel>()
+    val filesViewModel = viewModel<FilesViewModel>().apply {
         this.loadInternalRecordings(context)
+        this.loadExternalRecordings(context)
     }
 
     Column(modifier = Modifier.fillMaxSize().draggable(
-        state = viewModel.dragState.value!!,
+        state = tabViewModel.dragState.value!!,
         orientation = Orientation.Horizontal,
         onDragStarted = {  },
         onDragStopped = {
-            viewModel.updateTabIndexBasedOnSwipe()
+            tabViewModel.updateTabIndexBasedOnSwipe()
         }),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         TabLayout(
             views = listOf(
                 stringResource(R.string.records_internal_storage) to {
-                    RecordsView(navController, filesViewModel.internalFiles)
+                    RecordsView(navController, providerViewModel, filesViewModel.internalFiles)
                 },
                 stringResource(R.string.records_external_storage) to {
-                    RecordsView(navController, filesViewModel.externalFiles)
+                    RecordsView(navController, providerViewModel, filesViewModel.externalFiles)
                 }
             )
         )
@@ -73,7 +66,11 @@ fun RecordsView(
 }
 
 @Composable
-fun ColumnScope.RecordsView(navController: NavController, files: State<List<FilesViewModel.RecordingFile>>) {
+fun ColumnScope.RecordsView(
+    navController: NavController,
+    providerViewModel: ProviderViewModel,
+    files: State<List<FilesViewModel.RecordingFile>>
+) {
     Row(modifier = Modifier.align(Alignment.CenterHorizontally)) {
         LazyColumn(
             modifier = Modifier
@@ -87,10 +84,11 @@ fun ColumnScope.RecordsView(navController: NavController, files: State<List<File
                     size = files.value[it].size,
                     iconResource = R.drawable.outline_music_note_24,
                     contentDescriptionResource = R.string.records_icon_cd,
-                    onClick = { navController.navigate(
-                        route = ScaffoldNavigationItem.Prediction,
-                        navigatorExtras =
-                    ) }
+                    onClick = { fileName ->
+                        val audioPlayer = AudioPlayer(fileName)
+                        providerViewModel.updateCurrentProvider(audioPlayer)
+                        navController.navigate(route = InsideNavigationItem.Prediction)
+                    }
                 )
             }
         }
@@ -107,7 +105,10 @@ fun RecordItemView(
     contentDescriptionResource: Int,
     onClick: (String) -> Unit
 ) {
-    Box(modifier = modifier) {
+    Button(
+        onClick = { onClick(name) },
+        modifier = modifier
+    ) {
         Row(
             modifier = Modifier.fillMaxSize(),
             verticalAlignment = Alignment.CenterVertically,

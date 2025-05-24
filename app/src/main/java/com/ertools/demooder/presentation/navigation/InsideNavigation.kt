@@ -7,27 +7,27 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navArgument
 import com.ertools.demooder.R
-import com.ertools.demooder.core.audio.AudioProvider
 import com.ertools.demooder.presentation.ui.HomeView
 import com.ertools.demooder.presentation.ui.PredictionView
 import com.ertools.demooder.presentation.ui.RecordsView
+import com.ertools.demooder.presentation.viewmodel.ProviderViewModel
 
 
 @Composable
-fun ScaffoldNavigation(
+fun InsideNavigation(
     modifier: Modifier = Modifier,
     navController: NavHostController = rememberNavController()
 ) {
+    val providerViewModel = viewModel<ProviderViewModel>()
     NavHost(
         navController = navController,
-        startDestination = ScaffoldNavigationItem.Home.route,
+        startDestination = InsideNavigationItem.Home.route,
         modifier = modifier,
         enterTransition = {
             fadeIn(
@@ -40,49 +40,45 @@ fun ScaffoldNavigation(
             )
         }
     ) {
-        composable(ScaffoldNavigationItem.Home.route) { HomeView() }
-        composable() {
-            PredictionView()
-        }
-        composable(ScaffoldNavigationItem.Records.route) { RecordsView(navController) }
+        composable(InsideNavigationItem.Home.route) { HomeView() }
+        composable(InsideNavigationItem.Prediction.route) { PredictionView(providerViewModel) }
+        composable(InsideNavigationItem.Records.route) { RecordsView(navController, providerViewModel) }
     }
 }
 
-object ScaffoldNavigationRoutes {
+object InsideNavigationRoutes {
     val list = listOf(
-        ScaffoldNavigationItem.Home,
-        ScaffoldNavigationItem.Prediction,
-        ScaffoldNavigationItem.Records
+        InsideNavigationItem.Home,
+        InsideNavigationItem.Prediction,
+        InsideNavigationItem.Records
     )
 }
 
-sealed class ScaffoldNavigationItem(
+sealed class InsideNavigationItem(
     val route: String,
     @StringRes val title: Int? = null,
     @DrawableRes val selectedIcon: Int? = null,
     @DrawableRes val unselectedIcon: Int? = null,
-    val badgeCount: Int? = null
 ) {
-    data object Home : ScaffoldNavigationItem(
+    data object Home : InsideNavigationItem(
         route = "home",
         title = R.string.nav_home,
         selectedIcon = R.drawable.home_filled,
         unselectedIcon = R.drawable.home_outline
     )
 
-    data object Prediction : ScaffoldNavigationItem(
+    data object Prediction : InsideNavigationItem(
         route = "prediction",
         title = R.string.nav_prediction,
         selectedIcon = R.drawable.predict_filled,
         unselectedIcon = R.drawable.predict_outline
     )
 
-    data object Records : ScaffoldNavigationItem(
+    data object Records : InsideNavigationItem(
         route = "records",
         title = R.string.nav_records,
         selectedIcon = R.drawable.records_filled,
-        unselectedIcon = R.drawable.records_outline,
-        badgeCount = 0
+        unselectedIcon = R.drawable.records_outline
     )
 }
 

@@ -1,6 +1,5 @@
 package com.ertools.demooder.presentation.viewmodel
 
-import android.app.Application
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -11,10 +10,14 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
+/**
+ * ViewModel for managing settings in the application.
+ * It interacts with the SettingsStore to retrieve and save settings values.
+ */
 class SettingsViewModel(
     private val settingsStore: SettingsStore
 ): ViewModel() {
-
+    /** Data flow **/
     private val _deviceDamping = MutableStateFlow(AppConstants.SETTINGS_DEFAULT_DEVICE_DAMPING)
     val deviceDamping: StateFlow<Double> = _deviceDamping
 
@@ -44,6 +47,11 @@ class SettingsViewModel(
             Log.d("SettingsViewModel", "Data: $deviceDamping, $signalDetectionPeriod, $enableNotifications, $angerDetectionTime")
         }
     }
+
+
+    /**********/
+    /** API  **/
+    /**********/
 
     fun saveDeviceDamping(value: Double) {
         viewModelScope.launch {

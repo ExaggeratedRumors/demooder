@@ -5,8 +5,8 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.ertools.demooder.core.audio.AudioProvider
 import com.ertools.demooder.core.classifier.EmotionClassifier
-import com.ertools.demooder.core.detector.SpeechDetector
 import com.ertools.demooder.core.classifier.PredictionRepository
+import com.ertools.demooder.core.detector.SpeechDetector
 import com.ertools.demooder.core.detector.DetectionProvider
 import com.ertools.demooder.core.settings.SettingsStore
 import com.ertools.demooder.core.spectrum.SpectrumBuilder
@@ -22,9 +22,11 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
-import kotlin.math.min
 
-class RecorderViewModel(
+/**
+ * ViewModel for managing current audio data buffer.
+ */
+class AudioViewModel(
     private val audioProvider: AudioProvider,
     private val classifier: EmotionClassifier,
     private val detector: SpeechDetector,
@@ -35,15 +37,14 @@ class RecorderViewModel(
     private val graphUpdatePeriodMillis: Long = AppConstants.UI_GRAPH_UPDATE_DELAY
 
     /** Data flows **/
-    private val _spectrum = MutableStateFlow(OctavesAmplitudeSpectrum(ProcessingUtils.AUDIO_OCTAVES_AMOUNT))
+    private val _spectrum: MutableStateFlow<OctavesAmplitudeSpectrum> = MutableStateFlow(OctavesAmplitudeSpectrum(ProcessingUtils.AUDIO_OCTAVES_AMOUNT))
     private val spectrum: StateFlow<OctavesAmplitudeSpectrum> = _spectrum.asStateFlow()
 
-    private var _isSpeech = MutableStateFlow(false)
+    private var _isSpeech: MutableStateFlow<Boolean> = MutableStateFlow(false)
     private val isSpeech: StateFlow<Boolean> = _isSpeech.asStateFlow()
 
-    private var _isWorking = MutableStateFlow(false)
+    private var _isWorking: MutableStateFlow<Boolean> = MutableStateFlow(false)
     val isWorking: StateFlow<Boolean> = _isWorking.asStateFlow()
-
 
     /**********/
     /** API **/
@@ -51,7 +52,7 @@ class RecorderViewModel(
 
     fun togglePlay() {
         if (isWorking.value) stopRecording()
-        else viewModelScope.launch(Dispatchers.Main) { startRecording() }
+        else viewModelScope.launch(Dispatchers.IO) { startRecording() }
     }
 
     fun save() {
@@ -72,6 +73,7 @@ class RecorderViewModel(
     private suspend fun startRecording() {
         PredictionRepository.reset()
         val dataBufferSize = (settingsStore.signalDetectionPeriod.first() * ProcessingUtils.AUDIO_SAMPLING_RATE * 2).toInt()
+
         val dataBuffer = ByteArray(dataBufferSize)
         audioProvider.start()
         _isWorking.value = true
@@ -82,7 +84,7 @@ class RecorderViewModel(
                 synchronized(dataBuffer) {
                     audioProvider.read(dataBuffer)
                 }
-                //delay(recordingDelayMillis)
+                delay(recordingDelayMillis)
             }
         }
 
@@ -90,7 +92,9 @@ class RecorderViewModel(
         viewModelScope.launch {
             while(isActive && isWorking.value) {
                 delay(graphUpdatePeriodMillis)
-                val lastSampleSize = min(dataBuffer.size, audioProvider.getSampleRate())
+                //val lastSampleSize = min(dataBuffer.size, audioProvider.getSampleRate())
+                val lastSampleSize = 2048
+
                 val data = dataBuffer.sliceArray(dataBufferSize - lastSampleSize until dataBufferSize)
                 _spectrum.value = SpectrumBuilder.build(data)
             }
@@ -134,9 +138,7 @@ class RecorderViewModel(
     }
 }
 
-
-/** ViewModel Factory **/
-class PredictionViewModelFactory(
+class AudioViewModelFactory(
     private val audioProvider: AudioProvider,
     private val classifier: EmotionClassifier,
     private val detector: SpeechDetector,
@@ -144,9 +146,9 @@ class PredictionViewModelFactory(
 ) : ViewModelProvider.Factory {
 
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(RecorderViewModel::class.java)) {
+        if (modelClass.isAssignableFrom(AudioViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
-            return RecorderViewModel(
+            return AudioViewModel(
                 audioProvider,
                 classifier,
                 detector,

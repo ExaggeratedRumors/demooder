@@ -8,7 +8,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import com.ertools.demooder.presentation.navigation.AppNavigation
+import com.ertools.demooder.presentation.navigation.OutsideNavigation
 import com.ertools.demooder.presentation.theme.Theme
 import com.ertools.demooder.utils.Permissions.REQUIRED_PERMISSIONS
 
@@ -31,7 +31,7 @@ class MainActivity : ComponentActivity() {
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
         setContent {
             Theme.MainTheme {
-                AppNavigation()
+                OutsideNavigation()
             }
         }
     }

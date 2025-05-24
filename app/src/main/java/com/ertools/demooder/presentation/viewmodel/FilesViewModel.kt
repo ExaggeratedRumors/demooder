@@ -1,16 +1,19 @@
 package com.ertools.demooder.presentation.viewmodel
 
+import android.app.Application
 import android.content.Context
 import android.icu.text.SimpleDateFormat
 import android.provider.MediaStore
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.AndroidViewModel
 import java.util.Date
 import java.util.Locale
 
-class FilesViewModel : ViewModel() {
+/**
+ * ViewModel for loading External and Internal recordings from the device.
+ */
+class FilesViewModel(application: Application) : AndroidViewModel(application) {
     data class RecordingFile(
         val name: String,
         val modificationDate: String,
@@ -22,6 +25,10 @@ class FilesViewModel : ViewModel() {
 
     private var _internalFiles = mutableStateOf<List<RecordingFile>>(emptyList())
     val internalFiles: State<List<RecordingFile>> = _internalFiles
+
+    /********************/
+    /*******  API  ******/
+    /********************/
 
     fun loadInternalRecordings(context: Context) {
         val audioFiles = mutableListOf<RecordingFile>()
@@ -78,6 +85,10 @@ class FilesViewModel : ViewModel() {
     }
 
 
+    /*********************/
+    /** Private methods **/
+    /*********************/
+
     private fun dateFormat(date: String): String {
         val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH)
         return sdf.format(Date(date.toLong() * 1000)).toString()
@@ -90,15 +101,5 @@ class FilesViewModel : ViewModel() {
             in 1048577..1073741824 -> "${"%.2f".format(size / 1048576.0, Locale.ENGLISH)} MB"
             else -> "${"%.2f".format(size / 1073741824.0, Locale.ENGLISH)} GB"
         }
-    }
-}
-
-class FilesViewModelFactory : ViewModelProvider.Factory {
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(FilesViewModel::class.java)) {
-            @Suppress("UNCHECKED_CAST")
-            return FilesViewModel() as T
-        }
-        throw IllegalArgumentException("Unknown ViewModel class")
     }
 }

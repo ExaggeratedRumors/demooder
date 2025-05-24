@@ -12,13 +12,13 @@ import com.ertools.demooder.presentation.ui.MainView
 import com.ertools.demooder.presentation.ui.SettingsView
 
 @Composable
-fun AppNavigation(
+fun OutsideNavigation(
     modifier: Modifier = Modifier,
     navController: NavHostController = rememberNavController()
 ) {
     NavHost(
         navController = navController,
-        startDestination = AppNavigationItem.Main.route,
+        startDestination = OutsideNavigationItem.Main.route,
         modifier = modifier,
         enterTransition = {
             slideIntoContainer(
@@ -33,18 +33,18 @@ fun AppNavigation(
             )
         }
     ) {
-        composable(AppNavigationItem.Main.route) { MainView(navController) }
-        composable(AppNavigationItem.Settings.route) { SettingsView(navController) }
+        composable(OutsideNavigationItem.Main.route) { MainView(navController) }
+        composable(OutsideNavigationItem.Settings.route) { SettingsView(navController) }
     }
 }
 
-sealed class AppNavigationItem(
+sealed class OutsideNavigationItem(
     val route: String
 ) {
-    data object Main : AppNavigationItem(
+    data object Main : OutsideNavigationItem(
         route = "main"
     )
-    data object Settings : AppNavigationItem(
+    data object Settings : OutsideNavigationItem(
         route = "settings"
     )
 }
