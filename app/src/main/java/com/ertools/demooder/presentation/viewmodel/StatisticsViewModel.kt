@@ -42,7 +42,6 @@ class StatisticsViewModel(
         )
     }
 
-
     override fun reset() {
         predictionRepository.reset()
     }

@@ -21,20 +21,23 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import com.ertools.demooder.R
 import com.ertools.demooder.presentation.components.TabLayout
+import com.ertools.demooder.presentation.navigation.AppNavigationItem
+import com.ertools.demooder.presentation.navigation.ScaffoldNavigationItem
+import com.ertools.demooder.presentation.navigation.ScaffoldNavigationRoutes
+import com.ertools.demooder.presentation.viewmodel.CardViewModel
 import com.ertools.demooder.presentation.viewmodel.FilesViewModel
 import com.ertools.demooder.presentation.viewmodel.FilesViewModelFactory
-import com.ertools.demooder.presentation.viewmodel.CardViewModel
 
 @Composable
-fun RecordsView() {
+fun RecordsView(
+    navController: NavController
+) {
     val viewModel = viewModel<CardViewModel>()
     val context = LocalContext.current.applicationContext
     val filesViewModelFactory = remember {
@@ -58,15 +61,19 @@ fun RecordsView() {
     ) {
         TabLayout(
             views = listOf(
-                stringResource(R.string.records_internal_storage) to { RecordsView(filesViewModel.internalFiles) },
-                stringResource(R.string.records_external_storage) to { RecordsView(filesViewModel.externalFiles) }
+                stringResource(R.string.records_internal_storage) to {
+                    RecordsView(navController, filesViewModel.internalFiles)
+                },
+                stringResource(R.string.records_external_storage) to {
+                    RecordsView(navController, filesViewModel.externalFiles)
+                }
             )
         )
     }
 }
 
 @Composable
-fun ColumnScope.RecordsView(files: State<List<FilesViewModel.RecordingFile>>) {
+fun ColumnScope.RecordsView(navController: NavController, files: State<List<FilesViewModel.RecordingFile>>) {
     Row(modifier = Modifier.align(Alignment.CenterHorizontally)) {
         LazyColumn(
             modifier = Modifier
@@ -80,7 +87,10 @@ fun ColumnScope.RecordsView(files: State<List<FilesViewModel.RecordingFile>>) {
                     size = files.value[it].size,
                     iconResource = R.drawable.outline_music_note_24,
                     contentDescriptionResource = R.string.records_icon_cd,
-                    onClick = { /* Handle click */ }
+                    onClick = { navController.navigate(
+                        route = ScaffoldNavigationItem.Prediction,
+                        navigatorExtras =
+                    ) }
                 )
             }
         }
@@ -95,7 +105,7 @@ fun RecordItemView(
     size: String,
     iconResource: Int,
     contentDescriptionResource: Int,
-    onClick: () -> Unit
+    onClick: (String) -> Unit
 ) {
     Box(modifier = modifier) {
         Row(
@@ -129,17 +139,11 @@ fun RecordItemView(
                 verticalArrangement = Arrangement.Center
             ) {
                 Text(
-                    text = size.toString(),
+                    text = size,
                     fontSize = MaterialTheme.typography.labelSmall.fontSize,
                     fontWeight = MaterialTheme.typography.labelSmall.fontWeight
                 )
             }
         }
     }
-}
-
-@Preview(name = "records", group = "records")
-@Composable
-fun RecordsViewPreview() {
-    RecordsView()
 }

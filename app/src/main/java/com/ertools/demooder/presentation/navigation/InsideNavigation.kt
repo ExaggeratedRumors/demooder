@@ -8,10 +8,13 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.ertools.demooder.R
+import com.ertools.demooder.core.audio.AudioProvider
 import com.ertools.demooder.presentation.ui.HomeView
 import com.ertools.demooder.presentation.ui.PredictionView
 import com.ertools.demooder.presentation.ui.RecordsView
@@ -38,8 +41,10 @@ fun ScaffoldNavigation(
         }
     ) {
         composable(ScaffoldNavigationItem.Home.route) { HomeView() }
-        composable(ScaffoldNavigationItem.Prediction.route) { PredictionView() }
-        composable(ScaffoldNavigationItem.Records.route) { RecordsView() }
+        composable() {
+            PredictionView()
+        }
+        composable(ScaffoldNavigationItem.Records.route) { RecordsView(navController) }
     }
 }
 

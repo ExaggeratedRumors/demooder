@@ -44,13 +44,13 @@ import com.ertools.demooder.core.classifier.EmotionClassifier
 import com.ertools.demooder.core.classifier.PredictionProvider
 import com.ertools.demooder.core.detector.DetectionProvider
 import com.ertools.demooder.core.detector.SpeechDetector
-import com.ertools.demooder.core.audio.AudioRecorder
 import com.ertools.demooder.core.settings.SettingsStore
 import com.ertools.demooder.core.spectrum.SpectrumProvider
 import com.ertools.demooder.presentation.components.ClickButton
 import com.ertools.demooder.presentation.components.StateButton
+import com.ertools.demooder.presentation.components.TitleValue
 import com.ertools.demooder.presentation.viewmodel.RecorderViewModel
-import com.ertools.demooder.presentation.viewmodel.RecorderViewModelFactory
+import com.ertools.demooder.presentation.viewmodel.PredictionViewModelFactory
 import com.ertools.demooder.presentation.viewmodel.SettingsViewModel
 import com.ertools.demooder.presentation.viewmodel.SettingsViewModelFactory
 import com.ertools.demooder.presentation.viewmodel.StatisticsViewModel
@@ -77,10 +77,9 @@ fun PredictionView(
     /** Recorder **/
     val classifier = EmotionClassifier().apply { this.loadClassifier(context) }
     val detector = SpeechDetector().apply { this.loadModel(context) }
-    val recorder = AudioRecorder()
     val recorderViewModelFactory = remember {
-        RecorderViewModelFactory(
-            recorder = recorder,
+        PredictionViewModelFactory(
+            audioProvider = audioProvider,
             classifier = classifier,
             detector = detector,
             settingsStore = settingsStore
@@ -90,7 +89,7 @@ fun PredictionView(
     val statisticsViewModel: StatisticsViewModel = viewModel()
 
     /** Buttons state **/
-    val isRecording = recorderViewModel.isRecording.collectAsState()
+    val isRecording = recorderViewModel.isWorking.collectAsState()
 
     Column(
         modifier = Modifier
@@ -131,7 +130,7 @@ fun PredictionView(
                 iconResource = R.drawable.settings_link,
                 iconContentDescriptionResource = R.string.prediction_save_cd
 
-            ) { recorderViewModel.saveRecording() }
+            ) { recorderViewModel.save() }
             StateButton(
                 modifier = Modifier
                     .fillMaxHeight(0.8f)
@@ -140,14 +139,14 @@ fun PredictionView(
                 enableIconResource = R.drawable.mic_filled,
                 disableIconResource = R.drawable.stop_filled,
                 iconContentDescriptionResource = R.string.prediction_record_cd
-            ) { recorderViewModel.toggleRecording() }
+            ) { recorderViewModel.togglePlay() }
             ClickButton(
                 modifier = Modifier
                     .fillMaxHeight(0.6f)
                     .aspectRatio(1f),
                 iconResource = R.drawable.records_filled,
                 iconContentDescriptionResource = R.string.prediction_clear_cd
-            ) { recorderViewModel.clearRecording() }
+            ) { recorderViewModel.abort() }
         }
         Spacer(modifier = Modifier.fillMaxHeight())
     }
@@ -246,35 +245,22 @@ fun EvaluationView(
                 .padding(dimensionResource(R.dimen.prediction_padding))
         ) {
             if (isRecording.value) {
-                Column(
+                TitleValue(
                     modifier = Modifier
                         .fillMaxWidth()
                         .fillMaxHeight(0.5f),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text(
-                        text = predictionLabel,
-                        style = MaterialTheme.typography.titleMedium,
-                        modifier = Modifier,
-                        fontFamily = FontFamily.Monospace,
-                        color = MaterialTheme.colorScheme.onSecondary
-                    )
-                    Text(
-                        text = if (!isSpeech || lastTwoPredictions.isEmpty()) loadingText
-                        else lastTwoPredictions[0].let { prediction ->
-                            "${prediction.label}: ${
-                                "%.2f".format(
-                                    Locale.ENGLISH,
-                                    prediction.confidence * 100
-                                )
-                            }%"
-                        },
-                        style = MaterialTheme.typography.titleMedium,
-                        modifier = Modifier,
-                        fontFamily = FontFamily.Monospace,
-                        color = MaterialTheme.colorScheme.primary
-                    )
-                }
+                    title = predictionLabel,
+                    value = if (!isSpeech || lastTwoPredictions.isEmpty()) loadingText
+                    else lastTwoPredictions[0].let { prediction ->
+                        "${prediction.label}: ${
+                            "%.2f".format(
+                                Locale.ENGLISH,
+                                prediction.confidence * 100
+                            )
+                        }%"
+                    },
+                    isVertical = true
+                )
                 LaunchedEffect(Unit) {
                     while (isRecording.value) {
                         progressAnimation.animateTo(
@@ -292,62 +278,26 @@ fun EvaluationView(
                         .width(maxWidth * progressAnimation.value)
                         .background(MaterialTheme.colorScheme.primary)
                 )
-                Row (
+                TitleValue(
                     modifier = Modifier
                         .fillMaxWidth()
                         .fillMaxHeight(0.5f),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = previousPredictionLabel,
-                        style = MaterialTheme.typography.titleSmall,
-                        modifier = Modifier,
-                        fontFamily = FontFamily.Monospace,
-                        color = MaterialTheme.colorScheme.onSecondary
-                    )
-                    Text(
-                        text = if (!isSpeech || lastTwoPredictions.size < 2) previousPredictionPlaceholderText
-                        else lastTwoPredictions[1].let { prediction ->
-                            "${prediction.label}: ${
-                                "%.2f".format(
-                                    Locale.ENGLISH,
-                                    prediction.confidence * 100
-                                )
-                            }%"
-                        },
-                        style = MaterialTheme.typography.titleSmall,
-                        modifier = Modifier,
-                        fontFamily = FontFamily.Monospace,
-                        color = MaterialTheme.colorScheme.primary
-                    )
-                }
-                Row(
+                    title = previousPredictionLabel,
+                    value = if (!isSpeech || lastTwoPredictions.size < 2) previousPredictionPlaceholderText
+                    else lastTwoPredictions[1].let { prediction ->
+                        "${prediction.label}: ${"%.2f".format(Locale.ENGLISH, prediction.confidence * 100)}%"
+                    },
+                    isVertical = false
+                )
+                TitleValue(
                     modifier = Modifier
                         .fillMaxWidth()
                         .fillMaxHeight()
                         .align(Alignment.Start),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = angerLabel,
-                        style = MaterialTheme.typography.titleSmall,
-                        modifier = Modifier,
-                        fontFamily = FontFamily.Monospace,
-                        color = MaterialTheme.colorScheme.onSecondary
-                    )
-                    Text(
-                        text = "%.2f".format(
-                            Locale.ENGLISH,
-                            angryDuration
-                        ),
-                        style = MaterialTheme.typography.titleSmall,
-                        modifier = Modifier,
-                        fontFamily = FontFamily.Monospace,
-                        color = MaterialTheme.colorScheme.primary
-                    )
-                }
+                    title = angerLabel,
+                    value = "%.2f".format(Locale.ENGLISH, angryDuration),
+                    isVertical = false
+                )
             } else {
                 Column(
                     modifier = Modifier
