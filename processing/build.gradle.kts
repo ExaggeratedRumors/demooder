@@ -1,5 +1,3 @@
-import org.gradle.kotlin.dsl.support.kotlinCompilerOptions
-
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.android.library)
@@ -16,9 +14,14 @@ kotlin {
 
     sourceSets {
         androidMain.dependencies {
+            /** Core **/
             implementation(libs.androidx.core.ktx)
+
+            /** Tensorflow **/
             implementation(libs.litert)
             implementation(libs.litert.support)
+
+            /** Test **/
             implementation(libs.junit)
         }
 
