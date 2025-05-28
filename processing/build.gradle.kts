@@ -1,8 +1,9 @@
+import org.gradle.kotlin.dsl.support.kotlinCompilerOptions
+
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.android.library)
 }
-val projectCompileSdkVersion: Int by extra(libs.versions.android.compileSdk.get().toInt())
 
 kotlin {
     jvm {
@@ -15,10 +16,9 @@ kotlin {
 
     sourceSets {
         androidMain.dependencies {
+            implementation(libs.androidx.core.ktx)
             implementation(libs.litert)
             implementation(libs.litert.support)
-            implementation(libs.litert.metadata)
-            implementation(libs.androidx.core.ktx)
             implementation(libs.junit)
         }
 
@@ -39,21 +39,16 @@ kotlin {
 
 android {
     namespace = "com.ertools.processing"
-    compileSdk = projectCompileSdkVersion
+    compileSdk = libs.versions.android.compileSdk.get().toInt()
 
     defaultConfig {
         minSdk = libs.versions.android.minSdk.get().toInt()
-        lint.targetSdk = 34
+        lint.targetSdk =  libs.versions.android.targetSdk.get().toInt()
     }
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
-    }
-    tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
-        kotlinOptions {
-            jvmTarget = "11"
-        }
     }
 }
 dependencies {
