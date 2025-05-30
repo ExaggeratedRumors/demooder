@@ -12,7 +12,7 @@ import com.ertools.demooder.utils.AppConstants
  */
 class AudioRecorder: AudioProvider {
     private val sampleRate = AppConstants.RECORDER_SAMPLE_RATE
-    val recorderBufferSize = AudioRecord.getMinBufferSize(
+    private val recorderBufferSize = AudioRecord.getMinBufferSize(
         sampleRate,
         AudioFormat.CHANNEL_IN_MONO,
         AudioFormat.ENCODING_PCM_16BIT

@@ -92,9 +92,7 @@ class AudioViewModel(
         viewModelScope.launch {
             while(isActive && isWorking.value) {
                 delay(graphUpdatePeriodMillis)
-                //val lastSampleSize = min(dataBuffer.size, audioProvider.getSampleRate())
-                val lastSampleSize = 2048
-
+                val lastSampleSize = dataBuffer.size.coerceAtMost(AppConstants.UI_GRAPH_MAX_DATA_SIZE)
                 val data = dataBuffer.sliceArray(dataBufferSize - lastSampleSize until dataBufferSize)
                 _spectrum.value = SpectrumBuilder.build(data)
             }

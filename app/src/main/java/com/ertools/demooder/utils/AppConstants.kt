@@ -31,6 +31,7 @@ object AppConstants {
 
     /** Interface **/
     const val UI_GRAPH_UPDATE_DELAY = 100L
+    const val UI_GRAPH_MAX_DATA_SIZE = 2048
 
     /** History **/
     const val HISTORY_MAX_SIZE = 100
