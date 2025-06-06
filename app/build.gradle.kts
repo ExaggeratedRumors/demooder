@@ -44,6 +44,7 @@ android {
 dependencies {
     /** Core **/
     implementation(libs.androidx.datastore.preferences)
+    implementation(libs.androidx.media)
 
     /** Processing **/
     implementation(project(":processing"))

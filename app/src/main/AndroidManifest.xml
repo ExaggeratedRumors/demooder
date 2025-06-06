@@ -2,6 +2,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <uses-permission android:name="android.permission.READ_MEDIA_AUDIO"/>
     <uses-permission android:name="android.permission.RECORD_AUDIO"/>
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MICROPHONE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
 
     <application
         android:allowBackup="true"
@@ -13,6 +17,17 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Demooder"
         >
+        <service
+            android:name=".core.notifications.MicrophoneService"
+            android:enabled="true"
+            android:exported="false"
+            android:foregroundServiceType="microphone" />
+        <service android:name=".core.notifications.MediaService"
+            android:enabled="true"
+            android:exported="false"
+            android:foregroundServiceType="mediaPlayback" />
+        <receiver android:name=".core.notifications.NotificationActionReceiver"
+            android:exported="false" />
         <activity
             android:name=".core.host.MainActivity"
             android:exported="true"
