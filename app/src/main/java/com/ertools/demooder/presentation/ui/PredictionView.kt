@@ -2,6 +2,7 @@ package com.ertools.demooder.presentation.ui
 
 import android.util.Log
 import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
@@ -239,13 +240,10 @@ fun EvaluationView(
     val previousPredictionPlaceholderText = stringResource(R.string.prediction_previous_placeholder)
     val angerLabel = stringResource(R.string.prediction_anger_label)
 
-    BoxWithConstraints(
+    Box(
         modifier = modifier
     ){
         val progressAnimation = remember { Animatable(0f) }
-        val maxWidth = constraints.minWidth.dp
-
-        Log.d("PredictionView", "maxWidth: $maxWidth, progressAnimation: ${progressAnimation.value}")
 
         Column(
             modifier = Modifier
@@ -275,7 +273,7 @@ fun EvaluationView(
                             targetValue = 1f,
                             animationSpec = tween(
                                 durationMillis = (1000 * detectionPeriodSeconds.value).roundToInt(),
-                                easing = LinearOutSlowInEasing
+                                easing = LinearEasing
                             )
                         )
                         progressAnimation.snapTo(0f)
@@ -283,7 +281,7 @@ fun EvaluationView(
                 }
                 Box(
                     modifier = Modifier.fillMaxHeight(0.1f)
-                        .requiredWidth(maxWidth * progressAnimation.value)
+                        .fillMaxWidth(progressAnimation.value)
                         .background(MaterialTheme.colorScheme.primary)
                 )
                 TitleValue(

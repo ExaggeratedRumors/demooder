@@ -36,6 +36,12 @@ object AppConstants {
     /** History **/
     const val HISTORY_MAX_SIZE = 100
 
+    /** Notifications **/
+    const val NOTIFICATION_MICROPHONE_CHANNEL_ID = "microphone_channel"
+    const val NOTIFICATION_MICROPHONE_CHANNEL_NAME = "Microphone Channel"
+    const val NOTIFICATION_MEDIA_CHANNEL_ID = "media_channel"
+    const val NOTIFICATION_MEDIA_CHANNEL_NAME = "Media Channel"
+
     /* Default settings */
     const val SETTINGS_DEFAULT_DEVICE_DAMPING = 0.0
     const val SETTINGS_DEFAULT_SIGNAL_DETECTION_SECONDS = 2.0
