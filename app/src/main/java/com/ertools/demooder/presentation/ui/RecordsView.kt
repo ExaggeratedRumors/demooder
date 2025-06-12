@@ -87,7 +87,7 @@ fun ColumnScope.RecordsView(
                     onClick = { fileName ->
                         val audioPlayer = AudioPlayer(fileName)
                         providerViewModel.updateCurrentProvider(audioPlayer)
-                        navController.navigate(route = InsideNavigationItem.Prediction)
+                        navController.navigate(route = InsideNavigationItem.Prediction.route)
                     }
                 )
             }

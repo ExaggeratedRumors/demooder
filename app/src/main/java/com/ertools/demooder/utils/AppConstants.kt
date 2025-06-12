@@ -41,6 +41,8 @@ object AppConstants {
     const val NOTIFICATION_MICROPHONE_CHANNEL_NAME = "Microphone Channel"
     const val NOTIFICATION_MEDIA_CHANNEL_ID = "media_channel"
     const val NOTIFICATION_MEDIA_CHANNEL_NAME = "Media Channel"
+    const val NOTIFICATION_ACTION_START = "action_start"
+    const val NOTIFICATION_ACTION_STOP = "action_stop"
 
     /* Default settings */
     const val SETTINGS_DEFAULT_DEVICE_DAMPING = 0.0

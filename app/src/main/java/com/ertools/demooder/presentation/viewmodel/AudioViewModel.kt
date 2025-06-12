@@ -1,13 +1,18 @@
 package com.ertools.demooder.presentation.viewmodel
 
+import android.content.Context
+import android.content.Intent
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import androidx.media3.common.MediaItem
 import com.ertools.demooder.core.audio.AudioProvider
 import com.ertools.demooder.core.classifier.EmotionClassifier
 import com.ertools.demooder.core.classifier.PredictionRepository
 import com.ertools.demooder.core.detector.SpeechDetector
 import com.ertools.demooder.core.detector.DetectionProvider
+import com.ertools.demooder.core.notifications.MicrophoneService
 import com.ertools.demooder.core.settings.SettingsStore
 import com.ertools.demooder.core.spectrum.SpectrumBuilder
 import com.ertools.demooder.core.spectrum.SpectrumProvider
@@ -123,6 +128,19 @@ class AudioViewModel(
     private fun stopRecording() {
         if(isWorking.value) audioProvider.stop()
         _isWorking.value = false
+    }
+
+    /**
+     * Set background task for microphone service.
+     */
+    private fun setBackgroundTask(context: Context) {
+        val action = if(isWorking.value) AppConstants.NOTIFICATION_ACTION_START
+        else AppConstants.NOTIFICATION_ACTION_STOP
+
+        val serviceIntent = Intent(context, audioProvider.getServiceClass()).apply {
+            this.action = action
+        }
+        ContextCompat.startForegroundService(context, serviceIntent)
     }
 
     /********************/

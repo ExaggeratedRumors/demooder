@@ -9,7 +9,7 @@ object NotificationBuilder{
         val microphoneChannel = NotificationChannel(
             AppConstants.NOTIFICATION_MICROPHONE_CHANNEL_ID,
             AppConstants.NOTIFICATION_MICROPHONE_CHANNEL_NAME,
-            NotificationManager.IMPORTANCE_HIGH
+            NotificationManager.IMPORTANCE_LOW
         )
 
         val mediaChannel = NotificationChannel(
@@ -22,6 +22,4 @@ object NotificationBuilder{
             listOf(microphoneChannel, mediaChannel)
         )
     }
-
-    fun
 }

@@ -1,7 +1,9 @@
 package com.ertools.demooder.core.audio
 
+import android.app.Service
 import android.media.MediaPlayer
 import android.util.Log
+import com.ertools.demooder.core.notifications.MediaService
 import com.ertools.processing.data.WavFile
 import java.io.File
 
@@ -57,4 +59,6 @@ class AudioPlayer(
         if(mediaPlayer == null || wavFile == null) throw IllegalStateException("MediaPlayer is not initialized.")
         return wavFile!!.header.sampleRate
     }
+
+    override fun getServiceClass(): Class<out Service> = MediaService::class.java
 }

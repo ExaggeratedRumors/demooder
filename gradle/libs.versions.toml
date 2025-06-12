@@ -2,7 +2,7 @@
 android-compileSdk = "34"
 android-minSdk = "31"
 android-targetSdk = "34"
-androidx-media = "1.7.0"
+androidx-media3 = "1.4.1" # Limited by API level 34
 agp = "8.9.3"
 coreKtxVersion = "1.6.1"
 datastorePreferences = "1.1.7"
@@ -30,6 +30,10 @@ androidx-ui-test-junit4 = { module = "androidx.compose.ui:ui-test-junit4", versi
 androidx-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview", version.ref = "ui" }
 androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
 androidx-graphics-shapes-android = { group = "androidx.graphics", name = "graphics-shapes-android", version.ref = "graphicsShapesAndroid" }
+androidx-media3-common = { group = "androidx.media3", name = "media3-common", version.ref = "androidx-media3" }
+androidx-media3-ui = { group = "androidx.media3", name = "media3-ui", version.ref = "androidx-media3" }
+androidx-media3-exoplayer = { group = "androidx.media3", name = "media3-exoplayer", version.ref = "androidx-media3" }
+androidx-media3-mediasession = { group = "androidx.media3", name = "media3-session", version.ref = "androidx-media3" }
 core-ktx = { module = "androidx.test:core-ktx", version.ref = "coreKtxVersion" }
 junit = { module = "junit:junit", version.ref = "junit" }
 kotlin-fasterxml-jackson-module = { module = "com.fasterxml.jackson.module:jackson-module-kotlin", version.ref = "jackson" }
@@ -39,7 +43,7 @@ litert = { group = "com.google.ai.edge.litert", name = "litert", version.ref = "
 litert-support = { group = "com.google.ai.edge.litert", name = "litert-support", version.ref = "litert" }
 multik-core = { module = "org.jetbrains.kotlinx:multik-core", version.ref = "multikCore" }
 testng = { group = "org.testng", name = "testng", version.ref = "testng" }
-androidx-media = { group = "androidx.media", name = "media", version.ref = "androidx-media" }
+
 
 [plugins]
 android-library = { id = "com.android.library", version.ref = "agp" }

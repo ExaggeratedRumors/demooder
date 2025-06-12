@@ -44,7 +44,11 @@ android {
 dependencies {
     /** Core **/
     implementation(libs.androidx.datastore.preferences)
-    implementation(libs.androidx.media)
+    implementation(libs.androidx.media3.ui)
+    implementation(libs.androidx.media3.exoplayer)
+    implementation(libs.androidx.media3.common)
+    implementation(libs.androidx.media3.mediasession)
+
 
     /** Processing **/
     implementation(project(":processing"))

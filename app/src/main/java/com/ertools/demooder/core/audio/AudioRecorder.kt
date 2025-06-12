@@ -1,10 +1,13 @@
 package com.ertools.demooder.core.audio
 
 import android.annotation.SuppressLint
+import android.app.Service
 import android.media.AudioFormat
 import android.media.AudioRecord
 import android.media.MediaRecorder
 import android.util.Log
+import com.ertools.demooder.core.notifications.MediaService
+import com.ertools.demooder.core.notifications.MicrophoneService
 import com.ertools.demooder.utils.AppConstants
 
 /**
@@ -24,6 +27,10 @@ class AudioRecorder: AudioProvider {
 
     private lateinit var recorder: AudioRecord
     private var isInitialized = false
+
+    /******************/
+    /* Implementation */
+    /******************/
 
     /**
      * Initialize the AudioRecord instance and start recording.
@@ -58,8 +65,6 @@ class AudioRecorder: AudioProvider {
         Log.i("AudioRecorder", "Recording stopped.")
     }
 
-    override fun getSampleRate(): Int = sampleRate
-
     /**
      * Read audio data from the recorder into the provided buffer.
      */
@@ -79,6 +84,20 @@ class AudioRecorder: AudioProvider {
             else -> { return }
         }
     }
+
+    /**
+     * Get the sample rate of the audio recorder.
+     */
+    override fun getSampleRate(): Int = sampleRate
+
+    /**
+     * Get the service associated with this audio provider.
+     */
+    override fun getServiceClass(): Class<out Service> = MicrophoneService::class.java
+
+    /*************/
+    /** Private **/
+    /*************/
 
     private fun shiftAudioBuffer(dataBuffer: ByteArray, shift: Int) {
         if(shift > dataBuffer.size) return
