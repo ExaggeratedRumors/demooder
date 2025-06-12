@@ -140,7 +140,7 @@ fun PredictionView(
                 enableIconResource = R.drawable.mic_filled,
                 disableIconResource = R.drawable.stop_filled,
                 iconContentDescriptionResource = R.string.prediction_record_cd
-            ) { recorderViewModel.togglePlay() }
+            ) { recorderViewModel.togglePlay(context) }
             ClickButton(
                 modifier = Modifier
                     .fillMaxHeight(0.6f)

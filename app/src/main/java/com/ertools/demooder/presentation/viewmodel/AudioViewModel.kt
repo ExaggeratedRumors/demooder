@@ -55,9 +55,17 @@ class AudioViewModel(
     /** API **/
     /**********/
 
-    fun togglePlay() {
-        if (isWorking.value) stopRecording()
-        else viewModelScope.launch(Dispatchers.IO) { startRecording() }
+    fun togglePlay(context: Context) {
+        if (isWorking.value) {
+            stopRecording()
+            updateBackgroundTask(context)
+        }
+        else {
+            viewModelScope.launch(Dispatchers.IO) {
+                startRecording()
+                updateBackgroundTask(context)
+            }
+        }
     }
 
     fun save() {
@@ -131,9 +139,9 @@ class AudioViewModel(
     }
 
     /**
-     * Set background task for microphone service.
+     * Set background task for audio service.
      */
-    private fun setBackgroundTask(context: Context) {
+    fun updateBackgroundTask(context: Context) {
         val action = if(isWorking.value) AppConstants.NOTIFICATION_ACTION_START
         else AppConstants.NOTIFICATION_ACTION_STOP
 

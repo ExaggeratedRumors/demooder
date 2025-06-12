@@ -1,5 +1,6 @@
 plugins {
     id("com.android.application")
+    id("com.google.devtools.ksp")
     kotlin("android")
     alias(libs.plugins.compose.compiler)
 }
@@ -44,11 +45,6 @@ android {
 dependencies {
     /** Core **/
     implementation(libs.androidx.datastore.preferences)
-    implementation(libs.androidx.media3.ui)
-    implementation(libs.androidx.media3.exoplayer)
-    implementation(libs.androidx.media3.common)
-    implementation(libs.androidx.media3.mediasession)
-
 
     /** Processing **/
     implementation(project(":processing"))
@@ -58,6 +54,17 @@ dependencies {
     implementation(libs.androidx.material3.adaptive.navigation.suite)
     implementation(libs.androidx.graphics.shapes.android)
     implementation(libs.androidx.navigation.compose)
+
+    /** Hilt **/
+    implementation(libs.dagger.hilt.android)
+    ksp(libs.dagger.hilt.compiler)
+    implementation(libs.dagger.hilt.navigation)
+
+    /** Media **/
+    implementation(libs.androidx.media3.ui)
+    implementation(libs.androidx.media3.exoplayer)
+    implementation(libs.androidx.media3.common)
+    implementation(libs.androidx.media3.mediasession)
 
     /** Tensorflow **/
     implementation(libs.litert)
