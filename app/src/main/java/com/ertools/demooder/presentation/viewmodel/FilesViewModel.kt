@@ -1,12 +1,16 @@
 package com.ertools.demooder.presentation.viewmodel
 
 import android.app.Application
+import android.content.ContentUris
 import android.content.Context
 import android.icu.text.SimpleDateFormat
 import android.provider.MediaStore
+import android.util.Log
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.AndroidViewModel
+import com.ertools.demooder.core.audio.RecordingFile
 import java.util.Date
 import java.util.Locale
 
@@ -14,12 +18,6 @@ import java.util.Locale
  * ViewModel for loading External and Internal recordings from the device.
  */
 class FilesViewModel(application: Application) : AndroidViewModel(application) {
-    data class RecordingFile(
-        val name: String,
-        val modificationDate: String,
-        val size: String
-    )
-
     private var _externalFiles = mutableStateOf<List<RecordingFile>>(emptyList())
     val externalFiles: State<List<RecordingFile>> = _externalFiles
 
@@ -31,63 +29,49 @@ class FilesViewModel(application: Application) : AndroidViewModel(application) {
     /********************/
 
     fun loadInternalRecordings(context: Context) {
-        val audioFiles = mutableListOf<RecordingFile>()
-        val contentUri = MediaStore.Audio.Media.getContentUri(MediaStore.VOLUME_INTERNAL)
-        val columns = arrayOf(
-            MediaStore.Audio.Media.DISPLAY_NAME,
-            MediaStore.Audio.Media.DATE_MODIFIED,
-            MediaStore.Audio.Media.SIZE
-        )
-        val query = "${MediaStore.Audio.Media.IS_RECORDING} != 0"
-        val order = "${MediaStore.Audio.Media.DATE_ADDED} DESC"
-        context.contentResolver.query(
-            contentUri, columns, query, null, order
-        )?.use { cursor ->
-            val filenameColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DISPLAY_NAME)
-            val modificationDateColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DATE_MODIFIED)
-            val sizeColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.SIZE)
-            while (cursor.moveToNext()) audioFiles.add(
-                RecordingFile(
-                    cursor.getString(filenameColumn),
-                    dateFormat(cursor.getString(modificationDateColumn)),
-                    bytesFormat(cursor.getLong(sizeColumn))
-                )
-            )
-        }
-        _internalFiles.value = audioFiles
+        loadRecordings(context, MediaStore.VOLUME_INTERNAL, _internalFiles)
+        Log.d("FilesViewModel", "Internal files: ${_internalFiles.value}")
     }
 
     fun loadExternalRecordings(context: Context) {
-        val audioFiles = mutableListOf<RecordingFile>()
-        val contentUri = MediaStore.Audio.Media.getContentUri(MediaStore.VOLUME_EXTERNAL)
-        val columns = arrayOf(
-            MediaStore.Audio.Media.DISPLAY_NAME,
-            MediaStore.Audio.Media.DATE_MODIFIED,
-            MediaStore.Audio.Media.SIZE
-        )
-        val query = "${MediaStore.Audio.Media.IS_RECORDING} != 0"
-        val order = "${MediaStore.Audio.Media.DATE_ADDED} DESC"
-        context.contentResolver.query(
-            contentUri, columns, query, null, order
-        )?.use { cursor ->
-            val filenameColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DISPLAY_NAME)
-            val modificationDateColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DATE_MODIFIED)
-            val sizeColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.SIZE)
-            while (cursor.moveToNext()) audioFiles.add(
-                RecordingFile(
-                    cursor.getString(filenameColumn),
-                    dateFormat(cursor.getString(modificationDateColumn)),
-                    bytesFormat(cursor.getLong(sizeColumn))
-                )
-            )
-        }
-        _externalFiles.value = audioFiles
+        loadRecordings(context, MediaStore.VOLUME_EXTERNAL, _externalFiles)
+        Log.d("FilesViewModel", "External files: ${_externalFiles.value}")
     }
 
 
     /*********************/
     /** Private methods **/
     /*********************/
+
+    private fun loadRecordings(context: Context, source: String, dataStorage: MutableState<List<RecordingFile>>){
+        val audioFiles = mutableListOf<RecordingFile>()
+        val contentUri = MediaStore.Audio.Media.getContentUri(source)
+        val columns = arrayOf(
+            MediaStore.Audio.Media._ID,
+            MediaStore.Audio.Media.DISPLAY_NAME,
+            MediaStore.Audio.Media.DATE_MODIFIED,
+            MediaStore.Audio.Media.SIZE
+        )
+        val query = "${MediaStore.Audio.Media.IS_RECORDING} != 0"
+        val order = "${MediaStore.Audio.Media.DATE_ADDED} DESC"
+        context.contentResolver.query(
+            contentUri, columns, query, null, order
+        )?.use { cursor ->
+            val idColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media._ID)
+            val filenameColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DISPLAY_NAME)
+            val modificationDateColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DATE_MODIFIED)
+            val sizeColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.SIZE)
+            while (cursor.moveToNext()) audioFiles.add(
+                RecordingFile(
+                    cursor.getString(filenameColumn),
+                    dateFormat(cursor.getString(modificationDateColumn)),
+                    bytesFormat(cursor.getLong(sizeColumn)),
+                    ContentUris.withAppendedId(contentUri, cursor.getLong(idColumn))
+                )
+            )
+        }
+        dataStorage.value = audioFiles
+    }
 
     private fun dateFormat(date: String): String {
         val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH)

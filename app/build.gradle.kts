@@ -1,8 +1,8 @@
 plugins {
-    id("com.android.application")
-    id("com.google.devtools.ksp")
     kotlin("android")
+    alias(libs.plugins.android.application)
     alias(libs.plugins.compose.compiler)
+    id("kotlin-parcelize")
 }
 
 android {
@@ -55,12 +55,8 @@ dependencies {
     implementation(libs.androidx.graphics.shapes.android)
     implementation(libs.androidx.navigation.compose)
 
-    /** Hilt **/
-    implementation(libs.dagger.hilt.android)
-    ksp(libs.dagger.hilt.compiler)
-    implementation(libs.dagger.hilt.navigation)
-
     /** Media **/
+    implementation(libs.androidx.media)
     implementation(libs.androidx.media3.ui)
     implementation(libs.androidx.media3.exoplayer)
     implementation(libs.androidx.media3.common)

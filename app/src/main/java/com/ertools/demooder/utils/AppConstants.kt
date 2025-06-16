@@ -37,12 +37,16 @@ object AppConstants {
     const val HISTORY_MAX_SIZE = 100
 
     /** Notifications **/
+    const val NOTIFICATION_MICROPHONE_ID = 1
     const val NOTIFICATION_MICROPHONE_CHANNEL_ID = "microphone_channel"
     const val NOTIFICATION_MICROPHONE_CHANNEL_NAME = "Microphone Channel"
+    const val NOTIFICATION_MEDIA_ID = 2
     const val NOTIFICATION_MEDIA_CHANNEL_ID = "media_channel"
     const val NOTIFICATION_MEDIA_CHANNEL_NAME = "Media Channel"
     const val NOTIFICATION_ACTION_START = "action_start"
     const val NOTIFICATION_ACTION_STOP = "action_stop"
+    const val NOTIFICATION_ACTION_NOTIFY = "action_notify"
+    const val NOTIFICATION_DATA = "notification_data"
 
     /* Default settings */
     const val SETTINGS_DEFAULT_DEVICE_DAMPING = 0.0

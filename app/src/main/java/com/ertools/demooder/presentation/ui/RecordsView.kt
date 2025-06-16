@@ -1,5 +1,6 @@
 package com.ertools.demooder.presentation.ui
 
+import android.content.Context
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.draggable
 import androidx.compose.foundation.layout.Arrangement
@@ -25,6 +26,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.ertools.demooder.R
 import com.ertools.demooder.core.audio.AudioPlayer
+import com.ertools.demooder.core.audio.RecordingFile
 import com.ertools.demooder.presentation.components.TabLayout
 import com.ertools.demooder.presentation.navigation.InsideNavigationItem
 import com.ertools.demooder.presentation.viewmodel.FilesViewModel
@@ -47,18 +49,16 @@ fun RecordsView(
         state = tabViewModel.dragState.value!!,
         orientation = Orientation.Horizontal,
         onDragStarted = {  },
-        onDragStopped = {
-            tabViewModel.updateTabIndexBasedOnSwipe()
-        }),
+        onDragStopped = { tabViewModel.updateTabIndexBasedOnSwipe() }),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         TabLayout(
             views = listOf(
-                stringResource(R.string.records_internal_storage) to {
-                    RecordsView(navController, providerViewModel, filesViewModel.internalFiles)
-                },
                 stringResource(R.string.records_external_storage) to {
-                    RecordsView(navController, providerViewModel, filesViewModel.externalFiles)
+                    RecordsView(navController, context, providerViewModel, filesViewModel.externalFiles)
+                },
+                stringResource(R.string.records_internal_storage) to {
+                    RecordsView(navController, context, providerViewModel, filesViewModel.internalFiles)
                 }
             )
         )
@@ -68,8 +68,9 @@ fun RecordsView(
 @Composable
 fun ColumnScope.RecordsView(
     navController: NavController,
+    context: Context,
     providerViewModel: ProviderViewModel,
-    files: State<List<FilesViewModel.RecordingFile>>
+    files: State<List<RecordingFile>>
 ) {
     Row(modifier = Modifier.align(Alignment.CenterHorizontally)) {
         LazyColumn(
@@ -79,13 +80,11 @@ fun ColumnScope.RecordsView(
         ) {
             items(files.value.size) {
                 RecordItemView(
-                    name = files.value[it].name,
-                    modificationDate = files.value[it].modificationDate,
-                    size = files.value[it].size,
+                    file = files.value[it],
                     iconResource = R.drawable.outline_music_note_24,
                     contentDescriptionResource = R.string.records_icon_cd,
-                    onClick = { fileName ->
-                        val audioPlayer = AudioPlayer(fileName)
+                    onClick = { file ->
+                        val audioPlayer = AudioPlayer(context, file)
                         providerViewModel.updateCurrentProvider(audioPlayer)
                         navController.navigate(route = InsideNavigationItem.Prediction.route)
                     }
@@ -98,15 +97,13 @@ fun ColumnScope.RecordsView(
 @Composable
 fun RecordItemView(
     modifier: Modifier = Modifier,
-    name: String,
-    modificationDate: String,
-    size: String,
+    file: RecordingFile,
     iconResource: Int,
     contentDescriptionResource: Int,
-    onClick: (String) -> Unit
+    onClick: (RecordingFile) -> Unit
 ) {
     Button(
-        onClick = { onClick(name) },
+        onClick = { onClick(file) },
         modifier = modifier
     ) {
         Row(
@@ -124,12 +121,12 @@ fun RecordItemView(
                     .padding(8.dp)
             ) {
                 Text(
-                    text = name,
+                    text = file.name,
                     fontSize = MaterialTheme.typography.titleMedium.fontSize,
                     fontWeight = MaterialTheme.typography.titleMedium.fontWeight
                 )
                 Text(
-                    text = modificationDate,
+                    text = file.modificationDate,
                     fontSize = MaterialTheme.typography.titleSmall.fontSize,
                     fontWeight = MaterialTheme.typography.titleSmall.fontWeight
                 )
@@ -140,7 +137,7 @@ fun RecordItemView(
                 verticalArrangement = Arrangement.Center
             ) {
                 Text(
-                    text = size,
+                    text = file.size,
                     fontSize = MaterialTheme.typography.labelSmall.fontSize,
                     fontWeight = MaterialTheme.typography.labelSmall.fontWeight
                 )

@@ -6,13 +6,12 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import androidx.media3.common.MediaItem
 import com.ertools.demooder.core.audio.AudioProvider
 import com.ertools.demooder.core.classifier.EmotionClassifier
 import com.ertools.demooder.core.classifier.PredictionRepository
 import com.ertools.demooder.core.detector.SpeechDetector
 import com.ertools.demooder.core.detector.DetectionProvider
-import com.ertools.demooder.core.notifications.MicrophoneService
+import com.ertools.demooder.core.notifications.NotificationData
 import com.ertools.demooder.core.settings.SettingsStore
 import com.ertools.demooder.core.spectrum.SpectrumBuilder
 import com.ertools.demooder.core.spectrum.SpectrumProvider
@@ -58,12 +57,12 @@ class AudioViewModel(
     fun togglePlay(context: Context) {
         if (isWorking.value) {
             stopRecording()
-            updateBackgroundTask(context)
+            updateBackgroundTask(context, AppConstants.NOTIFICATION_ACTION_STOP)
         }
         else {
             viewModelScope.launch(Dispatchers.IO) {
                 startRecording()
-                updateBackgroundTask(context)
+                updateBackgroundTask(context, AppConstants.NOTIFICATION_ACTION_START)
             }
         }
     }
@@ -141,12 +140,11 @@ class AudioViewModel(
     /**
      * Set background task for audio service.
      */
-    fun updateBackgroundTask(context: Context) {
-        val action = if(isWorking.value) AppConstants.NOTIFICATION_ACTION_START
-        else AppConstants.NOTIFICATION_ACTION_STOP
-
+    private fun updateBackgroundTask(context: Context, action: String, data: NotificationData? = null) {
         val serviceIntent = Intent(context, audioProvider.getServiceClass()).apply {
             this.action = action
+            /** data in parcelable:**/
+            this.putExtra(AppConstants.NOTIFICATION_DATA, data)
         }
         ContextCompat.startForegroundService(context, serviceIntent)
     }

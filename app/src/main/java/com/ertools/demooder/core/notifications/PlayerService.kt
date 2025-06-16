@@ -14,7 +14,7 @@ import com.ertools.demooder.R
 import com.ertools.demooder.utils.AppConstants
 import com.ertools.demooder.utils.Permissions
 
-class MicrophoneService: Service() {
+class PlayerService: Service() {
     private var isPlaying = false
     private val binder = LocalBinder()
     private lateinit var notificationManager: NotificationManager
@@ -22,7 +22,7 @@ class MicrophoneService: Service() {
     private var onStopCallback: (() -> Unit)? = null
 
     inner class LocalBinder : Binder() {
-        fun getService(): MicrophoneService = this@MicrophoneService
+        fun getService(): PlayerService = this@PlayerService
     }
 
     override fun onCreate() {

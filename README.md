@@ -21,13 +21,14 @@ in progress
 
 ## Technologies
 Application:
-- Kotlin 1.9.22
+- Kotlin 2.1.21
 - Java 11
 - Android SDK 34
-- Gradle 8.9.1
-- Kotlin Multiplatform 1.9.22
+- Gradle 8.9.3
+- Kotlin Multiplatform 2.1.21
 - Jetpack Compose 1.6.10
 - LiteRT 1.0.0
+- Dagger Hilt 2.56.2
 
 Scripts:
 - Python 3.8.20

@@ -1,17 +1,18 @@
 package com.ertools.demooder.core.audio
 
 import android.app.Service
+import android.content.Context
 import android.media.MediaPlayer
 import android.util.Log
-import com.ertools.demooder.core.notifications.MediaService
+import com.ertools.demooder.core.notifications.PlayerService
 import com.ertools.processing.data.WavFile
-import java.io.File
 
 /**
  * Class for playing audio using the Android MediaPlayer API.
  */
 class AudioPlayer(
-    private val audioFilePath: String
+    private val context: Context,
+    private val recordingFile: RecordingFile
 ): AudioProvider {
     private var mediaPlayer: MediaPlayer? = null
     private var wavFile: WavFile? = null
@@ -19,15 +20,18 @@ class AudioPlayer(
     override fun start() {
         if(mediaPlayer == null) {
             try {
-                wavFile = WavFile.fromFile(File(audioFilePath))
+                context.contentResolver.openInputStream(recordingFile.uri)?.use { input ->
+                    wavFile = WavFile.fromStream(recordingFile.name, input)
+                }
                 mediaPlayer = MediaPlayer().apply {
-                    setDataSource(audioFilePath)
+                    setDataSource(context, recordingFile.uri)
                     prepare()
                     start()
                     setOnCompletionListener {
                         stop()
                     }
                 }
+                Log.d("AudioPlayer", "Load wav file: ${wavFile?.fileName}, header: ${wavFile?.header}")
             } catch (e: Exception) {
                 Log.e("AudioPlayer", "Error initializing MediaPlayer: ${e.message}")
             }
@@ -60,5 +64,5 @@ class AudioPlayer(
         return wavFile!!.header.sampleRate
     }
 
-    override fun getServiceClass(): Class<out Service> = MediaService::class.java
+    override fun getServiceClass(): Class<out Service> = PlayerService::class.java
 }

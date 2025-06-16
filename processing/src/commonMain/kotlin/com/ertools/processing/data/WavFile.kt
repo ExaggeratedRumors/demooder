@@ -4,6 +4,7 @@ import com.ertools.processing.commons.ProcessingUtils
 import com.ertools.processing.signal.Resampling.resample
 import java.io.File
 import java.io.FileInputStream
+import java.io.InputStream
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 
@@ -21,22 +22,27 @@ class WavFile(
 
 
     companion object {
+        fun fromStream(filename: String, inputStream: InputStream): WavFile {
+            /** Read header **/
+            val header = try {
+                inputStream.readHeader()
+            } catch (e: Exception) {
+                throw WavException("Error reading header.", e)
+            }
+            headerValidate(header)
+
+            /** Read and resample data **/
+            val data = ByteArray(header.subchunk2Size)
+            inputStream.read(data)
+            return WavFile(filename, header, data)
+        }
+
         fun fromFile(file: File): WavFile {
             FileInputStream(file).use { inputStream ->
-                val filename = file.nameWithoutExtension
-
-                /** Read header **/
-                val header = try {
-                    inputStream.readHeader()
-                } catch (e: Exception) {
-                    throw WavException("Error reading header.", e)
-                }
-                headerValidate(header)
-
-                /** Read and resample data **/
-                val data = ByteArray(header.subchunk2Size)
-                inputStream.read(data)
-                return WavFile(filename, header, data)
+                return fromStream(
+                    file.nameWithoutExtension,
+                    inputStream
+                )
             }
         }
 
@@ -44,7 +50,7 @@ class WavFile(
         /**************/
         /** Privates **/
         /**************/
-        private fun FileInputStream.readHeader(): WavHeader {
+        private fun InputStream.readHeader(): WavHeader {
             val headerBytes = ByteArray(ProcessingUtils.WAV_HEADER_SIZE)
             this.read(headerBytes)
 

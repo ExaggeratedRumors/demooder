@@ -6,7 +6,6 @@ import android.media.AudioFormat
 import android.media.AudioRecord
 import android.media.MediaRecorder
 import android.util.Log
-import com.ertools.demooder.core.notifications.MediaService
 import com.ertools.demooder.core.notifications.MicrophoneService
 import com.ertools.demooder.utils.AppConstants
 
