@@ -37,16 +37,16 @@ class MicrophoneService: Service() {
         when(intent?.action) {
             AppConstants.NOTIFICATION_ACTION_STOP -> {
                 isPlaying = false
-                sendNotification(data)
+                onPausedNotification(data)
                 onStopCallback?.invoke()
             }
             AppConstants.NOTIFICATION_ACTION_START -> {
                 isPlaying = true
-                sendNotification(data)
+                onRunningNotification(data)
                 onStartCallback?.invoke()
             }
             AppConstants.NOTIFICATION_ACTION_NOTIFY -> {
-                sendNotification(data)
+                onRunningNotification(data)
             }
             else -> {
                 Log.d("PlayerService", "Unknown action: ${intent?.action}")
@@ -62,10 +62,28 @@ class MicrophoneService: Service() {
     /**************/
     /** Private **/
     /*************/
-    private fun sendNotification(data: NotificationData?) {
+    private fun onRunningNotification(data: NotificationData?) {
         val style = androidx.media.app.NotificationCompat.MediaStyle()
             .setShowActionsInCompactView(0, 1, 2)
+        val notification = NotificationCompat.Builder(this, AppConstants.NOTIFICATION_MEDIA_CHANNEL_ID)
+            .setStyle(style)
+            .setContentTitle(data?.title ?: "")
+            .setContentText(data?.subtitle ?: "")
+            .addAction(
+                R.drawable.stop_filled,
+                AppConstants.NOTIFICATION_ACTION_STOP,
+                pendingIntentOf(AppConstants.NOTIFICATION_ACTION_STOP, 0)
+            ).setSmallIcon(R.drawable.vec_home_speech)
+            .build()
+        if(Permissions.isPostNotificationPermissionGained(this)) {
+            Log.d("PlayerService", "Starting foreground service with running notification")
+            startForeground(AppConstants.NOTIFICATION_MEDIA_ID, notification)
+        }
+    }
 
+    private fun onPausedNotification(data: NotificationData?) {
+        val style = androidx.media.app.NotificationCompat.MediaStyle()
+            .setShowActionsInCompactView(0, 1, 2)
         val notification = NotificationCompat.Builder(this, AppConstants.NOTIFICATION_MEDIA_CHANNEL_ID)
             .setStyle(style)
             .setContentTitle(data?.title ?: "")
@@ -74,18 +92,10 @@ class MicrophoneService: Service() {
                 R.drawable.mic_filled,
                 AppConstants.NOTIFICATION_ACTION_START,
                 pendingIntentOf(AppConstants.NOTIFICATION_ACTION_START, 0)
-            ).addAction(
-                R.drawable.mic_filled,
-                AppConstants.NOTIFICATION_ACTION_STOP,
-                pendingIntentOf(AppConstants.NOTIFICATION_ACTION_STOP, 1)
-            ).addAction(
-                R.drawable.mic_filled,
-                AppConstants.NOTIFICATION_ACTION_NOTIFY,
-                pendingIntentOf(AppConstants.NOTIFICATION_ACTION_NOTIFY, 2)
             ).setSmallIcon(R.drawable.vec_home_speech)
             .build()
         if(Permissions.isPostNotificationPermissionGained(this)) {
-            Log.d("PlayerService", "Starting foreground service with notification")
+            Log.d("PlayerService", "Starting foreground service with pause notification")
             startForeground(AppConstants.NOTIFICATION_MEDIA_ID, notification)
         }
     }
