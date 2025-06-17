@@ -23,7 +23,7 @@
             android:enabled="true"
             android:exported="false"
             android:foregroundServiceType="microphone" />
-        <service android:name=".core.notifications.MediaService"
+        <service android:name=".core.notifications.PlayerService"
             android:enabled="true"
             android:exported="false"
             android:foregroundServiceType="mediaPlayback" />

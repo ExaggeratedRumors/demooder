@@ -50,6 +50,13 @@ class AudioViewModel(
     private var _isWorking: MutableStateFlow<Boolean> = MutableStateFlow(false)
     val isWorking: StateFlow<Boolean> = _isWorking.asStateFlow()
 
+
+
+    init {
+        audioProvider.getServiceClass()
+    }
+
+
     /**********/
     /** API **/
     /**********/
@@ -83,12 +90,13 @@ class AudioViewModel(
      * Start recording audio and processing it.
      */
     private suspend fun startRecording() {
+        /** Initialize audio provider **/
         PredictionRepository.reset()
         val dataBufferSize = (settingsStore.signalDetectionPeriod.first() * ProcessingUtils.AUDIO_SAMPLING_RATE * 2).toInt()
-
         val dataBuffer = ByteArray(dataBufferSize)
         audioProvider.start()
         _isWorking.value = true
+
 
         /** Read buffer from audio provider **/
         viewModelScope.launch(Dispatchers.IO) {

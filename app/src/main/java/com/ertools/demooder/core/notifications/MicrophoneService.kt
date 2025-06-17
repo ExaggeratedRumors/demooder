@@ -25,6 +25,17 @@ class MicrophoneService: Service() {
         fun getService(): MicrophoneService = this@MicrophoneService
     }
 
+    fun registerOnStartCallback(callback: () -> Unit) {
+        onStartCallback = callback
+    }
+
+    fun registerOnStopCallback(callback: () -> Unit) {
+        onStopCallback = callback
+    }
+
+    /********************/
+    /** Implementation **/
+    /********************/
     override fun onCreate() {
         super.onCreate()
         notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
