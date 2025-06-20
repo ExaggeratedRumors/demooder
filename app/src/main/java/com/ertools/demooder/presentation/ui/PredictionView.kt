@@ -86,11 +86,13 @@ fun PredictionView(
             settingsStore = settingsStore
         )
     }
-    val recorderViewModel: AudioViewModel = viewModel(factory = recorderViewModelFactory)
+    val audioViewModel: AudioViewModel = viewModel<AudioViewModel>(factory = recorderViewModelFactory).apply {
+        runNotificationListeningTask(context)
+    }
     val statisticsViewModel: StatisticsViewModel = viewModel()
 
     /** Buttons state **/
-    val isRecording = recorderViewModel.isWorking.collectAsState()
+    val isRecording = audioViewModel.isWorking.collectAsState()
 
     Column(
         modifier = Modifier
@@ -103,7 +105,7 @@ fun PredictionView(
                 .fillMaxWidth()
                 .fillMaxHeight(0.6f)
                 .padding(16.dp),
-            provider = recorderViewModel,
+            provider = audioViewModel,
             isRecording = isRecording
         )
         EvaluationView(
@@ -113,7 +115,7 @@ fun PredictionView(
                 .background(MaterialTheme.colorScheme.secondary)
                 .align(Alignment.CenterHorizontally),
             predictionProvider = statisticsViewModel,
-            detectionProvider = recorderViewModel,
+            detectionProvider = audioViewModel,
             detectionPeriodSeconds = detectionPeriodSeconds,
             isRecording = isRecording
         )
@@ -131,7 +133,7 @@ fun PredictionView(
                 iconResource = R.drawable.settings_link,
                 iconContentDescriptionResource = R.string.prediction_save_cd
 
-            ) { recorderViewModel.save() }
+            ) { audioViewModel.save() }
             StateButton(
                 modifier = Modifier
                     .fillMaxHeight(0.8f)
@@ -140,14 +142,14 @@ fun PredictionView(
                 enableIconResource = R.drawable.mic_filled,
                 disableIconResource = R.drawable.stop_filled,
                 iconContentDescriptionResource = R.string.prediction_record_cd
-            ) { recorderViewModel.togglePlay(context) }
+            ) { audioViewModel.togglePlay(context) }
             ClickButton(
                 modifier = Modifier
                     .fillMaxHeight(0.6f)
                     .aspectRatio(1f),
                 iconResource = R.drawable.records_filled,
                 iconContentDescriptionResource = R.string.prediction_clear_cd
-            ) { recorderViewModel.abort() }
+            ) { audioViewModel.abort() }
         }
         Spacer(modifier = Modifier.fillMaxHeight())
     }

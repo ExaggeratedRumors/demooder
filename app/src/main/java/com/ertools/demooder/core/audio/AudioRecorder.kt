@@ -6,7 +6,6 @@ import android.media.AudioFormat
 import android.media.AudioRecord
 import android.media.MediaRecorder
 import android.util.Log
-import com.ertools.demooder.core.notifications.MicrophoneService
 import com.ertools.demooder.utils.AppConstants
 
 /**
@@ -50,7 +49,7 @@ class AudioRecorder: AudioProvider {
         }
         isInitialized = true
         recorder.startRecording()
-        Log.i("AudioRecorder", "Recording started.")
+        Log.d("AudioRecorder", "Recording started.")
     }
 
     /**
@@ -61,7 +60,7 @@ class AudioRecorder: AudioProvider {
         recorder.stop()
         recorder.release()
         isInitialized = false
-        Log.i("AudioRecorder", "Recording stopped.")
+        Log.d("AudioRecorder", "Recording stopped.")
     }
 
     /**
@@ -88,11 +87,6 @@ class AudioRecorder: AudioProvider {
      * Get the sample rate of the audio recorder.
      */
     override fun getSampleRate(): Int = sampleRate
-
-    /**
-     * Get the service associated with this audio provider.
-     */
-    override fun getServiceClass(): Class<out Service> = MicrophoneService::class.java
 
     /*************/
     /** Private **/

@@ -7,5 +7,4 @@ interface AudioProvider {
     fun stop()
     fun read(buffer: ByteArray)
     fun getSampleRate(): Int
-    fun getServiceClass(): Class<out Service>
 }

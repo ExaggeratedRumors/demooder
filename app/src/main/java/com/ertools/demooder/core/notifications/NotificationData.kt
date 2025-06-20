@@ -5,6 +5,13 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class NotificationData(
-    val title: String,
-    val subtitle: String
+    val action: NotificationAction,
+    val title: String? = null,
+    val subtitle: String? = null
 ): Parcelable
+
+enum class NotificationAction {
+    START,
+    STOP,
+    UPDATE
+}

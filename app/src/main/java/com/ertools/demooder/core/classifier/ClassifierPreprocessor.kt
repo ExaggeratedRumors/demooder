@@ -64,7 +64,6 @@ class ClassifierPreprocessor(
             spectrogramConfiguration.frameStep,
             spectrogramConfiguration.windowing
         )
-        Log.d("ClassifierPreprocessor", "Data size: ${data.size}, Spectrogram shape: ${stft.size}")
         val bitmap = SpectrogramImage.fromSpectrogram(stft)
         if(debugMode) SpectrogramImage.saveSpectrogramImage(bitmap, APP_DIR_NAME)
         return SpectrogramImage.scaledByteBufferFromBitmap(bitmap, modelShape)

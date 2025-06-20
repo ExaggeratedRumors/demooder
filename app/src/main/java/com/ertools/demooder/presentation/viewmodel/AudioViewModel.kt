@@ -2,16 +2,21 @@ package com.ertools.demooder.presentation.viewmodel
 
 import android.content.Context
 import android.content.Intent
+import android.util.Log
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.ertools.demooder.R
 import com.ertools.demooder.core.audio.AudioProvider
 import com.ertools.demooder.core.classifier.EmotionClassifier
 import com.ertools.demooder.core.classifier.PredictionRepository
-import com.ertools.demooder.core.detector.SpeechDetector
 import com.ertools.demooder.core.detector.DetectionProvider
+import com.ertools.demooder.core.detector.SpeechDetector
+import com.ertools.demooder.core.notifications.MediaService
+import com.ertools.demooder.core.notifications.NotificationAction
 import com.ertools.demooder.core.notifications.NotificationData
+import com.ertools.demooder.core.notifications.NotificationEventStream
 import com.ertools.demooder.core.settings.SettingsStore
 import com.ertools.demooder.core.spectrum.SpectrumBuilder
 import com.ertools.demooder.core.spectrum.SpectrumProvider
@@ -51,26 +56,38 @@ class AudioViewModel(
     val isWorking: StateFlow<Boolean> = _isWorking.asStateFlow()
 
 
-
-    init {
-        audioProvider.getServiceClass()
-    }
-
-
     /**********/
     /** API **/
     /**********/
 
-    fun togglePlay(context: Context) {
-        if (isWorking.value) {
-            stopRecording()
-            updateBackgroundTask(context, AppConstants.NOTIFICATION_ACTION_STOP)
-        }
-        else {
-            viewModelScope.launch(Dispatchers.IO) {
-                startRecording()
-                updateBackgroundTask(context, AppConstants.NOTIFICATION_ACTION_START)
+    fun runNotificationListeningTask(context: Context) {
+        updateBackgroundTask(context, AppConstants.NOTIFICATION_ACTION_NOTIFY)
+        viewModelScope.launch {
+            NotificationEventStream.events.collect { notificationData ->
+                when(notificationData.action) {
+                    NotificationAction.START -> startRecording()
+                    NotificationAction.STOP -> stopRecording()
+                    else -> {}
+                }
             }
+        }
+    }
+
+    fun togglePlay(context: Context) {
+        viewModelScope.launch {
+            val notificationData = if(isWorking.value) {
+                NotificationData(
+                    action = NotificationAction.STOP,
+                    title = context.getString(R.string.prediction_placeholder)
+                )
+            } else {
+                NotificationData(
+                    action = NotificationAction.START,
+                    title = context.getString(R.string.prediction_result_label),
+                    subtitle = context.getString(R.string.prediction_result_loading)
+                )
+            }
+            NotificationEventStream.events.emit(notificationData)
         }
     }
 
@@ -149,11 +166,11 @@ class AudioViewModel(
      * Set background task for audio service.
      */
     private fun updateBackgroundTask(context: Context, action: String, data: NotificationData? = null) {
-        val serviceIntent = Intent(context, audioProvider.getServiceClass()).apply {
+        val serviceIntent = Intent(context, MediaService::class.java).apply {
             this.action = action
-            /** data in parcelable:**/
             this.putExtra(AppConstants.NOTIFICATION_DATA, data)
         }
+        Log.d("AudioViewModel", "Starting service with action: $action, data: $data")
         ContextCompat.startForegroundService(context, serviceIntent)
     }
 
