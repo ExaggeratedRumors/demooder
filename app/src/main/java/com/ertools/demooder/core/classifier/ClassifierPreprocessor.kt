@@ -1,6 +1,5 @@
 package com.ertools.demooder.core.classifier
 
-import android.util.Log
 import com.ertools.demooder.utils.AppConstants.APP_DIR_NAME
 import com.ertools.processing.commons.RawData
 import com.ertools.processing.commons.Spectrogram
