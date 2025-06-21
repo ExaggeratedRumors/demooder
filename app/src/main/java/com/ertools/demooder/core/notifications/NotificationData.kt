@@ -13,5 +13,6 @@ data class NotificationData(
 enum class NotificationAction {
     START,
     STOP,
-    UPDATE
+    UPDATE,
+    DESTROY
 }

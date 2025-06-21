@@ -61,7 +61,7 @@ class AudioViewModel(
     /**********/
 
     fun runNotificationListeningTask(context: Context) {
-        updateBackgroundTask(context, AppConstants.NOTIFICATION_ACTION_NOTIFY)
+        startBackgroundTask(context, AppConstants.NOTIFICATION_ACTION_NOTIFY)
         viewModelScope.launch {
             NotificationEventStream.events.collect { notificationData ->
                 when(notificationData.action) {
@@ -117,7 +117,7 @@ class AudioViewModel(
 
         /** Read buffer from audio provider **/
         viewModelScope.launch(Dispatchers.IO) {
-            while(isActive && _isWorking.value) {
+            while(isActive && isWorking.value) {
                 synchronized(dataBuffer) {
                     audioProvider.read(dataBuffer)
                 }
@@ -165,13 +165,18 @@ class AudioViewModel(
     /**
      * Set background task for audio service.
      */
-    private fun updateBackgroundTask(context: Context, action: String, data: NotificationData? = null) {
+    private fun startBackgroundTask(context: Context, action: String, data: NotificationData? = null) {
         val serviceIntent = Intent(context, MediaService::class.java).apply {
             this.action = action
             this.putExtra(AppConstants.NOTIFICATION_DATA, data)
         }
         Log.d("AudioViewModel", "Starting service with action: $action, data: $data")
         ContextCompat.startForegroundService(context, serviceIntent)
+    }
+
+    private fun stopBackgroundTask() {
+        val notificationData = NotificationData(action = NotificationAction.DESTROY)
+        NotificationEventStream.events.tryEmit(notificationData)
     }
 
     /********************/
@@ -181,7 +186,8 @@ class AudioViewModel(
     override fun isSpeech(): StateFlow<Boolean> = isSpeech
     override fun onCleared() {
         super.onCleared()
-        if(isWorking.value) audioProvider.stop()
+        stopBackgroundTask()
+        stopRecording()
     }
 }
 

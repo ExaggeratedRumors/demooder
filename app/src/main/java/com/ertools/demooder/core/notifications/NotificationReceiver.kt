@@ -10,7 +10,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class NotificationActionReceiver : BroadcastReceiver() {
+class NotificationReceiver : BroadcastReceiver() {
 
     private val scope = CoroutineScope(Dispatchers.Main)
 
@@ -20,7 +20,7 @@ class NotificationActionReceiver : BroadcastReceiver() {
         } else {
             intent.getParcelableExtra(AppConstants.NOTIFICATION_DATA)
         }
-        Log.d("NotificationActionReceiver", "Received data: $data")
+        Log.d("NotificationReceiver", "Received data: $data")
         data?.let {
             scope.launch {
                 NotificationEventStream.events.emit(data)

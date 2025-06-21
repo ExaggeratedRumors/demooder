@@ -24,7 +24,7 @@ class MediaService: Service() {
     /*********************/
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        sendNotification(NotificationData(action = NotificationAction.START))
+        updateNotification(NotificationData(action = NotificationAction.STOP))
         observeEvents()
         return START_STICKY
     }
@@ -32,8 +32,10 @@ class MediaService: Service() {
     override fun onBind(intent: Intent?): IBinder? = null
 
     override fun onDestroy() {
+        Log.d("MediaService", "Service is being destroyed")
         super.onDestroy()
         job.cancel()
+        stopForeground(STOP_FOREGROUND_REMOVE)
         stopSelf()
     }
 
@@ -44,27 +46,39 @@ class MediaService: Service() {
     private fun observeEvents() {
         scope.launch {
             NotificationEventStream.events.collect { data ->
-                sendNotification(data)
+                Log.d("MediaService", "Received notification event: $data")
+                when(data.action) {
+                    NotificationAction.DESTROY -> {
+                        onDestroy()
+                    }
+                    else -> updateNotification(data)
+                }
             }
         }
     }
 
-    private fun sendNotification(data: NotificationData?) {
+    private fun updateNotification(data: NotificationData?) {
         val style = androidx.media.app.NotificationCompat.MediaStyle()
             .setShowActionsInCompactView(0)
 
         val icon =  if(data?.action == NotificationAction.START) R.drawable.stop_filled
                     else R.drawable.mic_filled
 
-        val action = if(data?.action == NotificationAction.START) AppConstants.NOTIFICATION_ACTION_STOP
-                    else AppConstants.NOTIFICATION_ACTION_START
+        val action =    if(data?.action == NotificationAction.START) AppConstants.NOTIFICATION_ACTION_STOP
+                        else AppConstants.NOTIFICATION_ACTION_START
 
         /** Action intent **/
-        val actionIntent = Intent(this, NotificationActionReceiver::class.java).apply {
-            putExtra(AppConstants.NOTIFICATION_DATA, data)
+        val actionData = NotificationData(
+            action =    if(data?.action == NotificationAction.START) NotificationAction.STOP
+                        else NotificationAction.START,
+        )
+
+        val actionIntent = Intent(this, NotificationReceiver::class.java).apply {
+            putExtra(AppConstants.NOTIFICATION_DATA, actionData)
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK
         }
 
-        val actionPendingIntent = PendingIntent.getService(
+        val actionPendingIntent = PendingIntent.getBroadcast(
             this,
             0,
             actionIntent,
@@ -95,7 +109,6 @@ class MediaService: Service() {
             ).setSmallIcon(R.drawable.vec_home_speech)
             .build()
         if(Permissions.isPostNotificationPermissionGained(this)) {
-            Log.d("PlayerService", "Starting foreground service with notification")
             startForeground(AppConstants.NOTIFICATION_MEDIA_ID, notification)
         }
     }

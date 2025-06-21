@@ -14,7 +14,7 @@
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/logo"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@mipmap/logo"
         android:supportsRtl="true"
         android:theme="@style/Theme.Demooder"
         >
@@ -22,7 +22,10 @@
             android:enabled="true"
             android:exported="false"
             android:foregroundServiceType="mediaPlayback|microphone" />
-        <receiver android:name=".core.notifications.NotificationActionReceiver" />
+        <receiver android:name=".core.notifications.NotificationReceiver"
+            android:enabled="true"
+            android:exported="true"
+            />
         <activity
             android:name=".core.host.MainActivity"
             android:exported="true"
