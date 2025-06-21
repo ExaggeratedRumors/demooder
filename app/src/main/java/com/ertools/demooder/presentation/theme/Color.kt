@@ -37,7 +37,7 @@ object Colors {
     val SURFACE_DIM = Color(0xFFFFFFFF)
     val SURFACE_TINT = Color(0xFFFFFFFF)
     val BACKGROUND = Color(0xFF35342C)
-    val ON_BACKGROUND = Color(0xFFFFFFFF)
+    val ON_BACKGROUND = Color(0xFF727272)
     val OUTLINE = Color(0xFFFFFFFF)
     val OUTLINE_VARIANT = Color(0xFFFFFFFF)
 }

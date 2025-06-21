@@ -5,9 +5,11 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -22,7 +24,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.unit.dp
+import com.ertools.demooder.R
 import java.util.Locale
 
 sealed class OptionData(
@@ -30,24 +34,22 @@ sealed class OptionData(
 ) {
     abstract fun valueToString(): String
     @Composable
-    abstract fun SettingsOption()
+    abstract fun SettingsOption(modifier: Modifier)
 
     class InputOptionData(
         optionTitle: String,
         val value: State<Double>,
+        val unit: String? = null,
         val onValidate: @Composable (String) -> Boolean,
         private val onSave: (Double) -> Unit
     ) : OptionData(optionTitle) {
         override fun valueToString(): String = "%.1f".format(Locale.ENGLISH, value.value)
 
         @Composable
-        override fun SettingsOption() {
+        override fun SettingsOption(modifier: Modifier) {
             val option = this
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .fillMaxHeight(0.1f)
-                    .padding(20.dp)
+                modifier = modifier
             ) {
                 val inputText = remember { mutableStateOf("") }
                 val showDialog = remember { mutableStateOf(false) }
@@ -56,29 +58,25 @@ sealed class OptionData(
                     onClick = {
                         showDialog.value = true
                     },
-                    modifier = Modifier
-                        .wrapContentSize()
-                        .align(Alignment.Bottom)
-                        .background(color = Color.Transparent),
+                    modifier = Modifier.background(color = Color.Transparent),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = Color.Transparent,
                         contentColor = MaterialTheme.colorScheme.onBackground
                     )
                 ) {
                     Column(
-                        modifier = Modifier
-                            .fillMaxWidth(0.8f)
-                            .fillMaxHeight(),
+                        modifier = Modifier.fillMaxWidth(0.9f),
                     ) {
                         Text(
+                            modifier = Modifier.padding(bottom = 8.dp),
                             text = option.optionTitle,
-                            fontStyle = MaterialTheme.typography.bodyLarge.fontStyle,
-                            color = MaterialTheme.colorScheme.onSurface
+                            style = MaterialTheme.typography.labelMedium,
+                            color = MaterialTheme.colorScheme.onBackground
                         )
                         Text(
-                            text = valueToString(),
-                            fontStyle = MaterialTheme.typography.bodyLarge.fontStyle,
-                            color = MaterialTheme.colorScheme.onBackground
+                            text = valueToString() + unit,
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onPrimary
                         )
                     }
                 }
@@ -111,20 +109,15 @@ sealed class OptionData(
         override fun valueToString(): String = "${value.value}"
 
         @Composable
-        override fun SettingsOption() {
+        override fun SettingsOption(modifier: Modifier) {
             val option = this
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .fillMaxHeight(0.1f)
-                    .padding(20.dp)
+                modifier = modifier
             ) {
-                /** Switch **/
                 Box(
                     modifier = Modifier
-                        .wrapContentSize()
                         .align(Alignment.CenterVertically)
-                        .padding(horizontal = 20.dp)
+                        .padding(horizontal = dimensionResource(R.dimen.global_padding))
                     ,
                 ) {
                     Row(
@@ -136,8 +129,8 @@ sealed class OptionData(
                     ) {
                         Text(
                             text = option.optionTitle,
-                            fontStyle = MaterialTheme.typography.bodyLarge.fontStyle,
-                            color = MaterialTheme.colorScheme.onSurface
+                            style = MaterialTheme.typography.labelMedium,
+                            color = MaterialTheme.colorScheme.onBackground
                         )
                         Switch(
                             checked = option.value.value,

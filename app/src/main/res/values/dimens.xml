@@ -3,6 +3,7 @@
     <!-- GLOBAL -->
     <dimen name="global_padding">20dp</dimen>
     <dimen name="global_dropdown_corner">0dp</dimen>
+    <dimen name="global_divider_thickness">0.5dp</dimen>
     <integer name="global_navbar_height_ratio">15</integer>
 
     <!-- HOME -->

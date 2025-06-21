@@ -4,7 +4,6 @@
     <string name="dialog_ok">OK</string>
     <string name="dialog_cancel">Cancel</string>
 
-
     <!-- NAVIGATION -->
     <string name="nav_home">Home</string>
     <string name="nav_prediction">Prediction</string>
@@ -31,6 +30,14 @@
     <string name="prediction_previous_placeholder">not detected</string>
     <string name="prediction_anger_label">Anger time:</string>
 
+    <!-- SETTINGS -->
+    <string name="settings_device_damping_title">"DEVICE DAMPING"</string>
+    <string name="settings_device_damping_unit">dB</string>
+    <string name="settings_signal_detection_period_title">SIGNAL DETECTION PERIOD IN SECONDS</string>
+    <string name="settings_signal_detection_period_unit">s</string>
+    <string name="settings_enable_notifications_title">ENABLE NOTIFICATIONS</string>
+    <string name="settings_anger_detection_time_title">ANGER DETECTION TIME IN SECONDS BEFORE TRIGGER NOTIFICATION</string>
+    <string name="settings_anger_detection_time_unit">s</string>
 
     <!-- RECORDS -->
     <string name="records_icon_cd">Recording</string>
