@@ -30,7 +30,7 @@ fun TextInputDialog(
                 text = title,
                 style = MaterialTheme.typography.titleSmall,
             )
-            },
+        },
         text = {
             Column {
                 TextField(
