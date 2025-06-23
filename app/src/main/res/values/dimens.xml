@@ -16,7 +16,7 @@
     <dimen name="prediction_buttons_space">50dp</dimen>
     <dimen name="equalizer_height">400dp</dimen>
     <dimen name="prediction_padding">10dp</dimen>
-    <dimen name="spectrum_padding">32dp</dimen>
+    <dimen name="spectrum_padding">8dp</dimen>
     <integer name="spectrum_bar_factor">2</integer>
     <integer name="spectrum_bar_spacing_factor">20</integer>
 

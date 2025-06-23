@@ -66,6 +66,7 @@ import com.ertools.demooder.presentation.viewmodel.StatisticsViewModel
 import com.ertools.demooder.utils.AppConstants
 import com.ertools.processing.commons.Emotion
 import java.util.Locale
+import kotlin.math.max
 import kotlin.math.roundToInt
 
 @Composable
@@ -198,49 +199,36 @@ fun SpectrumView(
                 .fillMaxWidth()
                 .height(dimensionResource(R.dimen.equalizer_height))
                 .background(color = MaterialTheme.colorScheme.surface)
-        ) {
-            val barFactor = integerResource(R.integer.spectrum_bar_factor)
-            val barSpacingFactor = integerResource(R.integer.spectrum_bar_spacing_factor)
+                .padding(dimensionResource(R.dimen.spectrum_padding)),
+            ) {
 
-            Canvas(modifier = Modifier.fillMaxSize()) {
-                val barWidth = size.width / (spectrum.size * (1 - 0.01f * barSpacingFactor))
-                val barSpacing = size.width / (spectrum.size * 0.01f * barSpacingFactor)
-
-                drawLine(
-                    color = linesColor,
-                    start = Offset(0f, size.height),
-                    end = Offset(size.width, size.height),
-                    strokeWidth = 2f,
-                    alpha = 0.5f
-                )
-
-                spectrum.forEachIndexed { i, db ->
-                    val x = i * (barWidth + barSpacing) + barSpacing / 2f
-                    val barTop = db * barFactor
-                    val barBottom = size.height
-
-                    drawRect(
-                        color = barBackgroundColor,
-                        topLeft = Offset(x, 0f),
-                        size = Size(barWidth, size.height)
+            Row(
+                modifier = Modifier.fillMaxSize(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                spectrum.forEach { sample ->
+                    val animatedHeight by animateFloatAsState(
+                        targetValue = sample.toFloat() * integerResource(R.integer.spectrum_bar_factor),
+                        animationSpec = spring(stiffness = Spring.StiffnessMedium),
+                        label = "$sample"
                     )
-
-                    drawRect(
-                        color = barColor,
-                        topLeft = Offset(x, db.toFloat() * barFactor),
-                        size = Size(barWidth, (barBottom - barTop).toFloat())
-                    )
-                }
-
-                drawContext.canvas.nativeCanvas.apply {
-                    val paint = android.graphics.Paint().apply {
-                        color = android.graphics.Color.WHITE
-                        textSize = 28f
-                        textAlign = android.graphics.Paint.Align.LEFT
+                    Box(
+                        modifier = Modifier
+                            .width(dimensionResource(R.dimen.spectrum_padding))
+                            .fillMaxHeight()
+                            .align(Alignment.Bottom)
+                            .background(MaterialTheme.colorScheme.surfaceContainer)
+                    ) {
+                        if (isRecording.value) {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height((animatedHeight).dp)
+                                    .align(Alignment.BottomCenter)
+                                    .background(MaterialTheme.colorScheme.primary)
+                            )
+                        }
                     }
-                    drawText("+5", 4f, 24f, paint)
-                    drawText("0", 4f, size.height + 8f, paint)
-                    drawText("-5", 4f, size.height - 4f, paint)
                 }
             }
 
@@ -260,42 +248,6 @@ fun SpectrumView(
                     )
                 }
             }
-
-
-            /*Row(
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .padding(dimensionResource(R.dimen.spectrum_padding)),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                if (isRecording.value) {
-                    spectrum.forEach { sample ->
-                        val animatedHeight by animateFloatAsState(
-                            targetValue = sample.toFloat() * integerResource(R.integer.equalizer_bar_factor),
-                            animationSpec = spring(stiffness = Spring.StiffnessMedium),
-                            label = "$sample"
-                        )
-                        Canvas(modifier = Modifier) {
-
-                        }
-                        Box(
-                            modifier = Modifier
-                                .width(dimensionResource(R.dimen.equalizer_bar_width))
-                                .fillMaxHeight()
-                                .align(Alignment.Bottom)
-                                .background(MaterialTheme.colorScheme.surfaceContainer)
-                        ) {
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height((animatedHeight).dp)
-                                    .align(Alignment.BottomCenter)
-                                    .background(MaterialTheme.colorScheme.primary)
-                            )
-                        }
-                    }
-                }
-            }*/
         }
     }
 }
