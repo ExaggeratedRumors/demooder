@@ -1,10 +1,13 @@
 package com.ertools.demooder.presentation.ui
 
 import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.FiniteAnimationSpec
 import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -29,6 +32,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.integerResource
@@ -36,6 +43,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ertools.demooder.R
@@ -45,6 +53,7 @@ import com.ertools.demooder.core.detector.DetectionProvider
 import com.ertools.demooder.core.detector.SpeechDetector
 import com.ertools.demooder.core.settings.SettingsStore
 import com.ertools.demooder.core.spectrum.SpectrumProvider
+import com.ertools.demooder.presentation.components.AppBar
 import com.ertools.demooder.presentation.components.ClickButton
 import com.ertools.demooder.presentation.components.StateButton
 import com.ertools.demooder.presentation.components.TitleValue
@@ -54,6 +63,7 @@ import com.ertools.demooder.presentation.viewmodel.ProviderViewModel
 import com.ertools.demooder.presentation.viewmodel.SettingsViewModel
 import com.ertools.demooder.presentation.viewmodel.SettingsViewModelFactory
 import com.ertools.demooder.presentation.viewmodel.StatisticsViewModel
+import com.ertools.demooder.utils.AppConstants
 import com.ertools.processing.commons.Emotion
 import java.util.Locale
 import kotlin.math.roundToInt
@@ -170,42 +180,222 @@ fun SpectrumView(
     Column (
         modifier = modifier,
         verticalArrangement = Arrangement.Center,
-    ){
+    ) {
+        /** Flow **/
         val spectrumFlow = remember(provider) { provider.getSpectrum() }
         val spectrum by spectrumFlow.collectAsStateWithLifecycle()
 
-        Surface (
+        /** Constance **/
+        val labels: List<String> = listOf(
+            "16", "32", "64", "128", "256", "512", "1k", "2k", "4k", "8k", "16k"
+        )
+        val linesColor = MaterialTheme.colorScheme.onSurface
+        val barColor = MaterialTheme.colorScheme.primary
+        val barBackgroundColor = MaterialTheme.colorScheme.surfaceContainer
+
+        Box (
             modifier = Modifier
                 .fillMaxWidth()
                 .height(dimensionResource(R.dimen.equalizer_height))
-                .background(
-                    color = MaterialTheme.colorScheme.surface,
-                    shape = MaterialTheme.shapes.large
-                ),
-            shape = MaterialTheme.shapes.large
+                .background(color = MaterialTheme.colorScheme.surface)
         ) {
+            val barFactor = integerResource(R.integer.spectrum_bar_factor)
+            val barSpacingFactor = integerResource(R.integer.spectrum_bar_spacing_factor)
+
+            Canvas(modifier = Modifier.fillMaxSize()) {
+                val barWidth = size.width / (spectrum.size * (1 - 0.01f * barSpacingFactor))
+                val barSpacing = size.width / (spectrum.size * 0.01f * barSpacingFactor)
+
+                drawLine(
+                    color = linesColor,
+                    start = Offset(0f, size.height),
+                    end = Offset(size.width, size.height),
+                    strokeWidth = 2f,
+                    alpha = 0.5f
+                )
+
+                spectrum.forEachIndexed { i, db ->
+                    val x = i * (barWidth + barSpacing) + barSpacing / 2f
+                    val barTop = db * barFactor
+                    val barBottom = size.height
+
+                    drawRect(
+                        color = barBackgroundColor,
+                        topLeft = Offset(x, 0f),
+                        size = Size(barWidth, size.height)
+                    )
+
+                    drawRect(
+                        color = barColor,
+                        topLeft = Offset(x, db.toFloat() * barFactor),
+                        size = Size(barWidth, (barBottom - barTop).toFloat())
+                    )
+                }
+
+                drawContext.canvas.nativeCanvas.apply {
+                    val paint = android.graphics.Paint().apply {
+                        color = android.graphics.Color.WHITE
+                        textSize = 28f
+                        textAlign = android.graphics.Paint.Align.LEFT
+                    }
+                    drawText("+5", 4f, 24f, paint)
+                    drawText("0", 4f, size.height + 8f, paint)
+                    drawText("-5", 4f, size.height - 4f, paint)
+                }
+            }
+
             Row(
                 modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .fillMaxWidth()
+                    .padding(bottom = 4.dp),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                labels.forEach { label ->
+                    Text(
+                        text = label,
+                        color = linesColor,
+                        fontSize = 12.sp,
+                        modifier = Modifier.weight(1f, fill = false)
+                    )
+                }
+            }
+
+
+            /*Row(
+                modifier = Modifier
                     .fillMaxHeight()
-                    .padding(horizontal = 16.dp),
+                    .padding(dimensionResource(R.dimen.spectrum_padding)),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 if (isRecording.value) {
                     spectrum.forEach { sample ->
                         val animatedHeight by animateFloatAsState(
                             targetValue = sample.toFloat() * integerResource(R.integer.equalizer_bar_factor),
-                            animationSpec = spring(),
+                            animationSpec = spring(stiffness = Spring.StiffnessMedium),
                             label = "$sample"
                         )
+                        Canvas(modifier = Modifier) {
+
+                        }
                         Box(
                             modifier = Modifier
-                                .width(dimensionResource(R.dimen.equalizer_bar_height))
-                                .height((animatedHeight).dp)
+                                .width(dimensionResource(R.dimen.equalizer_bar_width))
+                                .fillMaxHeight()
                                 .align(Alignment.Bottom)
-                                .background(MaterialTheme.colorScheme.primary)
-                        )
+                                .background(MaterialTheme.colorScheme.surfaceContainer)
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height((animatedHeight).dp)
+                                    .align(Alignment.BottomCenter)
+                                    .background(MaterialTheme.colorScheme.primary)
+                            )
+                        }
                     }
                 }
+            }*/
+        }
+    }
+}
+
+@Composable
+fun animatedAmplitudes(
+    target: List<Double>,
+    animationSpec: FiniteAnimationSpec<Float> = spring(stiffness = Spring.StiffnessMedium)
+): List<Float> {
+    return target.map { value ->
+        animateFloatAsState(
+            targetValue = value.toFloat(),
+            animationSpec = animationSpec,
+            label = "amplitude"
+        ).value
+    }
+}
+
+@Composable
+fun AmplitudeSpectrum(
+    amplitudes: List<Double>,
+    modifier: Modifier = Modifier,
+    minDb: Double = -5.0,
+    maxDb: Double = 5.0,
+    octaveLabels: List<String> = listOf("16", "32", "63", "125", "250", "500", "1k", "2k", "4k", "8k", "16k")
+) {
+    val animated = animatedAmplitudes(amplitudes)
+
+    val barColor = Color(0xFF7B4B4B)
+    val barBgColor = Color(0xFF2B241B)
+    val axisColor = Color.White
+    val labelColor = Color.White
+    val backgroundColor = Color(0xFF5A5956)
+
+    Box(
+        modifier = modifier
+            .background(backgroundColor)
+            .aspectRatio(1f)
+            .padding(8.dp)
+    ) {
+        Canvas(modifier = Modifier.fillMaxSize()) {
+            val barCount = animated.size
+            val barWidth = size.width / (barCount * 1.2f)
+            val barSpacing = barWidth * 0.2f
+            val zeroY = size.height * (maxDb / (maxDb - minDb))
+
+            drawLine(
+                color = axisColor,
+                start = Offset(0f, zeroY.toFloat()),
+                end = Offset(size.width, zeroY.toFloat()),
+                strokeWidth = 2f,
+                alpha = 0.5f
+            )
+
+            animated.forEachIndexed { i, db ->
+                val x = i * (barWidth + barSpacing) + barSpacing / 2
+                val barTop = ((maxDb - db) / (maxDb - minDb)) * size.height
+                val barBottom = size.height
+
+                drawRect(
+                    color = barBgColor,
+                    topLeft = Offset(x, 0f),
+                    size = Size(barWidth, size.height)
+                )
+                // Draw bar (actual value)
+                drawRect(
+                    color = barColor,
+                    topLeft = Offset(x, barTop.toFloat()),
+                    size = Size(barWidth, (barBottom - barTop).toFloat())
+                )
+            }
+
+            // Draw Y axis labels (+5, 0, -5)
+            drawContext.canvas.nativeCanvas.apply {
+                val paint = android.graphics.Paint().apply {
+                    color = android.graphics.Color.WHITE
+                    textSize = 28f
+                    textAlign = android.graphics.Paint.Align.LEFT
+                }
+                drawText("+5", 4f, 24f, paint)
+                drawText("0", 4f, zeroY.toFloat() + 8f, paint)
+                drawText("-5", 4f, size.height - 4f, paint)
+            }
+        }
+
+        // Draw X axis labels
+        Row(
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .fillMaxWidth()
+                .padding(bottom = 4.dp),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            octaveLabels.take(animated.size).forEach { label ->
+                Text(
+                    text = label,
+                    color = labelColor,
+                    fontSize = 12.sp,
+                    modifier = Modifier.weight(1f, fill = false)
+                )
             }
         }
     }
