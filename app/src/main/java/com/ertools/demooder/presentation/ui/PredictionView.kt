@@ -48,6 +48,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ertools.demooder.R
 import com.ertools.demooder.core.classifier.EmotionClassifier
+import com.ertools.demooder.core.classifier.Prediction
 import com.ertools.demooder.core.classifier.PredictionProvider
 import com.ertools.demooder.core.detector.DetectionProvider
 import com.ertools.demooder.core.detector.SpeechDetector
@@ -250,23 +251,6 @@ fun SpectrumView(
                     }
                 }
             }
-
-            /*Row(
-                modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .fillMaxWidth()
-                    .padding(bottom = 4.dp),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                labels.forEach { label ->
-                    Text(
-                        text = label,
-                        color = MaterialTheme.colorScheme.onSurface,
-                        fontSize = 12.sp,
-                        modifier = Modifier.weight(1f, fill = false)
-                    )
-                }
-            }*/
         }
     }
 }
@@ -288,7 +272,7 @@ fun EvaluationView(
     detectionPeriodSeconds: State<Double>,
     isRecording: State<Boolean>
 ) {
-    val lastTwoPredictions by predictionProvider.last(2).collectAsState()
+    val lastTwoPredictions: List<Prediction> by predictionProvider.last(2).collectAsState()
     val angryDuration by predictionProvider.proportion(Emotion.ANG).collectAsState()
     val isSpeech by detectionProvider.isSpeech().collectAsState()
 
@@ -326,7 +310,7 @@ fun EvaluationView(
                     },
                     isVertical = true
                 )
-                LaunchedEffect(Unit) {
+                LaunchedEffect(lastTwoPredictions) {
                     while (isRecording.value) {
                         progressAnimation.animateTo(
                             targetValue = 1f,
@@ -337,6 +321,7 @@ fun EvaluationView(
                         )
                         progressAnimation.snapTo(0f)
                     }
+
                 }
                 Box(
                     modifier = Modifier.fillMaxHeight(0.1f)
