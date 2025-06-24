@@ -190,9 +190,6 @@ fun SpectrumView(
         val labels: List<String> = listOf(
             "16", "32", "64", "128", "256", "512", "1k", "2k", "4k", "8k", "16k"
         )
-        val linesColor = MaterialTheme.colorScheme.onSurface
-        val barColor = MaterialTheme.colorScheme.primary
-        val barBackgroundColor = MaterialTheme.colorScheme.surfaceContainer
 
         Box (
             modifier = Modifier
@@ -206,7 +203,7 @@ fun SpectrumView(
                 modifier = Modifier.fillMaxSize(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                spectrum.forEach { sample ->
+                spectrum.forEachIndexed { i, sample ->
                     val animatedHeight by animateFloatAsState(
                         targetValue = sample.toFloat() * integerResource(R.integer.spectrum_bar_factor),
                         animationSpec = spring(stiffness = Spring.StiffnessMedium),
@@ -214,7 +211,8 @@ fun SpectrumView(
                     )
                     Box(
                         modifier = Modifier
-                            .width(dimensionResource(R.dimen.spectrum_padding))
+                            .weight(1f)
+                            .padding(dimensionResource(R.dimen.spectrum_padding))
                             .fillMaxHeight()
                             .align(Alignment.Bottom)
                             .background(MaterialTheme.colorScheme.surfaceContainer)
@@ -226,13 +224,34 @@ fun SpectrumView(
                                     .height((animatedHeight).dp)
                                     .align(Alignment.BottomCenter)
                                     .background(MaterialTheme.colorScheme.primary)
+                            ) {
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(2.dp)
+                                        .background(MaterialTheme.colorScheme.tertiary)
+                                )
+                            }
+                        }
+                        Row(
+                            modifier = Modifier
+                                .align(Alignment.BottomCenter)
+                                .fillMaxWidth(),
+                            horizontalArrangement = Arrangement.Center,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = labels[i],
+                                color = MaterialTheme.colorScheme.onSurface,
+                                fontSize = 12.sp,
                             )
+
                         }
                     }
                 }
             }
 
-            Row(
+            /*Row(
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
                     .fillMaxWidth()
@@ -242,116 +261,16 @@ fun SpectrumView(
                 labels.forEach { label ->
                     Text(
                         text = label,
-                        color = linesColor,
+                        color = MaterialTheme.colorScheme.onSurface,
                         fontSize = 12.sp,
                         modifier = Modifier.weight(1f, fill = false)
                     )
                 }
-            }
+            }*/
         }
     }
 }
 
-@Composable
-fun animatedAmplitudes(
-    target: List<Double>,
-    animationSpec: FiniteAnimationSpec<Float> = spring(stiffness = Spring.StiffnessMedium)
-): List<Float> {
-    return target.map { value ->
-        animateFloatAsState(
-            targetValue = value.toFloat(),
-            animationSpec = animationSpec,
-            label = "amplitude"
-        ).value
-    }
-}
-
-@Composable
-fun AmplitudeSpectrum(
-    amplitudes: List<Double>,
-    modifier: Modifier = Modifier,
-    minDb: Double = -5.0,
-    maxDb: Double = 5.0,
-    octaveLabels: List<String> = listOf("16", "32", "63", "125", "250", "500", "1k", "2k", "4k", "8k", "16k")
-) {
-    val animated = animatedAmplitudes(amplitudes)
-
-    val barColor = Color(0xFF7B4B4B)
-    val barBgColor = Color(0xFF2B241B)
-    val axisColor = Color.White
-    val labelColor = Color.White
-    val backgroundColor = Color(0xFF5A5956)
-
-    Box(
-        modifier = modifier
-            .background(backgroundColor)
-            .aspectRatio(1f)
-            .padding(8.dp)
-    ) {
-        Canvas(modifier = Modifier.fillMaxSize()) {
-            val barCount = animated.size
-            val barWidth = size.width / (barCount * 1.2f)
-            val barSpacing = barWidth * 0.2f
-            val zeroY = size.height * (maxDb / (maxDb - minDb))
-
-            drawLine(
-                color = axisColor,
-                start = Offset(0f, zeroY.toFloat()),
-                end = Offset(size.width, zeroY.toFloat()),
-                strokeWidth = 2f,
-                alpha = 0.5f
-            )
-
-            animated.forEachIndexed { i, db ->
-                val x = i * (barWidth + barSpacing) + barSpacing / 2
-                val barTop = ((maxDb - db) / (maxDb - minDb)) * size.height
-                val barBottom = size.height
-
-                drawRect(
-                    color = barBgColor,
-                    topLeft = Offset(x, 0f),
-                    size = Size(barWidth, size.height)
-                )
-                // Draw bar (actual value)
-                drawRect(
-                    color = barColor,
-                    topLeft = Offset(x, barTop.toFloat()),
-                    size = Size(barWidth, (barBottom - barTop).toFloat())
-                )
-            }
-
-            // Draw Y axis labels (+5, 0, -5)
-            drawContext.canvas.nativeCanvas.apply {
-                val paint = android.graphics.Paint().apply {
-                    color = android.graphics.Color.WHITE
-                    textSize = 28f
-                    textAlign = android.graphics.Paint.Align.LEFT
-                }
-                drawText("+5", 4f, 24f, paint)
-                drawText("0", 4f, zeroY.toFloat() + 8f, paint)
-                drawText("-5", 4f, size.height - 4f, paint)
-            }
-        }
-
-        // Draw X axis labels
-        Row(
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .fillMaxWidth()
-                .padding(bottom = 4.dp),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            octaveLabels.take(animated.size).forEach { label ->
-                Text(
-                    text = label,
-                    color = labelColor,
-                    fontSize = 12.sp,
-                    modifier = Modifier.weight(1f, fill = false)
-                )
-            }
-        }
-    }
-}
 
 /**
  * Displays the prediction result of the classifier.
