@@ -300,7 +300,7 @@ fun EvaluationView(
                         .fillMaxHeight(0.5f),
                     title = predictionLabel,
                     value = if (!isSpeech || lastTwoPredictions.isEmpty()) loadingText
-                    else lastTwoPredictions[0].let { prediction ->
+                    else lastTwoPredictions[lastTwoPredictions.size - 1].let { prediction ->
                         "${prediction.label}: ${
                             "%.2f".format(
                                 Locale.ENGLISH,
@@ -334,7 +334,7 @@ fun EvaluationView(
                         .fillMaxHeight(0.5f),
                     title = previousPredictionLabel,
                     value = if (!isSpeech || lastTwoPredictions.size < 2) previousPredictionPlaceholderText
-                    else lastTwoPredictions[1].let { prediction ->
+                    else lastTwoPredictions[0].let { prediction ->
                         "${prediction.label}: ${"%.2f".format(Locale.ENGLISH, prediction.confidence * 100)}%"
                     },
                     isVertical = false
