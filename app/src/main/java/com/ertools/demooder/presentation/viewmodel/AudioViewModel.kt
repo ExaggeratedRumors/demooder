@@ -87,7 +87,7 @@ class AudioViewModel(
                     subtitle = context.getString(R.string.prediction_result_loading)
                 )
             }
-            NotificationEventStream.events.emit(notificationData)
+            updateBackgroundTask(notificationData)
         }
     }
 
@@ -145,6 +145,12 @@ class AudioViewModel(
                         _isSpeech.value = true
                         classifier.predict(dataBuffer, audioProvider.getSampleRate()) { prediction ->
                             PredictionRepository.updatePredictions(prediction)
+                            val notificationData = NotificationData(
+                                action = NotificationAction.UPDATE,
+                                title = prediction[0].label.name,
+                                subtitle = "temp"
+                            )
+                            updateBackgroundTask(notificationData)
                         }
                     } else {
                         _isSpeech.value = false
@@ -174,6 +180,13 @@ class AudioViewModel(
         ContextCompat.startForegroundService(context, serviceIntent)
     }
 
+    private fun updateBackgroundTask(notificationData: NotificationData) {
+        NotificationEventStream.events.tryEmit(notificationData)
+    }
+
+    /**
+     * Stop background task for audio service.
+     */
     private fun stopBackgroundTask() {
         val notificationData = NotificationData(action = NotificationAction.DESTROY)
         NotificationEventStream.events.tryEmit(notificationData)
