@@ -28,11 +28,13 @@ class StatisticsViewModel(
     /********************/
 
     override fun last(amount: Int): StateFlow<List<Prediction>> {
-        return predictionHistory.take(amount).stateIn(
-            viewModelScope,
-            SharingStarted.Eagerly,
-            emptyList()
-        )
+        return predictionHistory
+            .map { it.takeLast(amount)}
+            .stateIn(
+                viewModelScope,
+                SharingStarted.Eagerly,
+                emptyList()
+            )
     }
 
     override fun proportion(label: Emotion): StateFlow<Float> {
