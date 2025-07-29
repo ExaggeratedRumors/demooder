@@ -72,17 +72,31 @@ class EmotionClassifier {
         val labelsHistogram = inputBuffers.map { inputBuffer ->
             val outputBuffer = Array(1) { FloatArray(labels.size) { Float.NaN }}
             classifier.run(inputBuffer, outputBuffer)
+
+
+            /*labels.map { (id, name) ->
+                name to outputBuffer.last()[id]
+            }.maxBy { it.second }.first*/
             labels.map { (id, name) ->
                 name to outputBuffer.last()[id]
-            }.maxBy { it.second }.first
-        }.groupingBy { it }.eachCount()
+            }.toMap()
+        }
+            .flatMap{it.entries}
+            .groupBy({it.key}, {it.value})
+            .mapValues{ it.value.sum() }
+            .map { Prediction(it.key, it.value) }
+            .sortedByDescending { it.confidence }
+
+
+        //.flatMap { it.entr}//.groupingBy { it }.eachCount()
         Log.d("EmotionClassifier", "Prediction of ${inputBuffers.size} classifications result: $labelsHistogram")
 
-        val votes = labelsHistogram.entries.sumOf { it.value }
+        /*val votes = labelsHistogram.entries.sumOf { it.value }
         val predictionsList = labelsHistogram.map {
             Prediction(it.key, it.value.toFloat() / votes)
-        }.sortedByDescending { it.confidence }
+        }.sortedByDescending { it.confidence }*/
 
-        callback(predictionsList)
+        //callback(predictionsList)
+        callback(labelsHistogram)
     }
 }
