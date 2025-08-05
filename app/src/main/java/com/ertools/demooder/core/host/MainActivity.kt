@@ -15,6 +15,10 @@ import com.ertools.demooder.presentation.theme.Theme
 import com.ertools.demooder.utils.Permissions.REQUIRED_PERMISSIONS
 
 class MainActivity : ComponentActivity() {
+    /********************/
+    /** Implementation **/
+    /********************/
+
     override fun onStart() {
         super.onStart()
         val permissionsGained = REQUIRED_PERMISSIONS.all {
@@ -38,8 +42,17 @@ class MainActivity : ComponentActivity() {
                 }
             }
         } catch (e: Exception) {
-            val notificationManager = this.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-            notificationManager.cancelAll()
+            cancelNotifcations(this)
         }
     }
+
+    /*********************/
+    /** Private methods **/
+    /*********************/
+
+    private fun cancelNotifcations(context: Context) {
+        val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.cancelAll()
+    }
+
 }
