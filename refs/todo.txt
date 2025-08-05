@@ -4,7 +4,7 @@ High-prio
 3. Zmiana buttonów w momencie odtwarzania
 4. Dodanie na pasku powiadomień etykiety predykcji
 5. Prawidłowo obliczyć szansę na wystąpienie danej emocji.
-6. Problemy z synchronizacją bufora klasyfikacji i
+6. Problemy z synchronizacją bufora klasyfikacji i detekcji
 
 Low-prio
 1. Implementacja funkcji zapisu nagrania wraz ze ścieżką klasyfikacji oraz odtworzenia nagrania
