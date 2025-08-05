@@ -8,6 +8,7 @@ import com.ertools.processing.model.ModelConfiguration
 import com.ertools.processing.commons.Emotion
 import com.ertools.processing.commons.RawData
 import com.ertools.processing.io.IOModel
+import com.ertools.processing.model.InferenceStrategy
 import com.ertools.processing.spectrogram.SpectrogramConfiguration
 import org.tensorflow.lite.Interpreter
 import java.nio.ByteBuffer
@@ -69,34 +70,14 @@ class EmotionClassifier {
     fun predict(rawData: RawData, recordingSampleRate: Int, callback: (List<Prediction>) -> (Unit)) {
         if (!isModelInitialized) throw IllegalStateException("Model is not initialized")
         val inputBuffers: List<ByteBuffer> = preprocessor.proceed(rawData, recordingSampleRate)
-        val labelsHistogram = inputBuffers.map { inputBuffer ->
+
+        val labelsHistogram = InferenceStrategy.majorityVoting(inputBuffers) { inputBuffer ->
             val outputBuffer = Array(1) { FloatArray(labels.size) { Float.NaN }}
             classifier.run(inputBuffer, outputBuffer)
+            outputBuffer
+        }.map { Prediction(it.first, it.second) }
 
-
-            /*labels.map { (id, name) ->
-                name to outputBuffer.last()[id]
-            }.maxBy { it.second }.first*/
-            labels.map { (id, name) ->
-                name to outputBuffer.last()[id]
-            }.toMap()
-        }
-            .flatMap{it.entries}
-            .groupBy({it.key}, {it.value})
-            .mapValues{ it.value.sum() }
-            .map { Prediction(it.key, it.value) }
-            .sortedByDescending { it.confidence }
-
-
-        //.flatMap { it.entr}//.groupingBy { it }.eachCount()
         Log.d("EmotionClassifier", "Prediction of ${inputBuffers.size} classifications result: $labelsHistogram")
-
-        /*val votes = labelsHistogram.entries.sumOf { it.value }
-        val predictionsList = labelsHistogram.map {
-            Prediction(it.key, it.value.toFloat() / votes)
-        }.sortedByDescending { it.confidence }*/
-
-        //callback(predictionsList)
         callback(labelsHistogram)
     }
 }
