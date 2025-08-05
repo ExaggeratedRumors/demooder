@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -262,7 +261,7 @@ fun EvaluationView(
     isRecording: State<Boolean>
 ) {
     val lastTwoPredictions: List<Prediction> by predictionProvider.last(2).collectAsState()
-    val angryDuration by predictionProvider.proportion(Emotion.ANG).collectAsState()
+    val angerCounter by predictionProvider.count(Emotion.ANG).collectAsState()
     val isSpeech by detectionProvider.isSpeech().collectAsState()
 
     val placeholderText = stringResource(R.string.prediction_placeholder)
@@ -323,7 +322,7 @@ fun EvaluationView(
                     title = previousPredictionLabel,
                     value = if (lastTwoPredictions.size < 2) previousPredictionPlaceholderText
                     else {
-                        val index = if(isSpeech) lastTwoPredictions.size - 1 else 0
+                        val index = if(isSpeech) 0 else lastTwoPredictions.size - 1
                         lastTwoPredictions[index].let {
                             "${it.label} (${"%.2f".format(Locale.ENGLISH, it.confidence * 100)}%)"
                         }
@@ -336,7 +335,7 @@ fun EvaluationView(
                         .fillMaxHeight()
                         .align(Alignment.Start),
                     title = angerLabel,
-                    value = "%.2f".format(Locale.ENGLISH, 100 * angryDuration) + "%",
+                    value = "${angerCounter * detectionPeriodSeconds.value}s",
                     isVertical = false
                 )
             } else {

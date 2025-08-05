@@ -5,6 +5,6 @@ import kotlinx.coroutines.flow.StateFlow
 
 interface PredictionProvider {
     fun last(amount: Int): StateFlow<List<Prediction>>
-    fun proportion(label: Emotion): StateFlow<Float>
+    fun count(label: Emotion): StateFlow<Int>
     fun reset()
 }

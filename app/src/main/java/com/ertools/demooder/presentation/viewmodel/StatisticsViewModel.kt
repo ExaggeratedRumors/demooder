@@ -11,7 +11,6 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.flow.take
 
 /**
  * VieModel for calculating and providing statistics based on predictions.
@@ -37,15 +36,13 @@ class StatisticsViewModel(
             )
     }
 
-    override fun proportion(label: Emotion): StateFlow<Float> {
+    override fun count(label: Emotion): StateFlow<Int> {
         return predictionHistory.map { history ->
-            val count = history.count { it.label == label }
-            val total = history.size
-            1f * count / total
+            history.count { it.label == label }
         }.stateIn(
             viewModelScope,
             SharingStarted.Eagerly,
-            0f
+            0
         )
     }
 

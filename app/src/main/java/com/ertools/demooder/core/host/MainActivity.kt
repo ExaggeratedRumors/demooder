@@ -1,6 +1,8 @@
 package com.ertools.demooder.core.host
 
 import android.annotation.SuppressLint
+import android.app.NotificationManager
+import android.content.Context
 import android.content.pm.ActivityInfo
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -29,10 +31,15 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-        setContent {
-            Theme.MainTheme {
-                OutsideNavigation()
+        try {
+            setContent {
+                Theme.MainTheme {
+                    OutsideNavigation()
+                }
             }
+        } catch (e: Exception) {
+            val notificationManager = this.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            notificationManager.cancelAll()
         }
     }
 }
