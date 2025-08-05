@@ -2,6 +2,10 @@ High-prio
 1. Dodanie metadanych do tflite https://ai.google.dev/edge/litert/models/metadata?hl=pl
 2. Implementacja funkcji powiadamiania poprzez e-mail oraz sms
 3. Zmiana buttonów w momencie odtwarzania
+- button left - rozwinięcie statystyk odnośnie emocji
+- button right - przełączenie z trybu odtwarzania nagrania do trybu czasu rzeczywistego
+                 lub zatrzymanie (stop) nagrywania w czasie rzeczywistym
+- play button - zmiana na pauzę
 4. Dodanie na pasku powiadomień etykiety predykcji
 5. Prawidłowo obliczyć szansę na wystąpienie danej emocji.
 6. Problemy z synchronizacją bufora klasyfikacji i detekcji
