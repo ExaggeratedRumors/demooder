@@ -9,6 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.style.TextOverflow
 
 
 @Composable
@@ -28,14 +29,18 @@ fun TitleValue(
                 style = MaterialTheme.typography.titleMedium,
                 modifier = Modifier,
                 fontFamily = FontFamily.Monospace,
-                color = MaterialTheme.colorScheme.onSecondary
+                color = MaterialTheme.colorScheme.onSecondary,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
             )
             Text(
                 text = value,
                 style = MaterialTheme.typography.titleMedium,
                 modifier = Modifier,
                 fontFamily = FontFamily.Monospace,
-                color = MaterialTheme.colorScheme.primary
+                color = MaterialTheme.colorScheme.primary,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
             )
         }
     } else {
@@ -49,14 +54,18 @@ fun TitleValue(
                 style = MaterialTheme.typography.titleSmall,
                 modifier = Modifier,
                 fontFamily = FontFamily.Monospace,
-                color = MaterialTheme.colorScheme.onSecondary
+                color = MaterialTheme.colorScheme.onSecondary,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
             )
             Text(
                 text = value,
                 style = MaterialTheme.typography.titleSmall,
                 modifier = Modifier,
                 fontFamily = FontFamily.Monospace,
-                color = MaterialTheme.colorScheme.primary
+                color = MaterialTheme.colorScheme.primary,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
             )
         }
     }

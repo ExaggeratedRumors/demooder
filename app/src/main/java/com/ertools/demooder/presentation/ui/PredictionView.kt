@@ -1,13 +1,11 @@
 package com.ertools.demooder.presentation.ui
 
 import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.FiniteAnimationSpec
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -20,9 +18,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -32,10 +28,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.integerResource
@@ -54,7 +46,6 @@ import com.ertools.demooder.core.detector.DetectionProvider
 import com.ertools.demooder.core.detector.SpeechDetector
 import com.ertools.demooder.core.settings.SettingsStore
 import com.ertools.demooder.core.spectrum.SpectrumProvider
-import com.ertools.demooder.presentation.components.AppBar
 import com.ertools.demooder.presentation.components.ClickButton
 import com.ertools.demooder.presentation.components.StateButton
 import com.ertools.demooder.presentation.components.TitleValue
@@ -64,10 +55,8 @@ import com.ertools.demooder.presentation.viewmodel.ProviderViewModel
 import com.ertools.demooder.presentation.viewmodel.SettingsViewModel
 import com.ertools.demooder.presentation.viewmodel.SettingsViewModelFactory
 import com.ertools.demooder.presentation.viewmodel.StatisticsViewModel
-import com.ertools.demooder.utils.AppConstants
 import com.ertools.processing.commons.Emotion
 import java.util.Locale
-import kotlin.math.max
 import kotlin.math.roundToInt
 
 @Composable
@@ -110,20 +99,21 @@ fun PredictionView(
         modifier = Modifier
             .fillMaxWidth()
             .fillMaxHeight()
-            .padding(16.dp)
+            .padding(dimensionResource(R.dimen.prediction_view_padding)),
+        verticalArrangement = Arrangement.SpaceBetween,
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
         SpectrumView(
             modifier = Modifier
                 .fillMaxWidth()
-                .fillMaxHeight(0.6f)
-                .padding(16.dp),
+                .fillMaxHeight(0.55f),
             provider = audioViewModel,
             isRecording = isRecording
         )
         EvaluationView(
             modifier = Modifier
-                .fillMaxHeight(0.5f)
-                .fillMaxWidth(0.6f)
+                .fillMaxHeight(0.45f)
+                .fillMaxWidth()
                 .background(MaterialTheme.colorScheme.secondary)
                 .align(Alignment.CenterHorizontally),
             predictionProvider = statisticsViewModel,
@@ -134,13 +124,13 @@ fun PredictionView(
         Row (
             modifier = Modifier
                 .fillMaxWidth()
-                .fillMaxHeight(0.9f),
+                .fillMaxHeight(0.8f),
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically
         ) {
             ClickButton(
                 modifier = Modifier
-                    .fillMaxHeight(0.6f)
+                    .fillMaxHeight(0.75f)
                     .aspectRatio(1f),
                 iconResource = R.drawable.settings_link,
                 iconContentDescriptionResource = R.string.prediction_save_cd
@@ -148,7 +138,7 @@ fun PredictionView(
             ) { audioViewModel.save() }
             StateButton(
                 modifier = Modifier
-                    .fillMaxHeight(0.8f)
+                    .fillMaxHeight()
                     .aspectRatio(1f),
                 state = isRecording,
                 enableIconResource = R.drawable.mic_filled,
@@ -157,13 +147,12 @@ fun PredictionView(
             ) { audioViewModel.togglePlay(context) }
             ClickButton(
                 modifier = Modifier
-                    .fillMaxHeight(0.6f)
+                    .fillMaxHeight(0.75f)
                     .aspectRatio(1f),
                 iconResource = R.drawable.records_filled,
                 iconContentDescriptionResource = R.string.prediction_clear_cd
             ) { audioViewModel.abort() }
         }
-        Spacer(modifier = Modifier.fillMaxHeight())
     }
 }
 
@@ -291,7 +280,7 @@ fun EvaluationView(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(dimensionResource(R.dimen.prediction_padding))
+                .padding(dimensionResource(R.dimen.prediction_bar_padding))
         ) {
             if (isRecording.value) {
                 TitleValue(
@@ -321,7 +310,6 @@ fun EvaluationView(
                         )
                         progressAnimation.snapTo(0f)
                     }
-
                 }
                 Box(
                     modifier = Modifier.fillMaxHeight(0.1f)
@@ -333,9 +321,12 @@ fun EvaluationView(
                         .fillMaxWidth()
                         .fillMaxHeight(0.5f),
                     title = previousPredictionLabel,
-                    value = if (!isSpeech || lastTwoPredictions.size < 2) previousPredictionPlaceholderText
-                    else lastTwoPredictions[0].let { prediction ->
-                        "${prediction.label}: ${"%.2f".format(Locale.ENGLISH, prediction.confidence * 100)}%"
+                    value = if (lastTwoPredictions.size < 2) previousPredictionPlaceholderText
+                    else {
+                        val index = if(isSpeech) lastTwoPredictions.size - 1 else 0
+                        lastTwoPredictions[index].let {
+                            "${it.label} (${"%.2f".format(Locale.ENGLISH, it.confidence * 100)}%)"
+                        }
                     },
                     isVertical = false
                 )
@@ -345,7 +336,7 @@ fun EvaluationView(
                         .fillMaxHeight()
                         .align(Alignment.Start),
                     title = angerLabel,
-                    value = "%.2f".format(Locale.ENGLISH, angryDuration),
+                    value = "%.2f".format(Locale.ENGLISH, 100 * angryDuration) + "%",
                     isVertical = false
                 )
             } else {

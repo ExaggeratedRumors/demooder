@@ -12,10 +12,12 @@
     <dimen name="home_description_height">180dp</dimen>
 
     <!-- PREDICTION -->
+    <dimen name="prediction_view_padding">32dp</dimen>
+    <dimen name="prediction_view_spacing">8dp</dimen>
     <dimen name="prediction_button_size">120dp</dimen>
     <dimen name="prediction_buttons_space">50dp</dimen>
     <dimen name="equalizer_height">400dp</dimen>
-    <dimen name="prediction_padding">10dp</dimen>
+    <dimen name="prediction_bar_padding">10dp</dimen>
     <dimen name="spectrum_padding">4dp</dimen>
     <integer name="spectrum_bar_factor">2</integer>
     <integer name="spectrum_bar_spacing_factor">20</integer>
