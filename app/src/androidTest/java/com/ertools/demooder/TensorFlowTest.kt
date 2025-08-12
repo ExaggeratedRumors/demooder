@@ -18,7 +18,7 @@ import java.io.FileOutputStream
 class TensorFlowTest {
     @Test
     fun `print tensorflow version`() {
-        assertEquals("TensorFlow version.","2.18.0", TensorFlowLite.runtimeVersion())
+        assertEquals("TensorFlow version.","2.20.0-dev0+selfbuilt", TensorFlowLite.runtimeVersion())
     }
 
     @Test
@@ -31,7 +31,10 @@ class TensorFlowTest {
 
     @Test
     fun `predict emotion from audio data`() {
-        val audioFilename = "cremad14kHz.wav"
+        val audioFilename = "ANG.wav"
+        val expectedEmotion = Emotion.entries.first {
+            it.name == audioFilename.removeSuffix(".wav").uppercase()
+        }
 
         val context = InstrumentationRegistry.getInstrumentation().context
         val inputStream = context.assets.open(audioFilename)
@@ -51,9 +54,12 @@ class TensorFlowTest {
         classifier.predict(wavFile.data, wavFile.header.sampleRate) { result ->
             val endTime = System.currentTimeMillis()
 
-            assertEquals(2, result.size)
             Log.i("TensorFlowTest", "Prediction result: $result")
             Log.i("TensorFlowTest", "Prediction time: ${endTime - startTime} ms")
+
+            assertEquals(6, result.size)
+            assertEquals(expectedEmotion, result[0].label)
+
         }
     }
 

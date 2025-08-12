@@ -33,8 +33,8 @@ Application:
 Scripts:
 - Python 3.8.20
 - Numpy 1.23.3
-- TensorFlow 2.10.0
-- Keras 2.10.0
+- TensorFlow 2.13.0
+- Keras 2.13.1
 - cuda 11.2
 - cuDNN 8.1.0
 
@@ -100,7 +100,6 @@ Output spectrograms are saved in `data/spectrograms` directory.
 3. Convert FFt to spectral amplitude.
 4. Convert to octave/thirds bands: <a href="https://sengpielaudio.com/calculator-octave.htm">about octave to third conversion</a>.
 5. Filter by A-weighting or C-weighting.
-
 
 ## Additional requirements
 1. CUDA for training model on GPU (Nvidia graphics cards): <a href="https://developer.nvidia.com/compute/machine-learning/cudnn/secure/7.6.3.30/Production/10.0_20190822/cudnn-10.0-windows10-x64-v7.6.3.30.zip">download CUDA</a>.

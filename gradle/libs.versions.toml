@@ -3,14 +3,13 @@ android-compileSdk = "34"
 android-minSdk = "31"
 android-targetSdk = "34"
 androidx-media3 = "1.4.1" # Limited by API level 34
-androidx-media = "1.6.1"
+androidx-media = "1.4.1"
 agp = "8.9.3"
 compose-plugin = "1.6.10"
 coreKtx = "1.13.1" # Limited by API level 34
 coreKtxVersion = "1.6.1"
 datastorePreferences = "1.1.7"
 graphicsShapesAndroid = "1.0.1"
-hiltNavigation = "1.2.0"
 jackson = "2.18.1"
 junit = "4.13.2"
 junitVersion = "1.2.1"
@@ -21,7 +20,7 @@ multikCore = "0.2.3"
 navigationCompose = "2.8.4" # Limited by API level 34
 slf4j = "2.0.7"
 testng = "6.9.6"
-ui = "1.7.5" # Limited by API level 34
+ui = "1.7.5"
 
 [libraries]
 androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastorePreferences" }
@@ -46,7 +45,6 @@ litert = { group = "com.google.ai.edge.litert", name = "litert", version.ref = "
 litert-support = { group = "com.google.ai.edge.litert", name = "litert-support", version.ref = "litert" }
 multik-core = { module = "org.jetbrains.kotlinx:multik-core", version.ref = "multikCore" }
 testng = { group = "org.testng", name = "testng", version.ref = "testng" }
-
 
 [plugins]
 android-library = { id = "com.android.library", version.ref = "agp" }
