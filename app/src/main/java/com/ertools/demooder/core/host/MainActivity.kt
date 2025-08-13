@@ -12,6 +12,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.ertools.demooder.presentation.navigation.OutsideNavigation
 import com.ertools.demooder.presentation.theme.Theme
+import com.ertools.demooder.utils.Permissions
 import com.ertools.demooder.utils.Permissions.REQUIRED_PERMISSIONS
 
 class MainActivity : ComponentActivity() {
@@ -21,13 +22,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onStart() {
         super.onStart()
-        val permissionsGained = REQUIRED_PERMISSIONS.all {
-            ContextCompat.checkSelfPermission(
-                this, it
-            ) == android.content.pm.PackageManager.PERMISSION_GRANTED
-        }
-        if(!permissionsGained)
-            ActivityCompat.requestPermissions(this, REQUIRED_PERMISSIONS, 1)
+        Permissions.requestPermissions(this)
     }
 
     @SuppressLint("SourceLockedOrientationActivity")

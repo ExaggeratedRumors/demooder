@@ -1,4 +1,4 @@
-package com.ertools.demooder.presentation.components
+package com.ertools.demooder.presentation.components.shapes
 
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.Size

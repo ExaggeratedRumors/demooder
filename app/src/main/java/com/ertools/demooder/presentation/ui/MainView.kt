@@ -6,7 +6,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.ertools.demooder.presentation.components.AppScaffold
+import com.ertools.demooder.presentation.components.scaffold.AppScaffold
 import com.ertools.demooder.presentation.navigation.InsideNavigation
 
 @Preview(name = "main", group = "main",

@@ -23,8 +23,8 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.ertools.demooder.R
 import com.ertools.demooder.core.settings.SettingsStore
-import com.ertools.demooder.presentation.components.OptionData
-import com.ertools.demooder.presentation.components.ReturnScaffold
+import com.ertools.demooder.presentation.components.dialog.OptionData
+import com.ertools.demooder.presentation.components.scaffold.ReturnScaffold
 import com.ertools.demooder.presentation.viewmodel.SettingsViewModel
 import com.ertools.demooder.presentation.viewmodel.SettingsViewModelFactory
 import com.ertools.demooder.utils.Validation

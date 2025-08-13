@@ -5,8 +5,10 @@ import androidx.annotation.StringRes
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.dimensionResource
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -15,7 +17,6 @@ import androidx.navigation.compose.rememberNavController
 import com.ertools.demooder.R
 import com.ertools.demooder.presentation.ui.HomeView
 import com.ertools.demooder.presentation.ui.PredictionView
-import com.ertools.demooder.presentation.ui.RecordsView
 import com.ertools.demooder.presentation.viewmodel.ProviderViewModel
 
 
@@ -42,7 +43,13 @@ fun InsideNavigation(
     ) {
         composable(InsideNavigationItem.Home.route) { HomeView() }
         composable(InsideNavigationItem.Prediction.route) { PredictionView(providerViewModel) }
-        composable(InsideNavigationItem.Records.route) { RecordsView(navController) }
+        composable(InsideNavigationItem.Records.route) {
+            val recordsNavController = rememberNavController()
+            RecordsNavigation(
+                modifier = Modifier.padding(dimensionResource(R.dimen.recording_padding)),
+                navController = recordsNavController
+            )
+        }
     }
 }
 

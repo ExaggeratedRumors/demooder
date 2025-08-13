@@ -21,23 +21,14 @@ class FilesViewModel(application: Application) : AndroidViewModel(application) {
     private var _externalFiles = mutableStateOf<List<RecordingFile>>(emptyList())
     val externalFiles: State<List<RecordingFile>> = _externalFiles
 
-    private var _internalFiles = mutableStateOf<List<RecordingFile>>(emptyList())
-    val internalFiles: State<List<RecordingFile>> = _internalFiles
-
     /********************/
     /*******  API  ******/
     /********************/
-
-    fun loadInternalRecordings(context: Context) {
-        loadRecordings(context, MediaStore.VOLUME_INTERNAL, _internalFiles)
-        Log.d("FilesViewModel", "Internal files: ${_internalFiles.value}")
-    }
 
     fun loadExternalRecordings(context: Context) {
         loadRecordings(context, MediaStore.VOLUME_EXTERNAL, _externalFiles)
         Log.d("FilesViewModel", "External files: ${_externalFiles.value}")
     }
-
 
     /*********************/
     /** Private methods **/
@@ -63,10 +54,11 @@ class FilesViewModel(application: Application) : AndroidViewModel(application) {
             val sizeColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.SIZE)
             while (cursor.moveToNext()) audioFiles.add(
                 RecordingFile(
-                    cursor.getString(filenameColumn),
-                    dateFormat(cursor.getString(modificationDateColumn)),
-                    bytesFormat(cursor.getLong(sizeColumn)),
-                    ContentUris.withAppendedId(contentUri, cursor.getLong(idColumn))
+                    name = cursor.getString(filenameColumn),
+                    modificationDate = dateFormat(cursor.getString(modificationDateColumn)),
+                    size = bytesFormat(cursor.getLong(sizeColumn)),
+                    uri = ContentUris.withAppendedId(contentUri, cursor.getLong(idColumn)),
+                    isWav = cursor.getString(filenameColumn).endsWith(".wav", ignoreCase = true)
                 )
             )
         }

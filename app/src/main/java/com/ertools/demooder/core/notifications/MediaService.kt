@@ -24,7 +24,7 @@ class MediaService: Service() {
     /*********************/
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        updateNotification(NotificationData(action = NotificationAction.STOP))
+        updateNotification(NotificationData(action = NotificationAction.INIT))
         observeEvents()
         return START_STICKY
     }
@@ -108,8 +108,6 @@ class MediaService: Service() {
                 actionPendingIntent
             ).setSmallIcon(R.drawable.vec_home_speech)
             .build()
-        if(Permissions.isPostNotificationPermissionGained(this)) {
-            startForeground(AppConstants.NOTIFICATION_MEDIA_ID, notification)
-        }
+        startForeground(AppConstants.NOTIFICATION_MEDIA_ID, notification)
     }
 }

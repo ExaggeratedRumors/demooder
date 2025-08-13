@@ -1,4 +1,4 @@
-package com.ertools.demooder.presentation.components
+package com.ertools.demooder.presentation.components.dialog
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Button
@@ -11,6 +11,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 
+/**
+ * Displays a button that toggles between two states with different icons.
+ * @param modifier Modifier to be applied to the button.
+ * @param state State representing the current toggle state (enabled/disabled).
+ * @param enableIconResource Resource ID of the icon when the state is enabled.
+ * @param disableIconResource Resource ID of the icon when the state is disabled.
+ * @param iconContentDescriptionResource Resource ID of the content description for the icon.
+ * @param onClick Action to be performed when the button is clicked.
+ */
 @Composable
 fun StateButton(
     modifier: Modifier = Modifier,

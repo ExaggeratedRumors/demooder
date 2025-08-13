@@ -1,4 +1,4 @@
-package com.ertools.demooder.presentation.components
+package com.ertools.demooder.presentation.components.scaffold
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth

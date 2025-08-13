@@ -1,14 +1,17 @@
 package com.ertools.demooder.utils
 
 import android.Manifest
+import android.app.Activity
 import android.content.Context
 import android.os.Build
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 
 object Permissions {
     internal val REQUIRED_PERMISSIONS: Array<String> = listOf (
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             Manifest.permission.READ_MEDIA_AUDIO
+            Manifest.permission.POST_NOTIFICATIONS
         }
         else {
             Manifest.permission.READ_EXTERNAL_STORAGE
@@ -20,8 +23,18 @@ object Permissions {
         } else {
             Manifest.permission.FOREGROUND_SERVICE
         },
-        Manifest.permission.RECORD_AUDIO
+        Manifest.permission.RECORD_AUDIO,
     ).toTypedArray()
+
+    fun requestPermissions(context: Activity) {
+        val permissionsGained = REQUIRED_PERMISSIONS.all {
+            ContextCompat.checkSelfPermission(
+                context, it
+            ) == android.content.pm.PackageManager.PERMISSION_GRANTED
+        }
+        if(!permissionsGained)
+            ActivityCompat.requestPermissions(context, REQUIRED_PERMISSIONS, 1)
+    }
 
     fun isPermissionsGained(context: Context): Boolean {
         return REQUIRED_PERMISSIONS.all {
@@ -32,7 +45,7 @@ object Permissions {
     }
 
     fun isPostNotificationPermissionGained(context: Context) : Boolean {
-        return if(android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+        return if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             ContextCompat.checkSelfPermission(
                 context, Manifest.permission.POST_NOTIFICATIONS
             ) == android.content.pm.PackageManager.PERMISSION_GRANTED

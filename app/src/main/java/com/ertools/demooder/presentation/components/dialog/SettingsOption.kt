@@ -1,4 +1,4 @@
-package com.ertools.demooder.presentation.components
+package com.ertools.demooder.presentation.components.dialog
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -87,8 +87,8 @@ sealed class OptionData(
                         onConfirm = {
                             showDialog.value = false
                             //if(option.onValidate(it)) {
-                                inputText.value = it
-                                option.onSave(it.toDouble())
+                            inputText.value = it
+                            option.onSave(it.toDouble())
                             //}
                             inputText.value = it
                         }

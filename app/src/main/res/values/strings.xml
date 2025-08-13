@@ -3,12 +3,14 @@
     <string name="app_name">demooder</string>
     <string name="dialog_ok">OK</string>
     <string name="dialog_cancel">Cancel</string>
+    <string name="empty"> </string>
 
     <!-- NAVIGATION -->
     <string name="nav_home">Home</string>
     <string name="nav_prediction">Prediction</string>
     <string name="nav_records">Records</string>
     <string name="nav_settings">Settings</string>
+    <string name="nav_player">Player</string>
 
     <!-- HOME -->
     <string name="home_description_01">Every speech is emotional, even a little bit.</string>
@@ -30,6 +32,14 @@
     <string name="prediction_previous_placeholder">not detected</string>
     <string name="prediction_anger_label">Anger time:</string>
 
+    <!-- RECORDS -->
+    <string name="records_icon_cd">Recording</string>
+    <string name="records_external_storage">External storage</string>
+    <string name="records_internal_storage">Internal storage</string>
+    <string name="records_play_cd">Play</string>
+    <string name="records_more_cd">More</string>
+    <string name="records_replay_cd">Replay</string>
+
     <!-- SETTINGS -->
     <string name="settings_device_damping_title">"DEVICE DAMPING"</string>
     <string name="settings_device_damping_unit">dB</string>
@@ -39,13 +49,13 @@
     <string name="settings_anger_detection_time_title">ANGER DETECTION TIME IN SECONDS BEFORE TRIGGER NOTIFICATION</string>
     <string name="settings_anger_detection_time_unit">s</string>
 
-    <!-- RECORDS -->
-    <string name="records_icon_cd">Recording</string>
-    <string name="records_external_storage">External storage</string>
-    <string name="records_internal_storage">Internal storage</string>
-
     <!-- ERRORS -->
     <string name="error_number">You must input a number.</string>
     <string name="error_number_range">Number must be between %1$d and %2$d.</string>
-
+    <string name="error_notification_permission">
+        You must allow notifications in the settings of your device to receive anger detection notifications.
+    </string>
+    <string name="error_not_wav">
+        The file you selected is not a valid WAV file. Please select a valid WAV file.
+    </string>
 </resources>

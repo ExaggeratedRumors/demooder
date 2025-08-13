@@ -1,4 +1,4 @@
-package com.ertools.demooder.presentation.components
+package com.ertools.demooder.presentation.components.dialog
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Button

@@ -1,4 +1,4 @@
-package com.ertools.demooder.presentation.components
+package com.ertools.demooder.presentation.components.scaffold
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background

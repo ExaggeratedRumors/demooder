@@ -1,4 +1,4 @@
-package com.ertools.demooder.presentation.components
+package com.ertools.demooder.presentation.components.dialog
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -15,6 +15,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.ertools.demooder.R
 
+/**
+ * Displays a dialog with a text input field.
+ * @param title Title of the dialog.
+ * @param onDismiss Action to be performed when the dialog is dismissed.
+ * @param onConfirm Action to be performed when the confirm button is clicked, passing the input text.
+ */
 @Composable
 fun TextInputDialog(
     title: String,

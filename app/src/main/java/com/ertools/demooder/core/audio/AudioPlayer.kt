@@ -41,6 +41,7 @@ class AudioPlayer(
                 Log.d("AudioPlayer", "Load wav file: ${wavFile?.fileName}, header: ${wavFile?.header}")
             } catch (e: Exception) {
                 Log.e("AudioPlayer", "Error initializing MediaPlayer: ${e.message}")
+                e.printStackTrace()
             }
         }
         else if(mediaPlayer?.isPlaying == false) {

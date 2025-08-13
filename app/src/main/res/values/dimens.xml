@@ -22,4 +22,7 @@
     <integer name="spectrum_bar_factor">2</integer>
     <integer name="spectrum_bar_spacing_factor">20</integer>
 
+    <!-- RECORDINGS -->
+    <dimen name="recording_padding">0dp</dimen>
+
 </resources>

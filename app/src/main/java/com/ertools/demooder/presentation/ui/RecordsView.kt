@@ -1,6 +1,7 @@
 package com.ertools.demooder.presentation.ui
 
 import android.content.Context
+import android.widget.Toast
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.draggable
 import androidx.compose.foundation.layout.Arrangement
@@ -25,13 +26,11 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.ertools.demooder.R
-import com.ertools.demooder.core.audio.AudioPlayer
 import com.ertools.demooder.core.audio.RecordingFile
-import com.ertools.demooder.presentation.components.TabLayout
-import com.ertools.demooder.presentation.navigation.InsideNavigationItem
+import com.ertools.demooder.presentation.navigation.RecordsNavigationItem
 import com.ertools.demooder.presentation.viewmodel.FilesViewModel
-import com.ertools.demooder.presentation.viewmodel.ProviderViewModel
 import com.ertools.demooder.presentation.viewmodel.TabViewModel
+import com.ertools.demooder.utils.AppConstants
 
 @Composable
 fun RecordsView(
@@ -40,7 +39,6 @@ fun RecordsView(
     val context = LocalContext.current.applicationContext
     val tabViewModel = viewModel<TabViewModel>()
     val filesViewModel = viewModel<FilesViewModel>().apply {
-        this.loadInternalRecordings(context)
         this.loadExternalRecordings(context)
     }
 
@@ -51,22 +49,12 @@ fun RecordsView(
         onDragStopped = { tabViewModel.updateTabIndexBasedOnSwipe() }),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        RecordsView(navController, context, filesViewModel.externalFiles)
-        /*TabLayout(
-            views = listOf(
-                stringResource(R.string.records_external_storage) to {
-                    RecordsView(navController, context, filesViewModel.externalFiles)
-                },
-                stringResource(R.string.records_internal_storage) to {
-                    RecordsView(navController, context, filesViewModel.internalFiles)
-                }
-            )
-        )*/
+        RecordsColumn(navController, context, filesViewModel.externalFiles)
     }
 }
 
 @Composable
-fun ColumnScope.RecordsView(
+fun ColumnScope.RecordsColumn(
     navController: NavController,
     context: Context,
     files: State<List<RecordingFile>>
@@ -80,12 +68,22 @@ fun ColumnScope.RecordsView(
             items(files.value.size) {
                 RecordItemView(
                     file = files.value[it],
-                    iconResource = R.drawable.outline_music_note_24,
+                    iconResource = R.drawable.music_outlined,
                     contentDescriptionResource = R.string.records_icon_cd,
                     onClick = { file ->
-                        val audioPlayer = AudioPlayer(context, file)
-                        //providerViewModel.updateCurrentProvider(audioPlayer)
-                        navController.navigate(route = InsideNavigationItem.Prediction.route)
+                        if(!file.isWav) {
+                            Toast.makeText(
+                                context,
+                                context.getString(R.string.error_not_wav),
+                                Toast.LENGTH_SHORT
+                            ).show()
+                            return@RecordItemView
+                        }
+                        navController.currentBackStackEntry?.savedStateHandle?.set(
+                            key = AppConstants.BUNDLE_KEY_RECORDS_FILE,
+                            value = file
+                        )
+                        navController.navigate(route = RecordsNavigationItem.Player.route)
                     }
                 )
             }

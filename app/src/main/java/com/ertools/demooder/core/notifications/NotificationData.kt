@@ -10,9 +10,4 @@ data class NotificationData(
     val subtitle: String? = null
 ): Parcelable
 
-enum class NotificationAction {
-    START,
-    STOP,
-    UPDATE,
-    DESTROY
-}
+enum class NotificationAction { INIT, START, STOP, UPDATE, DESTROY }

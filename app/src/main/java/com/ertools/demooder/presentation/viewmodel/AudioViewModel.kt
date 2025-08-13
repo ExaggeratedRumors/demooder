@@ -21,12 +21,15 @@ import com.ertools.demooder.core.settings.SettingsStore
 import com.ertools.demooder.core.spectrum.SpectrumBuilder
 import com.ertools.demooder.core.spectrum.SpectrumProvider
 import com.ertools.demooder.utils.AppConstants
+import com.ertools.demooder.utils.Permissions
 import com.ertools.processing.commons.OctavesAmplitudeSpectrum
 import com.ertools.processing.commons.ProcessingUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.isActive
@@ -55,14 +58,20 @@ class AudioViewModel(
     private var _isWorking: MutableStateFlow<Boolean> = MutableStateFlow(false)
     val isWorking: StateFlow<Boolean> = _isWorking.asStateFlow()
 
+    private var _serviceRunning: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    val serviceRunning: StateFlow<Boolean> = _serviceRunning.asStateFlow()
+
+    private val _errors: MutableSharedFlow<String> = MutableSharedFlow()
+    val errors = _errors.asSharedFlow()
+
 
     /**********/
     /** API **/
     /**********/
 
     fun runNotificationListeningTask(context: Context) {
-        startBackgroundTask(context, AppConstants.NOTIFICATION_ACTION_NOTIFY)
         viewModelScope.launch {
+            startBackgroundTask(context, AppConstants.NOTIFICATION_ACTION_NOTIFY)
             NotificationEventStream.events.collect { notificationData ->
                 when(notificationData.action) {
                     NotificationAction.START -> startRecording()
@@ -91,7 +100,7 @@ class AudioViewModel(
         }
     }
 
-    fun save() {
+    fun more() {
 
     }
 
@@ -171,16 +180,28 @@ class AudioViewModel(
     /**
      * Set background task for audio service.
      */
-    private fun startBackgroundTask(context: Context, action: String, data: NotificationData? = null) {
+    private suspend fun startBackgroundTask(context: Context, action: String, data: NotificationData? = null) {
+        if(!Permissions.isPostNotificationPermissionGained(context)) {
+            _errors.emit(context.getString(R.string.error_notification_permission))
+            return
+        }
+        val notificationData = NotificationData(
+            action = NotificationAction.INIT,
+            title = context.getString(R.string.prediction_placeholder),
+            subtitle = context.getString(R.string.empty)
+        )
+
         val serviceIntent = Intent(context, MediaService::class.java).apply {
             this.action = action
-            this.putExtra(AppConstants.NOTIFICATION_DATA, data)
+            this.putExtra(AppConstants.NOTIFICATION_DATA, notificationData)
         }
         Log.d("AudioViewModel", "Starting service with action: $action, data: $data")
         ContextCompat.startForegroundService(context, serviceIntent)
+        _serviceRunning.value = true
     }
 
     private fun updateBackgroundTask(notificationData: NotificationData) {
+        if(!serviceRunning.value) return
         NotificationEventStream.events.tryEmit(notificationData)
     }
 
@@ -188,6 +209,7 @@ class AudioViewModel(
      * Stop background task for audio service.
      */
     private fun stopBackgroundTask() {
+        if(!serviceRunning.value) return
         val notificationData = NotificationData(action = NotificationAction.DESTROY)
         NotificationEventStream.events.tryEmit(notificationData)
     }
