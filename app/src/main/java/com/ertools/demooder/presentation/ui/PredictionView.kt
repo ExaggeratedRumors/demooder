@@ -63,6 +63,7 @@ fun PredictionView(
     providerViewModel: ProviderViewModel
 ) {
     val audioProvider = providerViewModel.currentProvider.collectAsState().value
+    val audioProviderType = audioProvider.javaClass.name
     val context = LocalContext.current
 
     /** Settings **/

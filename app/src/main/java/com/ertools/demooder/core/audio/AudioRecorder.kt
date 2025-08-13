@@ -64,6 +64,7 @@ class AudioRecorder: AudioProvider {
 
     /**
      * Read audio data from the recorder into the provided buffer.
+     * @param buffer The buffer to read the audio data into.
      */
     override fun read(buffer: ByteArray) {
         if(!isInitialized) throw IllegalStateException("Recorder is not initialized.")
@@ -86,6 +87,11 @@ class AudioRecorder: AudioProvider {
      * Get the sample rate of the audio recorder.
      */
     override fun getSampleRate(): Int = sampleRate
+
+    /**
+     * Get the type of the audio provider.
+     */
+    override fun getProviderType(): AudioProvider.ProviderType = AudioProvider.ProviderType.Microphone
 
     /*************/
     /** Private **/

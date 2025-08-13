@@ -35,8 +35,7 @@ import com.ertools.demooder.presentation.viewmodel.TabViewModel
 
 @Composable
 fun RecordsView(
-    navController: NavController,
-    providerViewModel: ProviderViewModel
+    navController: NavController
 ) {
     val context = LocalContext.current.applicationContext
     val tabViewModel = viewModel<TabViewModel>()
@@ -52,16 +51,17 @@ fun RecordsView(
         onDragStopped = { tabViewModel.updateTabIndexBasedOnSwipe() }),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        TabLayout(
+        RecordsView(navController, context, filesViewModel.externalFiles)
+        /*TabLayout(
             views = listOf(
                 stringResource(R.string.records_external_storage) to {
-                    RecordsView(navController, context, providerViewModel, filesViewModel.externalFiles)
+                    RecordsView(navController, context, filesViewModel.externalFiles)
                 },
                 stringResource(R.string.records_internal_storage) to {
-                    RecordsView(navController, context, providerViewModel, filesViewModel.internalFiles)
+                    RecordsView(navController, context, filesViewModel.internalFiles)
                 }
             )
-        )
+        )*/
     }
 }
 
@@ -69,7 +69,6 @@ fun RecordsView(
 fun ColumnScope.RecordsView(
     navController: NavController,
     context: Context,
-    providerViewModel: ProviderViewModel,
     files: State<List<RecordingFile>>
 ) {
     Row(modifier = Modifier.align(Alignment.CenterHorizontally)) {
@@ -85,7 +84,7 @@ fun ColumnScope.RecordsView(
                     contentDescriptionResource = R.string.records_icon_cd,
                     onClick = { file ->
                         val audioPlayer = AudioPlayer(context, file)
-                        providerViewModel.updateCurrentProvider(audioPlayer)
+                        //providerViewModel.updateCurrentProvider(audioPlayer)
                         navController.navigate(route = InsideNavigationItem.Prediction.route)
                     }
                 )

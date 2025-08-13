@@ -42,7 +42,7 @@ fun InsideNavigation(
     ) {
         composable(InsideNavigationItem.Home.route) { HomeView() }
         composable(InsideNavigationItem.Prediction.route) { PredictionView(providerViewModel) }
-        composable(InsideNavigationItem.Records.route) { RecordsView(navController, providerViewModel) }
+        composable(InsideNavigationItem.Records.route) { RecordsView(navController) }
     }
 }
 
