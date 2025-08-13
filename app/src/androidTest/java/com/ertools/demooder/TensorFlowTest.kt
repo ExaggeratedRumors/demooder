@@ -31,7 +31,7 @@ class TensorFlowTest {
 
     @Test
     fun `predict emotion from audio data`() {
-        val audioFilename = "ANG.wav"
+        val audioFilename = "SAD.wav"
         val expectedEmotion = Emotion.entries.first {
             it.name == audioFilename.removeSuffix(".wav").uppercase()
         }
