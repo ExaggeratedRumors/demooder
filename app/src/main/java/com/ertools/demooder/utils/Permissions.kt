@@ -2,17 +2,25 @@ package com.ertools.demooder.utils
 
 import android.Manifest
 import android.content.Context
+import android.os.Build
 import androidx.core.content.ContextCompat
 
 object Permissions {
-    internal val REQUIRED_PERMISSIONS = listOf (
-        if(android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+    internal val REQUIRED_PERMISSIONS: Array<String> = listOf (
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             Manifest.permission.READ_MEDIA_AUDIO
-            Manifest.permission.POST_NOTIFICATIONS
         }
-        else
-            Manifest.permission.READ_EXTERNAL_STORAGE,
-        Manifest.permission.RECORD_AUDIO,
+        else {
+            Manifest.permission.READ_EXTERNAL_STORAGE
+        },
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            Manifest.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK
+            Manifest.permission.FOREGROUND_SERVICE_MICROPHONE
+            Manifest.permission.FOREGROUND_SERVICE
+        } else {
+            Manifest.permission.FOREGROUND_SERVICE
+        },
+        Manifest.permission.RECORD_AUDIO
     ).toTypedArray()
 
     fun isPermissionsGained(context: Context): Boolean {
