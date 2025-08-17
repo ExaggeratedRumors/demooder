@@ -11,14 +11,17 @@ import com.ertools.processing.data.WavFile
 class AudioPlayer(
     private val context: Context,
     private val recordingFile: RecordingFile
-): AudioProvider {
+): AudioProvider, ProgressProvider {
     private var mediaPlayer: MediaPlayer? = null
     private var wavFile: WavFile? = null
 
+    fun isInitialized(): Boolean {
+        return mediaPlayer != null && wavFile != null
+    }
 
-    /******************/
-    /* Implementation */
-    /******************/
+    /*********************************/
+    /* Audio Provider implementation */
+    /*********************************/
 
     /**
      * Start playing the audio file.
@@ -54,7 +57,7 @@ class AudioPlayer(
      * If the MediaPlayer is not playing, it will pause the playback.
      */
     override fun stop() {
-        if(mediaPlayer?.isPlaying == false) return
+        if(!isInitialized()) return
         mediaPlayer?.pause()
     }
 
@@ -65,7 +68,7 @@ class AudioPlayer(
      * @param buffer The buffer to read the audio data into.
      */
     override fun read(buffer: ByteArray) {
-        if(mediaPlayer == null || wavFile == null) throw IllegalStateException("MediaPlayer is not initialized.")
+        if(!isInitialized()) throw IllegalStateException("MediaPlayer is not initialized.")
         val currentMillis = mediaPlayer!!.currentPosition
         val bytesPerSample = 2 * wavFile!!.header.numChannels
         val endPosition = (bytesPerSample * currentMillis * wavFile!!.header.sampleRate) / 1000
@@ -81,13 +84,27 @@ class AudioPlayer(
      * Get the sample rate of the audio being played.
      */
     override fun getSampleRate(): Int {
-        if(mediaPlayer == null || wavFile == null) throw IllegalStateException("MediaPlayer is not initialized.")
+        if(!isInitialized()) throw IllegalStateException("MediaPlayer is not initialized.")
         return wavFile!!.header.sampleRate
     }
 
-    /**
-     * Get the type of the audio provider.
-     */
-    override fun getProviderType(): AudioProvider.ProviderType = AudioProvider.ProviderType.Microphone
+    /************************************/
+    /* Progress Provider implementation */
+    /************************************/
+    override fun getSize(): Int {
+        return mediaPlayer?.duration ?: 0
+    }
 
+    override fun getCurrentPosition(): Int {
+        return mediaPlayer?.currentPosition ?: 0
+    }
+
+    override fun seekTo(position: Int) {
+        if(!isInitialized()) return
+        if(mediaPlayer == null) throw IllegalStateException("MediaPlayer is not initialized.")
+        if(position < 0 || position > wavFile!!.data.size) {
+            throw IllegalArgumentException("Position out of bounds: $position")
+        }
+        mediaPlayer?.seekTo(position)
+    }
 }

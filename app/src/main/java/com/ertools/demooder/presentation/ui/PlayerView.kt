@@ -1,6 +1,5 @@
 package com.ertools.demooder.presentation.ui
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -18,9 +17,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavController
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import com.ertools.demooder.R
 import com.ertools.demooder.core.audio.AudioPlayer
 import com.ertools.demooder.core.audio.RecordingFile
@@ -29,22 +25,25 @@ import com.ertools.demooder.core.detector.SpeechDetector
 import com.ertools.demooder.core.settings.SettingsStore
 import com.ertools.demooder.presentation.components.dialog.ClickButton
 import com.ertools.demooder.presentation.components.dialog.StateButton
+import com.ertools.demooder.presentation.components.widgets.AudioSeekBarWidget
 import com.ertools.demooder.presentation.components.widgets.EvaluationWidget
 import com.ertools.demooder.presentation.components.widgets.SoundboardWidget
 import com.ertools.demooder.presentation.components.widgets.SpectrumWidget
+import com.ertools.demooder.presentation.components.widgets.TitleValue
 import com.ertools.demooder.presentation.viewmodel.AudioViewModel
 import com.ertools.demooder.presentation.viewmodel.AudioViewModelFactory
+import com.ertools.demooder.presentation.viewmodel.SeekBarViewModel
+import com.ertools.demooder.presentation.viewmodel.SeekBarViewModelFactory
 import com.ertools.demooder.presentation.viewmodel.SettingsViewModel
 import com.ertools.demooder.presentation.viewmodel.SettingsViewModelFactory
 import com.ertools.demooder.presentation.viewmodel.StatisticsViewModel
 
 @Composable
 fun PlayerView(
-    navController: NavHostController,
     recordingFile: RecordingFile?
 ) {
     val context = LocalContext.current
-    val audioProvider = AudioPlayer(context, recordingFile!!)
+    val audioPlayer = AudioPlayer(context, recordingFile!!)
 
     /** Settings **/
     val settingsStore = SettingsStore(context)
@@ -59,17 +58,29 @@ fun PlayerView(
     /** Recorder **/
     val classifier = EmotionClassifier().apply { this.loadClassifier(context) }
     val detector = SpeechDetector().apply { this.loadModel(context) }
-    val recorderViewModelFactory = remember {
+
+    /** AudioViewModel for control player and detect speech **/
+    val audioViewModelFactory = remember {
         AudioViewModelFactory(
-            audioProvider = audioProvider,
+            audioProvider = audioPlayer,
             classifier = classifier,
             detector = detector,
             settingsStore = settingsStore
         )
     }
-    val audioViewModel: AudioViewModel = viewModel<AudioViewModel>(factory = recorderViewModelFactory).apply {
+    val audioViewModel: AudioViewModel = viewModel<AudioViewModel>(factory = audioViewModelFactory).apply {
         runNotificationListeningTask(context)
     }
+
+    /** SeekBarViewModel for control seek bar **/
+    val seekBarViewModelFactory = remember {
+        SeekBarViewModelFactory(
+            progressProvider = audioPlayer
+        )
+    }
+    val seekBarViewModel: SeekBarViewModel = viewModel<SeekBarViewModel>(factory = seekBarViewModelFactory)
+
+    /** StatisticsViewModel for statistics of audio **/
     val statisticsViewModel: StatisticsViewModel = viewModel()
 
     /** Buttons state **/
@@ -90,6 +101,19 @@ fun PlayerView(
             provider = audioViewModel,
             isRecording = isRecording
         )
+
+        TitleValue(
+            modifier = Modifier,
+            title = stringResource(R.string.records_recording_label),
+            value = recordingFile.name
+        )
+
+        AudioSeekBarWidget(
+            durationStateFlow = seekBarViewModel.duration,
+            positionStateFlow = seekBarViewModel.position,
+            onSeekChange = { seekBarViewModel.seekTo(it) }
+        )
+
         EvaluationWidget(
             modifier = Modifier
                 .fillMaxHeight(0.45f)
@@ -115,7 +139,11 @@ fun PlayerView(
                     enableIconResource = R.drawable.play_filled,
                     disableIconResource = R.drawable.pause_filled,
                     iconContentDescriptionResource = R.string.records_play_cd,
-                    onClick = { audioViewModel.togglePlay(context) }
+                    onClick = {
+                        audioViewModel.togglePlay(context)
+                        seekBarViewModel.togglePlay()
+
+                    }
                 )
             },
             leftButton = {
@@ -141,3 +169,5 @@ fun PlayerView(
         )
     }
 }
+
+

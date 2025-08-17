@@ -39,6 +39,7 @@
     <string name="records_play_cd">Play</string>
     <string name="records_more_cd">More</string>
     <string name="records_replay_cd">Replay</string>
+    <string name="records_recording_label">Loaded recording:</string>
 
     <!-- SETTINGS -->
     <string name="settings_device_damping_title">"DEVICE DAMPING"</string>

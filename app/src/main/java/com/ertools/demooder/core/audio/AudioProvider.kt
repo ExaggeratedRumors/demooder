@@ -5,10 +5,4 @@ interface AudioProvider {
     fun stop()
     fun read(buffer: ByteArray)
     fun getSampleRate(): Int
-    fun getProviderType(): ProviderType
-
-    sealed class ProviderType {
-        object Microphone : ProviderType()
-        object Player : ProviderType()
-    }
 }

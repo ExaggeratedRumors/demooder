@@ -88,11 +88,6 @@ class AudioRecorder: AudioProvider {
      */
     override fun getSampleRate(): Int = sampleRate
 
-    /**
-     * Get the type of the audio provider.
-     */
-    override fun getProviderType(): AudioProvider.ProviderType = AudioProvider.ProviderType.Microphone
-
     /*************/
     /** Private **/
     /*************/

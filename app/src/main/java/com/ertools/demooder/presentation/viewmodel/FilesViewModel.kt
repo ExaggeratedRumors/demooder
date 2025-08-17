@@ -3,7 +3,6 @@ package com.ertools.demooder.presentation.viewmodel
 import android.app.Application
 import android.content.ContentUris
 import android.content.Context
-import android.icu.text.SimpleDateFormat
 import android.provider.MediaStore
 import android.util.Log
 import androidx.compose.runtime.MutableState
@@ -11,7 +10,7 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.AndroidViewModel
 import com.ertools.demooder.core.audio.RecordingFile
-import java.util.Date
+import com.ertools.demooder.utils.AppFormat.dateFormat
 import java.util.Locale
 
 /**
@@ -65,10 +64,6 @@ class FilesViewModel(application: Application) : AndroidViewModel(application) {
         dataStorage.value = audioFiles
     }
 
-    private fun dateFormat(date: String): String {
-        val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH)
-        return sdf.format(Date(date.toLong() * 1000)).toString()
-    }
 
     private fun bytesFormat(size: Long): String {
         return when(size) {

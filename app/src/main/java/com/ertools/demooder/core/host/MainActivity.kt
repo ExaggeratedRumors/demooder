@@ -8,12 +8,9 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import com.ertools.demooder.presentation.navigation.OutsideNavigation
 import com.ertools.demooder.presentation.theme.Theme
 import com.ertools.demooder.utils.Permissions
-import com.ertools.demooder.utils.Permissions.REQUIRED_PERMISSIONS
 
 class MainActivity : ComponentActivity() {
     /********************/
@@ -38,6 +35,7 @@ class MainActivity : ComponentActivity() {
             }
         } catch (e: Exception) {
             cancelNotifcations(this)
+            e.printStackTrace()
         }
     }
 

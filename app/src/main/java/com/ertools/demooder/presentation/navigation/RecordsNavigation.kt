@@ -42,7 +42,7 @@ fun RecordsNavigation(
                 .previousBackStackEntry
                 ?.savedStateHandle
                 ?.get<RecordingFile>(AppConstants.BUNDLE_KEY_RECORDS_FILE)
-            if(recordingFile != null) PlayerView(navController, recordingFile)
+            if(recordingFile != null) PlayerView(recordingFile)
         }
     }
 }
