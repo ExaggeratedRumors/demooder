@@ -7,6 +7,7 @@ import com.ertools.demooder.core.classifier.Prediction
 import com.ertools.demooder.core.classifier.PredictionProvider
 import com.ertools.demooder.core.classifier.PredictionRepository
 import com.ertools.processing.commons.Emotion
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
@@ -21,6 +22,9 @@ class StatisticsViewModel(
 ): AndroidViewModel(application), PredictionProvider {
     private val predictionRepository: PredictionRepository = PredictionRepository
     private val predictionHistory: StateFlow<List<Prediction>> = predictionRepository.predictionHistory
+
+    private val _isDescriptionVisible = MutableStateFlow(false)
+    val isDescriptionVisible: StateFlow<Boolean> = _isDescriptionVisible
 
     /********************/
     /** Implementation **/

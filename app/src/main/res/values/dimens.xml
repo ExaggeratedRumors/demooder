@@ -16,13 +16,18 @@
     <dimen name="prediction_view_spacing">8dp</dimen>
     <dimen name="prediction_button_size">120dp</dimen>
     <dimen name="prediction_buttons_space">50dp</dimen>
-    <dimen name="equalizer_height">400dp</dimen>
+    <dimen name="prediction_equalizer_height">400dp</dimen>
     <dimen name="prediction_bar_padding">10dp</dimen>
-    <dimen name="spectrum_padding">4dp</dimen>
+    <dimen name="prediction_spectrum_padding">4dp</dimen>
+    <dimen name="prediction_description_padding">8dp</dimen>
+
+    <!-- RECORDS -->
+    <dimen name="records_list_padding">0dp</dimen>
+    <dimen name="records_view_padding">32dp</dimen>
+    <dimen name="records_description_padding">8dp</dimen>
+    <dimen name="records_divider_thickness">1dp</dimen>
+
+    <!-- WIDGETS -->
     <integer name="spectrum_bar_factor">2</integer>
     <integer name="spectrum_bar_spacing_factor">20</integer>
-
-    <!-- RECORDINGS -->
-    <dimen name="recording_padding">0dp</dimen>
-
 </resources>

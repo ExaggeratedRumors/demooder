@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -67,6 +68,7 @@ fun PredictionView(
 
     /** Buttons state **/
     val isRecording = audioViewModel.isWorking.collectAsState()
+    val isDescriptionVisible = statisticsViewModel.isDescriptionVisible.collectAsState()
 
     Column(
         modifier = Modifier
@@ -79,16 +81,17 @@ fun PredictionView(
         SpectrumWidget(
             modifier = Modifier
                 .fillMaxWidth()
-                .fillMaxHeight(0.55f),
+                .fillMaxHeight(0.5f),
             provider = audioViewModel,
             isRecording = isRecording
         )
         EvaluationWidget(
             modifier = Modifier
-                .fillMaxHeight(0.45f)
                 .fillMaxWidth()
+                .fillMaxHeight(0.4f)
                 .background(MaterialTheme.colorScheme.secondary)
-                .align(Alignment.CenterHorizontally),
+                .align(Alignment.CenterHorizontally)
+                .padding(dimensionResource(R.dimen.prediction_description_padding)),
             predictionProvider = statisticsViewModel,
             detectionProvider = audioViewModel,
             detectionPeriodSeconds = detectionPeriodSeconds,
@@ -98,7 +101,7 @@ fun PredictionView(
         SoundboardWidget(
             modifier = Modifier
                 .fillMaxWidth()
-                .fillMaxHeight(0.8f),
+                .fillMaxHeight(0.5f),
             mainButton = {
                 StateButton(
                     modifier = Modifier
@@ -112,11 +115,13 @@ fun PredictionView(
                 )
             },
             leftButton = {
-                ClickButton(
+                StateButton(
                     modifier = Modifier
                         .fillMaxHeight(0.75f)
                         .aspectRatio(1f),
-                    iconResource = R.drawable.settings_link,
+                    state = isDescriptionVisible,
+                    enableIconResource = R.drawable.arrow_up,
+                    disableIconResource = R.drawable.arrow_down,
                     iconContentDescriptionResource = R.string.prediction_save_cd,
                     onClick = { audioViewModel.more() }
                 )
@@ -126,7 +131,7 @@ fun PredictionView(
                     modifier = Modifier
                         .fillMaxHeight(0.75f)
                         .aspectRatio(1f),
-                    iconResource = R.drawable.records_filled,
+                    iconResource = R.drawable.refresh_filled,
                     iconContentDescriptionResource = R.string.prediction_clear_cd,
                     onClick = { audioViewModel.abort() }
                 )

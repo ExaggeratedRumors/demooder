@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -90,46 +91,62 @@ fun PlayerView(
         modifier = Modifier
             .fillMaxWidth()
             .fillMaxHeight()
-            .padding(dimensionResource(R.dimen.prediction_view_padding)),
+            .padding(dimensionResource(R.dimen.records_view_padding)),
         verticalArrangement = Arrangement.SpaceBetween,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         SpectrumWidget(
             modifier = Modifier
                 .fillMaxWidth()
-                .fillMaxHeight(0.55f),
+                .fillMaxHeight(0.375f),
             provider = audioViewModel,
             isRecording = isRecording
         )
 
-        TitleValue(
-            modifier = Modifier,
-            title = stringResource(R.string.records_recording_label),
-            value = recordingFile.name
-        )
-
         AudioSeekBarWidget(
+            modifier = Modifier.fillMaxHeight(0.2f).fillMaxWidth(),
             durationStateFlow = seekBarViewModel.duration,
             positionStateFlow = seekBarViewModel.position,
             onSeekChange = { seekBarViewModel.seekTo(it) }
         )
 
-        EvaluationWidget(
+        Column(
             modifier = Modifier
-                .fillMaxHeight(0.45f)
+                .fillMaxHeight(0.6f)
                 .fillMaxWidth()
                 .background(MaterialTheme.colorScheme.secondary)
+                .padding(dimensionResource(R.dimen.records_description_padding))
                 .align(Alignment.CenterHorizontally),
-            predictionProvider = statisticsViewModel,
-            detectionProvider = audioViewModel,
-            detectionPeriodSeconds = detectionPeriodSeconds,
-            isRecording = isRecording
-        )
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.SpaceBetween
+        ) {
+            TitleValue(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(dimensionResource(R.dimen.records_description_padding))
+                    .align(Alignment.CenterHorizontally),
+                title = stringResource(R.string.records_recording_label),
+                value = recordingFile.name
+            )
+
+            HorizontalDivider(
+                modifier = Modifier.fillMaxWidth(0.8f),
+                thickness = dimensionResource(R.dimen.records_divider_thickness),
+                color = MaterialTheme.colorScheme.onSecondary.copy(alpha = 0.5f)
+            )
+            EvaluationWidget(
+                modifier = Modifier.fillMaxWidth().fillMaxHeight(),
+                predictionProvider = statisticsViewModel,
+                detectionProvider = audioViewModel,
+                detectionPeriodSeconds = detectionPeriodSeconds,
+                isRecording = isRecording
+            )
+        }
 
         SoundboardWidget(
             modifier = Modifier
                 .fillMaxWidth()
-                .fillMaxHeight(0.8f),
+                .fillMaxHeight(0.75f),
             mainButton = {
                 StateButton(
                     modifier = Modifier

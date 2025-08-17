@@ -46,7 +46,7 @@ fun InsideNavigation(
         composable(InsideNavigationItem.Records.route) {
             val recordsNavController = rememberNavController()
             RecordsNavigation(
-                modifier = Modifier.padding(dimensionResource(R.dimen.recording_padding)),
+                modifier = Modifier.padding(dimensionResource(R.dimen.records_list_padding)),
                 navController = recordsNavController
             )
         }
