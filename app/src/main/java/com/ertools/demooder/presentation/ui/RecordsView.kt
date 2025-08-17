@@ -2,13 +2,18 @@ package com.ertools.demooder.presentation.ui
 
 import android.content.Context
 import android.widget.Toast
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.draggable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Button
@@ -20,8 +25,10 @@ import androidx.compose.runtime.State
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
@@ -67,6 +74,7 @@ fun ColumnScope.RecordsColumn(
         ) {
             items(files.value.size) {
                 RecordItemView(
+                    modifier = Modifier.padding(dimensionResource(R.dimen.records_list_elements_padding)),
                     file = files.value[it],
                     iconResource = R.drawable.music_outlined,
                     contentDescriptionResource = R.string.records_icon_cd,
@@ -100,37 +108,47 @@ fun RecordItemView(
     onClick: (RecordingFile) -> Unit
 ) {
     Button(
+        modifier = modifier,
+        shape = MaterialTheme.shapes.extraSmall,
         onClick = { onClick(file) },
-        modifier = modifier
     ) {
         Row(
             modifier = Modifier.fillMaxSize(),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Start
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Icon(
-                painter = painterResource(iconResource),
-                modifier = Modifier.padding(8.dp),
-                contentDescription = stringResource(contentDescriptionResource)
-            )
-            Column(
-                modifier = Modifier
-                    .padding(8.dp)
+            Row (
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text(
-                    text = file.name,
-                    fontSize = MaterialTheme.typography.titleMedium.fontSize,
-                    fontWeight = MaterialTheme.typography.titleMedium.fontWeight
+                Icon(
+                    painter = painterResource(iconResource),
+                    modifier = Modifier.padding(8.dp),
+                    contentDescription = stringResource(contentDescriptionResource)
                 )
-                Text(
-                    text = file.modificationDate,
-                    fontSize = MaterialTheme.typography.titleSmall.fontSize,
-                    fontWeight = MaterialTheme.typography.titleSmall.fontWeight
-                )
+                Column(
+                    modifier = Modifier
+                        .padding(8.dp)
+                        .fillMaxWidth(0.75f)
+                ) {
+                    Text(
+                        text = file.name,
+                        fontSize = MaterialTheme.typography.titleMedium.fontSize,
+                        fontWeight = MaterialTheme.typography.titleMedium.fontWeight,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                    Text(
+                        text = file.modificationDate,
+                        fontSize = MaterialTheme.typography.titleSmall.fontSize,
+                        fontWeight = MaterialTheme.typography.titleSmall.fontWeight,
+                        maxLines = 1
+                    )
+                }
             }
             Column(
                 modifier = Modifier.padding(8.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
+                horizontalAlignment = Alignment.End,
                 verticalArrangement = Arrangement.Center
             ) {
                 Text(

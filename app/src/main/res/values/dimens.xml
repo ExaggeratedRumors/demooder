@@ -22,8 +22,10 @@
     <dimen name="prediction_description_padding">8dp</dimen>
 
     <!-- RECORDS -->
+    <dimen name="records_list_divider_height">8dp</dimen>
     <dimen name="records_list_padding">0dp</dimen>
-    <dimen name="records_view_padding">32dp</dimen>
+    <dimen name="records_list_elements_padding">4dp</dimen>
+    <dimen name="records_player_padding">32dp</dimen>
     <dimen name="records_description_padding">8dp</dimen>
     <dimen name="records_divider_thickness">1dp</dimen>
 

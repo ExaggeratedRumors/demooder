@@ -91,7 +91,7 @@ fun PlayerView(
         modifier = Modifier
             .fillMaxWidth()
             .fillMaxHeight()
-            .padding(dimensionResource(R.dimen.records_view_padding)),
+            .padding(dimensionResource(R.dimen.records_player_padding)),
         verticalArrangement = Arrangement.SpaceBetween,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
