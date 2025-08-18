@@ -4,6 +4,7 @@ import android.content.Context
 import android.media.MediaPlayer
 import android.util.Log
 import com.ertools.processing.data.WavFile
+import kotlin.math.min
 
 /**
  * Class for playing audio using the Android MediaPlayer API.
@@ -17,6 +18,18 @@ class AudioPlayer(
 
     fun isInitialized(): Boolean {
         return mediaPlayer != null && wavFile != null
+    }
+
+    fun destroy() {
+        try {
+            mediaPlayer?.release()
+            mediaPlayer = null
+            wavFile = null
+            Log.d("AudioPlayer", "MediaPlayer and WavFile resources released.")
+        } catch (e: Exception) {
+            Log.e("AudioPlayer", "Error releasing MediaPlayer: ${e.message}")
+            e.printStackTrace()
+        }
     }
 
     /*********************************/
@@ -48,7 +61,12 @@ class AudioPlayer(
             }
         }
         else if(mediaPlayer?.isPlaying == false) {
-            mediaPlayer?.start()
+            try {
+                mediaPlayer?.start()
+            } catch (e: Exception) {
+                Log.e("AudioPlayer", "Error starting MediaPlayer: ${e.message}")
+                e.printStackTrace()
+            }
         }
     }
 
@@ -58,7 +76,12 @@ class AudioPlayer(
      */
     override fun stop() {
         if(!isInitialized()) return
-        mediaPlayer?.pause()
+        try {
+            mediaPlayer?.pause()
+        } catch (e: Exception) {
+            Log.e("AudioPlayer", "Error stopping MediaPlayer: ${e.message}")
+            e.printStackTrace()
+        }
     }
 
 
@@ -71,8 +94,12 @@ class AudioPlayer(
         if(!isInitialized()) throw IllegalStateException("MediaPlayer is not initialized.")
         val currentMillis = mediaPlayer!!.currentPosition
         val bytesPerSample = 2 * wavFile!!.header.numChannels
-        val endPosition = (bytesPerSample * currentMillis * wavFile!!.header.sampleRate) / 1000
-        val startPosition = endPosition - buffer.size
+        val endPosition = bytesPerSample * currentMillis * wavFile!!.header.sampleRate / 1000
+        val startPosition = min(0, endPosition - buffer.size)
+        if(mediaPlayer!!.currentPosition == mediaPlayer!!.duration) destroy()
+        if(startPosition <= endPosition) return
+
+        Log.d("AudioPlayer", "Reading audio data: start=$startPosition, end=$endPosition, bufferSize=${buffer.size}, currentMillis=$currentMillis numChannels=${wavFile!!.header.numChannels}, sampleRate=${wavFile!!.header.sampleRate}")
         wavFile!!.data.copyInto(
             destination = buffer,
             startIndex = startPosition,

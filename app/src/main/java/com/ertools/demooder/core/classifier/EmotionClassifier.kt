@@ -46,7 +46,7 @@ class EmotionClassifier {
             shape = ModelShape.fromShapeArray(classifier.getInputTensor(0).shape())
             Log.d(
                 "EmotionClassifier",
-                "Model loaded with shape: [width=${shape.width}, height=${shape.height}, channels=${shape.channels}]"
+                "Classifier model loaded with shape: [width=${shape.width}, height=${shape.height}, channels=${shape.channels}]"
             )
             preprocessor = ClassifierPreprocessor(
                 spectrogramConfiguration,

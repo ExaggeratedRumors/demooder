@@ -38,7 +38,7 @@ class SpeechDetector {
             shape = ModelShape.fromShapeArray(detector.getInputTensor(0).shape())
             Log.d(
                 "SpeechDetector",
-                "Model loaded with shape: [batch=${shape.batch}, width=${shape.width}, height=${shape.height}, channels=${shape.channels}]"
+                "Detector model loaded with shape: [batch=${shape.batch}, width=${shape.width}, height=${shape.height}, channels=${shape.channels}]"
             )
             preprocessor = DetectorPreprocessor(
                 targetSampleRate = shape.batch,
