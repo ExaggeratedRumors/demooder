@@ -4,32 +4,25 @@ import android.content.Context
 import android.media.MediaPlayer
 import android.util.Log
 import com.ertools.processing.data.WavFile
-import kotlin.math.min
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlin.math.max
 
 /**
  * Class for playing audio using the Android MediaPlayer API.
  */
 class AudioPlayer(
     private val context: Context,
-    private val recordingFile: RecordingFile
+    private val recordingFile: RecordingFile,
+    private val onStopCallback: () -> Unit = {}
 ): AudioProvider, ProgressProvider {
     private var mediaPlayer: MediaPlayer? = null
     private var wavFile: WavFile? = null
 
+    private var isRunning: MutableStateFlow<Boolean> = MutableStateFlow(false)
+
     fun isInitialized(): Boolean {
         return mediaPlayer != null && wavFile != null
-    }
-
-    fun destroy() {
-        try {
-            mediaPlayer?.release()
-            mediaPlayer = null
-            wavFile = null
-            Log.d("AudioPlayer", "MediaPlayer and WavFile resources released.")
-        } catch (e: Exception) {
-            Log.e("AudioPlayer", "Error releasing MediaPlayer: ${e.message}")
-            e.printStackTrace()
-        }
     }
 
     /*********************************/
@@ -46,15 +39,16 @@ class AudioPlayer(
                 context.contentResolver.openInputStream(recordingFile.uri)?.use { input ->
                     wavFile = WavFile.fromStream(recordingFile.name, input)
                 }
+                Log.d("AudioPlayer", "Load wav file: ${wavFile?.fileName}, header: ${wavFile?.header}")
                 mediaPlayer = MediaPlayer().apply {
                     setDataSource(context, recordingFile.uri)
                     prepare()
                     start()
                     setOnCompletionListener {
-                        stop()
+                        onStopCallback()
                     }
                 }
-                Log.d("AudioPlayer", "Load wav file: ${wavFile?.fileName}, header: ${wavFile?.header}")
+                isRunning.value = true
             } catch (e: Exception) {
                 Log.e("AudioPlayer", "Error initializing MediaPlayer: ${e.message}")
                 e.printStackTrace()
@@ -63,6 +57,7 @@ class AudioPlayer(
         else if(mediaPlayer?.isPlaying == false) {
             try {
                 mediaPlayer?.start()
+                isRunning.value = true
             } catch (e: Exception) {
                 Log.e("AudioPlayer", "Error starting MediaPlayer: ${e.message}")
                 e.printStackTrace()
@@ -75,8 +70,11 @@ class AudioPlayer(
      * If the MediaPlayer is not playing, it will pause the playback.
      */
     override fun stop() {
-        if(!isInitialized()) return
+        if(!isInitialized()) {
+            return
+        }
         try {
+            isRunning.value = false
             mediaPlayer?.pause()
         } catch (e: Exception) {
             Log.e("AudioPlayer", "Error stopping MediaPlayer: ${e.message}")
@@ -84,34 +82,42 @@ class AudioPlayer(
         }
     }
 
+    override fun isRunning(): StateFlow<Boolean> = isRunning
 
     /**
      * Read audio data into the provided buffer.
      * The buffer size should be a multiple of the sample size.
      * @param buffer The buffer to read the audio data into.
+     * @return The number of bytes read into the buffer, or -1 if the end of the audio file is reached.
      */
-    override fun read(buffer: ByteArray) {
-        if(!isInitialized()) throw IllegalStateException("MediaPlayer is not initialized.")
+    override fun read(buffer: ByteArray): Int? {
+        if(!isInitialized()) {
+            Log.d("AudioPlayer", "Read called but MediaPlayer is not initialized.")
+            return null
+        }
+        if(mediaPlayer!!.currentPosition == mediaPlayer!!.duration) {
+            return null
+        }
         val currentMillis = mediaPlayer!!.currentPosition
         val bytesPerSample = 2 * wavFile!!.header.numChannels
         val endPosition = bytesPerSample * currentMillis * wavFile!!.header.sampleRate / 1000
-        val startPosition = min(0, endPosition - buffer.size)
-        if(mediaPlayer!!.currentPosition == mediaPlayer!!.duration) destroy()
-        if(startPosition <= endPosition) return
+        val startPosition = max(0, endPosition - buffer.size)
 
-        Log.d("AudioPlayer", "Reading audio data: start=$startPosition, end=$endPosition, bufferSize=${buffer.size}, currentMillis=$currentMillis numChannels=${wavFile!!.header.numChannels}, sampleRate=${wavFile!!.header.sampleRate}")
+        if(startPosition == endPosition) return 0
         wavFile!!.data.copyInto(
             destination = buffer,
             startIndex = startPosition,
             endIndex = endPosition
         )
+        return endPosition - startPosition
     }
 
     /**
      * Get the sample rate of the audio being played.
+     * @return The sample rate in Hz, or -1 if the MediaPlayer is not initialized.
      */
-    override fun getSampleRate(): Int {
-        if(!isInitialized()) throw IllegalStateException("MediaPlayer is not initialized.")
+    override fun getSampleRate(): Int? {
+        if(!isInitialized()) return null
         return wavFile!!.header.sampleRate
     }
 
@@ -128,9 +134,9 @@ class AudioPlayer(
 
     override fun seekTo(position: Int) {
         if(!isInitialized()) return
-        if(mediaPlayer == null) throw IllegalStateException("MediaPlayer is not initialized.")
         if(position < 0 || position > wavFile!!.data.size) {
-            throw IllegalArgumentException("Position out of bounds: $position")
+            Log.e("AudioPlayer", "Seek position out of bounds: $position")
+            return
         }
         mediaPlayer?.seekTo(position)
     }

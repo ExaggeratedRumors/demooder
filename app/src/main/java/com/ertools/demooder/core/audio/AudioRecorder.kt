@@ -6,6 +6,8 @@ import android.media.AudioRecord
 import android.media.MediaRecorder
 import android.util.Log
 import com.ertools.demooder.utils.AppConstants
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 
 /**
  * Class for recording audio using the Android AudioRecord API.
@@ -23,7 +25,7 @@ class AudioRecorder: AudioProvider {
     }
 
     private lateinit var recorder: AudioRecord
-    private var isInitialized = false
+    private val isPlaying = MutableStateFlow(false)
 
     /******************/
     /* Implementation */
@@ -34,7 +36,10 @@ class AudioRecorder: AudioProvider {
      */
     @SuppressLint("MissingPermission")
     override fun start() {
-        if(isInitialized) return
+        if(isPlaying.value) {
+            Log.d("AudioRecorder", "Start called but recorder is playing.")
+            return
+        }
         recorder = AudioRecord(
             MediaRecorder.AudioSource.MIC,
             sampleRate,
@@ -46,7 +51,7 @@ class AudioRecorder: AudioProvider {
             Log.e("AudioRecorder", "AudioRecord failed to initialize.")
             return
         }
-        isInitialized = true
+        isPlaying.value = true
         recorder.startRecording()
         Log.d("AudioRecorder", "Recording started.")
     }
@@ -55,19 +60,31 @@ class AudioRecorder: AudioProvider {
      * Stop the recording and release the AudioRecord instance.
      */
     override fun stop() {
-        if(!isInitialized) throw IllegalStateException("Recorder is not initialized.")
+        if(!isPlaying.value) {
+            Log.d("AudioRecorder", "Stop called but recorder is not playing.")
+            return
+        }
         recorder.stop()
         recorder.release()
-        isInitialized = false
+        isPlaying.value = false
         Log.d("AudioRecorder", "Recording stopped.")
     }
+
+    /**
+     * Check if the recorder is currently running.
+     * @return A StateFlow indicating whether the recorder is running.
+     */
+    override fun isRunning(): StateFlow<Boolean> = isPlaying
 
     /**
      * Read audio data from the recorder into the provided buffer.
      * @param buffer The buffer to read the audio data into.
      */
-    override fun read(buffer: ByteArray) {
-        if(!isInitialized) throw IllegalStateException("Recorder is not initialized.")
+    override fun read(buffer: ByteArray): Int? {
+        if(!isPlaying.value) {
+            Log.d("AudioRecorder", "Recorder is not playing.")
+            return null
+        }
         shiftAudioBuffer(buffer, recorderBufferSize)
         val result = recorder.read(
             buffer,
@@ -75,18 +92,18 @@ class AudioRecorder: AudioProvider {
             recorderBufferSize
         )
         when(result) {
-            AudioRecord.ERROR -> Log.w("AudioRecorder", "AudioRecord.ERROR")
-            AudioRecord.ERROR_BAD_VALUE -> Log.w("AudioRecorder", "AudioRecord.ERROR_BAD_VALUE")
-            AudioRecord.ERROR_INVALID_OPERATION -> Log.w("AudioRecorder", "AudioRecord.ERROR_INVALID_OPERATION")
-            AudioRecord.ERROR_DEAD_OBJECT -> Log.w("AudioRecorder", "AudioRecord.ERROR_DEAD_OBJECT")
-            else -> { return }
+            AudioRecord.ERROR -> Log.e("AudioRecorder", "AudioRecord.ERROR")
+            AudioRecord.ERROR_BAD_VALUE -> Log.e("AudioRecorder", "AudioRecord.ERROR_BAD_VALUE")
+            AudioRecord.ERROR_INVALID_OPERATION -> Log.e("AudioRecorder", "AudioRecord.ERROR_INVALID_OPERATION")
+            AudioRecord.ERROR_DEAD_OBJECT -> Log.e("AudioRecorder", "AudioRecord.ERROR_DEAD_OBJECT")
         }
+        return result
     }
 
     /**
      * Get the sample rate of the audio recorder.
      */
-    override fun getSampleRate(): Int = sampleRate
+    override fun getSampleRate(): Int? = sampleRate
 
     /*************/
     /** Private **/

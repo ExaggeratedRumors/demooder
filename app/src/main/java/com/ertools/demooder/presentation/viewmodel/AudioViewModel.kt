@@ -1,27 +1,18 @@
 package com.ertools.demooder.presentation.viewmodel
 
-import android.content.Context
-import android.content.Intent
 import android.util.Log
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.ertools.demooder.R
 import com.ertools.demooder.core.audio.AudioProvider
 import com.ertools.demooder.core.classifier.EmotionClassifier
 import com.ertools.demooder.core.classifier.PredictionRepository
 import com.ertools.demooder.core.detector.DetectionProvider
 import com.ertools.demooder.core.detector.SpeechDetector
-import com.ertools.demooder.core.notifications.MediaService
-import com.ertools.demooder.core.notifications.NotificationAction
-import com.ertools.demooder.core.notifications.NotificationData
-import com.ertools.demooder.core.notifications.NotificationEventStream
 import com.ertools.demooder.core.settings.SettingsStore
 import com.ertools.demooder.core.spectrum.SpectrumBuilder
 import com.ertools.demooder.core.spectrum.SpectrumProvider
 import com.ertools.demooder.utils.AppConstants
-import com.ertools.demooder.utils.Permissions
 import com.ertools.processing.commons.OctavesAmplitudeSpectrum
 import com.ertools.processing.commons.ProcessingUtils
 import kotlinx.coroutines.Dispatchers
@@ -37,6 +28,8 @@ import kotlinx.coroutines.launch
 
 /**
  * ViewModel for managing current audio data buffer.
+ * Modifies PredictionRepository.
+ * Listen audio provider.
  */
 class AudioViewModel(
     private val audioProvider: AudioProvider,
@@ -58,54 +51,16 @@ class AudioViewModel(
     private var _isWorking: MutableStateFlow<Boolean> = MutableStateFlow(false)
     val isWorking: StateFlow<Boolean> = _isWorking.asStateFlow()
 
-    private var _serviceRunning: MutableStateFlow<Boolean> = MutableStateFlow(false)
-    val serviceRunning: StateFlow<Boolean> = _serviceRunning.asStateFlow()
-
     private val _errors: MutableSharedFlow<String> = MutableSharedFlow()
-    val errors = _errors.asSharedFlow()
+    val audioErrors = _errors.asSharedFlow()
 
 
     /**********/
     /** API **/
     /**********/
 
-    fun runNotificationListeningTask(context: Context) {
-        viewModelScope.launch {
-            startBackgroundTask(context, AppConstants.NOTIFICATION_ACTION_NOTIFY)
-            NotificationEventStream.events.collect { notificationData ->
-                when(notificationData.action) {
-                    NotificationAction.START -> startRecording()
-                    NotificationAction.STOP -> stopRecording()
-                    else -> {}
-                }
-            }
-        }
-    }
-
-    fun togglePlay(context: Context) {
-        viewModelScope.launch {
-            val notificationData = if(isWorking.value) {
-                NotificationData(
-                    action = NotificationAction.STOP,
-                    title = context.getString(R.string.prediction_placeholder)
-                )
-            } else {
-                NotificationData(
-                    action = NotificationAction.START,
-                    title = context.getString(R.string.prediction_result_label),
-                    subtitle = context.getString(R.string.prediction_result_loading)
-                )
-            }
-            updateBackgroundTask(notificationData)
-        }
-    }
-
-    fun more() {
-
-    }
-
-    fun abort() {
-
+    fun runTasks() {
+        startListeningTask()
     }
 
     /*********************/
@@ -113,18 +68,38 @@ class AudioViewModel(
     /*********************/
 
     /**
+     * Start listening for audio data and processing it in the background.
+     */
+    private fun startListeningTask() {
+        viewModelScope.launch {
+            audioProvider.isRunning().collect { running ->
+                if(running) {
+                    _isWorking.value = true
+                    startRecording()
+                } else {
+                    _isWorking.value = false
+                }
+            }
+        }
+    }
+
+    /**
      * Start recording audio and processing it.
      */
     private suspend fun startRecording() {
-        /** Initialize audio provider **/
         PredictionRepository.reset()
         val dataBufferSize = (settingsStore.signalDetectionPeriod.first() * ProcessingUtils.AUDIO_SAMPLING_RATE * 2).toInt()
         val dataBuffer = ByteArray(dataBufferSize)
-        audioProvider.start()
-        _isWorking.value = true
+        startBufferReadingTask(dataBuffer)
+        startSpectrumBuildingTask(dataBuffer, dataBufferSize)
+        startEmotionDetectingTask(dataBuffer)
+    }
 
-
-        /** Read buffer from audio provider **/
+    /**
+     * Start a background task to read audio data into the provided buffer.
+     * @param dataBuffer The byte array buffer to read audio data into.
+     */
+    private fun startBufferReadingTask(dataBuffer: ByteArray) {
         viewModelScope.launch(Dispatchers.IO) {
             while(isActive && isWorking.value) {
                 synchronized(dataBuffer) {
@@ -133,8 +108,14 @@ class AudioViewModel(
                 delay(recordingDelayMillis)
             }
         }
+    }
 
-        /** Update spectrum **/
+    /**
+     * Start a background task to build the spectrum from the audio data buffer.
+     * This task runs in a loop, updating the spectrum at regular intervals.
+     * @param dataBuffer The byte array buffer containing audio data.
+     */
+    private fun startSpectrumBuildingTask(dataBuffer: ByteArray, dataBufferSize: Int) {
         viewModelScope.launch {
             while(isActive && isWorking.value) {
                 delay(graphUpdatePeriodMillis)
@@ -143,75 +124,44 @@ class AudioViewModel(
                 _spectrum.value = SpectrumBuilder.build(data)
             }
         }
+    }
 
-        /** Detect speech and classify emotions **/
+
+    /**
+     * Start a background task to detect speech and classify emotions.
+     * This task runs in a loop, checking the audio data buffer at regular intervals.
+     * @param dataBuffer The byte array buffer containing audio data.
+     */
+    private fun startEmotionDetectingTask(dataBuffer: ByteArray) {
         viewModelScope.launch(Dispatchers.IO) {
             val classificationPeriodMillis = (1000 * settingsStore.signalDetectionPeriod.first()).toLong()
             while(isActive && isWorking.value) {
                 delay(classificationPeriodMillis)
-                detector.detectSpeech(dataBuffer, audioProvider.getSampleRate()) { isSpeech ->
-                    if(isSpeech) {
-                        _isSpeech.value = true
-                        classifier.predict(dataBuffer, audioProvider.getSampleRate()) { prediction ->
-                            PredictionRepository.updatePredictions(prediction)
-                            val notificationData = NotificationData(
-                                action = NotificationAction.UPDATE,
-                                title = prediction[0].label.name,
-                                subtitle = "temp"
-                            )
-                            updateBackgroundTask(notificationData)
+                audioProvider.getSampleRate()?.let { sampleRate ->
+                    detector.detectSpeech(dataBuffer, sampleRate) { isSpeech ->
+                        if(isSpeech) {
+                            _isSpeech.value = true
+                            classifier.predict(dataBuffer, sampleRate) { prediction ->
+                                PredictionRepository.updatePredictions(prediction)
+                            }
+                        } else {
+                            _isSpeech.value = false
                         }
-                    } else {
-                        _isSpeech.value = false
                     }
+                } ?: run {
+                    Log.e("AudioViewModel", "Sample rate is null, cannot detect speech.")
+                    _errors.emit("Sample rate is null, cannot detect speech.")
                 }
+
             }
         }
     }
-
     /**
      * Stop recording audio and processing it.
      */
     private fun stopRecording() {
         if(isWorking.value) audioProvider.stop()
         _isWorking.value = false
-    }
-
-    /**
-     * Set background task for audio service.
-     */
-    private suspend fun startBackgroundTask(context: Context, action: String, data: NotificationData? = null) {
-        if(!Permissions.isPostNotificationPermissionGained(context)) {
-            _errors.emit(context.getString(R.string.error_notification_permission))
-            return
-        }
-        val notificationData = NotificationData(
-            action = NotificationAction.INIT,
-            title = context.getString(R.string.prediction_placeholder),
-            subtitle = context.getString(R.string.empty)
-        )
-
-        val serviceIntent = Intent(context, MediaService::class.java).apply {
-            this.action = action
-            this.putExtra(AppConstants.NOTIFICATION_DATA, notificationData)
-        }
-        Log.d("AudioViewModel", "Starting service with action: $action, data: $data")
-        ContextCompat.startForegroundService(context, serviceIntent)
-        _serviceRunning.value = true
-    }
-
-    private fun updateBackgroundTask(notificationData: NotificationData) {
-        if(!serviceRunning.value) return
-        NotificationEventStream.events.tryEmit(notificationData)
-    }
-
-    /**
-     * Stop background task for audio service.
-     */
-    private fun stopBackgroundTask() {
-        if(!serviceRunning.value) return
-        val notificationData = NotificationData(action = NotificationAction.DESTROY)
-        NotificationEventStream.events.tryEmit(notificationData)
     }
 
     /********************/
@@ -221,7 +171,6 @@ class AudioViewModel(
     override fun isSpeech(): StateFlow<Boolean> = isSpeech
     override fun onCleared() {
         super.onCleared()
-        stopBackgroundTask()
         stopRecording()
     }
 }

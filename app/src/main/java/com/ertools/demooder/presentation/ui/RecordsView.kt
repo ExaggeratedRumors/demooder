@@ -32,7 +32,6 @@ import com.ertools.demooder.R
 import com.ertools.demooder.core.audio.RecordingFile
 import com.ertools.demooder.presentation.navigation.RecordsNavigationItem
 import com.ertools.demooder.presentation.viewmodel.FilesViewModel
-import com.ertools.demooder.presentation.viewmodel.TabViewModel
 import com.ertools.demooder.utils.AppConstants
 
 @Composable
@@ -40,16 +39,11 @@ fun RecordsView(
     navController: NavController
 ) {
     val context = LocalContext.current.applicationContext
-    val tabViewModel = viewModel<TabViewModel>()
     val filesViewModel = viewModel<FilesViewModel>().apply {
         this.loadExternalRecordings(context)
     }
 
-    Column(modifier = Modifier.fillMaxSize().draggable(
-        state = tabViewModel.dragState.value!!,
-        orientation = Orientation.Horizontal,
-        onDragStarted = {  },
-        onDragStopped = { tabViewModel.updateTabIndexBasedOnSwipe() }),
+    Column(modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         RecordsColumn(navController, context, filesViewModel.externalFiles)

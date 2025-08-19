@@ -10,7 +10,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -22,6 +25,7 @@ import com.ertools.demooder.R
 import com.ertools.demooder.core.audio.AudioPlayer
 import com.ertools.demooder.core.audio.RecordingFile
 import com.ertools.demooder.core.classifier.EmotionClassifier
+import com.ertools.demooder.core.classifier.PredictionRepository
 import com.ertools.demooder.core.detector.SpeechDetector
 import com.ertools.demooder.core.settings.SettingsStore
 import com.ertools.demooder.presentation.components.dialog.ClickButton
@@ -33,6 +37,8 @@ import com.ertools.demooder.presentation.components.widgets.SpectrumWidget
 import com.ertools.demooder.presentation.components.widgets.TitleValue
 import com.ertools.demooder.presentation.viewmodel.AudioViewModel
 import com.ertools.demooder.presentation.viewmodel.AudioViewModelFactory
+import com.ertools.demooder.presentation.viewmodel.NotificationViewModel
+import com.ertools.demooder.presentation.viewmodel.NotificationViewModelFactory
 import com.ertools.demooder.presentation.viewmodel.SeekBarViewModel
 import com.ertools.demooder.presentation.viewmodel.SeekBarViewModelFactory
 import com.ertools.demooder.presentation.viewmodel.SettingsViewModel
@@ -43,8 +49,14 @@ import com.ertools.demooder.presentation.viewmodel.StatisticsViewModel
 fun PlayerView(
     recordingFile: RecordingFile?
 ) {
+    val isAudioCompleted: MutableState<Boolean> = remember { mutableStateOf(false) }
+
     val context = LocalContext.current
-    val audioPlayer = AudioPlayer(context, recordingFile!!)
+    val audioPlayer = AudioPlayer(
+        context,
+        recordingFile!!,
+        onStopCallback = { isAudioCompleted.value = true }
+    )
 
     /** Settings **/
     val settingsStore = SettingsStore(context)
@@ -69,23 +81,43 @@ fun PlayerView(
             settingsStore = settingsStore
         )
     }
-    val audioViewModel: AudioViewModel = viewModel<AudioViewModel>(factory = audioViewModelFactory).apply {
-        runNotificationListeningTask(context)
+    val audioViewModel: AudioViewModel = viewModel<AudioViewModel>(
+        factory = audioViewModelFactory
+    ).apply { runTasks() }
+
+    /** NotificationViewModel for notifications **/
+    val notificationViewModelFactory = remember {
+        NotificationViewModelFactory(
+            audioProvider = audioPlayer,
+            predictionRepository = PredictionRepository
+        )
     }
+    val notificationViewModel: NotificationViewModel = viewModel<NotificationViewModel>(
+        factory = notificationViewModelFactory
+    ).apply { runTasks(context) }
 
     /** SeekBarViewModel for control seek bar **/
     val seekBarViewModelFactory = remember {
         SeekBarViewModelFactory(
-            progressProvider = audioPlayer
+            progressProvider = audioPlayer,
+            audioProvider = audioPlayer
         )
     }
-    val seekBarViewModel: SeekBarViewModel = viewModel<SeekBarViewModel>(factory = seekBarViewModelFactory)
+    val seekBarViewModel: SeekBarViewModel = viewModel<SeekBarViewModel>(
+        factory = seekBarViewModelFactory
+    ).apply { runTasks() }
 
     /** StatisticsViewModel for statistics of audio **/
     val statisticsViewModel: StatisticsViewModel = viewModel()
 
     /** Buttons state **/
-    val isRecording = audioViewModel.isWorking.collectAsState()
+    val isPlaying = audioPlayer.isRunning().collectAsState()
+
+    LaunchedEffect(isAudioCompleted) {
+        if (isAudioCompleted.value) {
+            audioPlayer.stop()
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -100,7 +132,7 @@ fun PlayerView(
                 .fillMaxWidth()
                 .fillMaxHeight(0.375f),
             provider = audioViewModel,
-            isRecording = isRecording
+            isRunning = isPlaying
         )
 
         AudioSeekBarWidget(
@@ -139,7 +171,7 @@ fun PlayerView(
                 predictionProvider = statisticsViewModel,
                 detectionProvider = audioViewModel,
                 detectionPeriodSeconds = detectionPeriodSeconds,
-                isRecording = isRecording
+                isRecording = isPlaying
             )
         }
 
@@ -152,14 +184,13 @@ fun PlayerView(
                     modifier = Modifier
                         .fillMaxHeight()
                         .aspectRatio(1f),
-                    state = isRecording,
-                    enableIconResource = R.drawable.play_filled,
-                    disableIconResource = R.drawable.pause_filled,
+                    turnState = isPlaying,
+                    trueStateIconResource = R.drawable.play_filled,
+                    falseIconResource = R.drawable.pause_filled,
                     iconContentDescriptionResource = R.string.records_play_cd,
                     onClick = {
-                        audioViewModel.togglePlay(context)
-                        seekBarViewModel.togglePlay()
-
+                        if(isPlaying.value) audioPlayer.stop()
+                        else audioPlayer.start()
                     }
                 )
             },
@@ -180,7 +211,7 @@ fun PlayerView(
                         .aspectRatio(1f),
                     iconResource = R.drawable.replay_filled,
                     iconContentDescriptionResource = R.string.records_replay_cd,
-                    onClick = { audioViewModel.abort() }
+                    onClick = { seekBarViewModel.seekTo(0) }
                 )
             }
         )

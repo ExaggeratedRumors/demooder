@@ -34,13 +34,13 @@ import com.ertools.demooder.core.spectrum.SpectrumProvider
  * Displays the spectrum of the audio signal.
  * @param modifier Modifier to be applied to the view.
  * @param provider SpectrumProvider giving information about the audio spectrum.
- * @param isRecording State indicating if the recorder is currently recording.
+ * @param isRunning State indicating if the recorder is currently recording.
  */
 @Composable
 fun SpectrumWidget(
     modifier: Modifier = Modifier,
     provider: SpectrumProvider,
-    isRecording: State<Boolean>
+    isRunning: State<Boolean>
 ) {
     Column (
         modifier = modifier,
@@ -81,7 +81,7 @@ fun SpectrumWidget(
                             .align(Alignment.Bottom)
                             .background(MaterialTheme.colorScheme.surfaceContainer)
                     ) {
-                        if (isRecording.value) {
+                        if (isRunning.value) {
                             Box(
                                 modifier = Modifier
                                     .fillMaxWidth()

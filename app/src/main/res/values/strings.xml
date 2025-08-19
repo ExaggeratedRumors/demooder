@@ -21,8 +21,8 @@
     <string name="prediction_start_recording">Start</string>
     <string name="prediction_stop_recording">Stop</string>
     <string name="prediction_record_cd">Record</string>
-    <string name="prediction_save_cd">Save</string>
-    <string name="prediction_clear_cd">Clear</string>
+    <string name="prediction_more_cd">More</string>
+    <string name="prediction_refresh_cd">Refresh</string>
     <string name="prediction_placeholder">Waiting for session…</string>
 
     <string name="prediction_result_label">Prediction:</string>

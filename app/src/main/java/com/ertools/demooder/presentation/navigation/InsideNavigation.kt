@@ -9,15 +9,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.ertools.demooder.R
 import com.ertools.demooder.presentation.ui.HomeView
-import com.ertools.demooder.presentation.ui.PredictionView
-import com.ertools.demooder.presentation.viewmodel.ProviderViewModel
+import com.ertools.demooder.presentation.ui.RecorderView
 
 
 @Composable
@@ -25,7 +23,6 @@ fun InsideNavigation(
     modifier: Modifier = Modifier,
     navController: NavHostController = rememberNavController()
 ) {
-    val providerViewModel = viewModel<ProviderViewModel>()
     NavHost(
         navController = navController,
         startDestination = InsideNavigationItem.Home.route,
@@ -42,7 +39,7 @@ fun InsideNavigation(
         }
     ) {
         composable(InsideNavigationItem.Home.route) { HomeView() }
-        composable(InsideNavigationItem.Prediction.route) { PredictionView(providerViewModel) }
+        composable(InsideNavigationItem.Prediction.route) { RecorderView() }
         composable(InsideNavigationItem.Records.route) {
             val recordsNavController = rememberNavController()
             RecordsNavigation(
