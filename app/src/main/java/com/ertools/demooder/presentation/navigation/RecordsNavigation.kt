@@ -13,7 +13,6 @@ import com.ertools.demooder.presentation.ui.PlayerView
 import com.ertools.demooder.presentation.ui.RecordsView
 import com.ertools.demooder.utils.AppConstants
 
-
 @Composable
 fun RecordsNavigation(
     modifier: Modifier = Modifier,

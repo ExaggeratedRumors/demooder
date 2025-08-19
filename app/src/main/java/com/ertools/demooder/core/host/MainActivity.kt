@@ -34,7 +34,7 @@ class MainActivity : ComponentActivity() {
                 }
             }
         } catch (e: Exception) {
-            cancelNotifcations(this)
+            cancelNotifications(this)
             e.printStackTrace()
         }
     }
@@ -43,8 +43,8 @@ class MainActivity : ComponentActivity() {
     /** Private methods **/
     /*********************/
 
-    private fun cancelNotifcations(context: Context) {
-        val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+    private fun cancelNotifications(context: Context) {
+        val notificationManager = context.getSystemService(NOTIFICATION_SERVICE) as NotificationManager
         notificationManager.cancelAll()
     }
 

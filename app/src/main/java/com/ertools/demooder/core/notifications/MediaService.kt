@@ -9,7 +9,6 @@ import androidx.core.app.NotificationCompat
 import com.ertools.demooder.R
 import com.ertools.demooder.core.host.MainActivity
 import com.ertools.demooder.utils.AppConstants
-import com.ertools.demooder.utils.Permissions
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job

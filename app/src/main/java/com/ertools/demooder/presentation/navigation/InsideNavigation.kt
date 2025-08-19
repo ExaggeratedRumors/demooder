@@ -17,7 +17,6 @@ import com.ertools.demooder.R
 import com.ertools.demooder.presentation.ui.HomeView
 import com.ertools.demooder.presentation.ui.RecorderView
 
-
 @Composable
 fun InsideNavigation(
     modifier: Modifier = Modifier,
