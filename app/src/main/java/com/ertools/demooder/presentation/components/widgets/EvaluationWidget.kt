@@ -99,6 +99,7 @@ fun EvaluationWidget(
                         )
                         progressAnimation.snapTo(0f)
                     }
+                    progressAnimation.snapTo(0f)
                 }
                 Box(
                     modifier = Modifier.fillMaxHeight(0.1f)

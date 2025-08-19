@@ -88,7 +88,13 @@ class AudioViewModel(
      */
     private suspend fun startRecording() {
         PredictionRepository.reset()
-        val dataBufferSize = (settingsStore.signalDetectionPeriod.first() * ProcessingUtils.AUDIO_SAMPLING_RATE * 2).toInt()
+        val sampleRate = audioProvider.getSampleRate()
+        if(sampleRate == null) {
+            Log.e("AudioViewModel", "Sample rate is null, cannot start recording.")
+            _errors.emit("Sample rate is null, cannot start recording.")
+            return
+        }
+        val dataBufferSize = (settingsStore.signalDetectionPeriod.first() * sampleRate * 2).toInt()
         val dataBuffer = ByteArray(dataBufferSize)
         startBufferReadingTask(dataBuffer)
         startSpectrumBuildingTask(dataBuffer, dataBufferSize)

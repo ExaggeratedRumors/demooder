@@ -18,7 +18,6 @@ class AudioPlayer(
 ): AudioProvider, ProgressProvider {
     private var mediaPlayer: MediaPlayer? = null
     private var wavFile: WavFile? = null
-
     private var isRunning: MutableStateFlow<Boolean> = MutableStateFlow(false)
 
     fun isInitialized(): Boolean {
@@ -39,7 +38,6 @@ class AudioPlayer(
                 context.contentResolver.openInputStream(recordingFile.uri)?.use { input ->
                     wavFile = WavFile.fromStream(recordingFile.name, input)
                 }
-                Log.d("AudioPlayer", "Load wav file: ${wavFile?.fileName}, header: ${wavFile?.header}")
                 mediaPlayer = MediaPlayer().apply {
                     setDataSource(context, recordingFile.uri)
                     prepare()
@@ -49,6 +47,7 @@ class AudioPlayer(
                     }
                 }
                 isRunning.value = true
+                Log.d("AudioPlayer", "MediaPlayer initialized and started with wav file: ${wavFile?.fileName}, header: ${wavFile?.header}")
             } catch (e: Exception) {
                 Log.e("AudioPlayer", "Error initializing MediaPlayer: ${e.message}")
                 e.printStackTrace()
@@ -76,6 +75,7 @@ class AudioPlayer(
         try {
             isRunning.value = false
             mediaPlayer?.pause()
+            Log.d("AudioPlayer", "MediaPlayer paused.")
         } catch (e: Exception) {
             Log.e("AudioPlayer", "Error stopping MediaPlayer: ${e.message}")
             e.printStackTrace()
@@ -103,6 +103,7 @@ class AudioPlayer(
         val endPosition = bytesPerSample * currentMillis * wavFile!!.header.sampleRate / 1000
         val startPosition = max(0, endPosition - buffer.size)
 
+        Log.d("AudioPlayer", "Reading audio data from position $startPosition to $endPosition (current millis: $currentMillis), buffer size: ${buffer.size}, bytes per sample: $bytesPerSample")
         if(startPosition == endPosition) return 0
         wavFile!!.data.copyInto(
             destination = buffer,

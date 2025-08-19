@@ -1,5 +1,6 @@
 package com.ertools.demooder.presentation.ui
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -44,6 +45,7 @@ import com.ertools.demooder.presentation.viewmodel.SeekBarViewModelFactory
 import com.ertools.demooder.presentation.viewmodel.SettingsViewModel
 import com.ertools.demooder.presentation.viewmodel.SettingsViewModelFactory
 import com.ertools.demooder.presentation.viewmodel.StatisticsViewModel
+import kotlinx.coroutines.delay
 
 @Composable
 fun PlayerView(
@@ -55,7 +57,10 @@ fun PlayerView(
     val audioPlayer = AudioPlayer(
         context,
         recordingFile!!,
-        onStopCallback = { isAudioCompleted.value = true }
+        onStopCallback = {
+            isAudioCompleted.value = true
+            Log.d("PlayerView", "Audio playback completed for file: ${recordingFile.name}")
+        }
     )
 
     /** Settings **/
@@ -114,8 +119,13 @@ fun PlayerView(
     val isPlaying = audioPlayer.isRunning().collectAsState()
 
     LaunchedEffect(isAudioCompleted) {
-        if (isAudioCompleted.value) {
-            audioPlayer.stop()
+        while(true) {
+            if (isAudioCompleted.value) {
+                Log.d("PlayerView", "Stopping audio player as playback is completed.")
+                audioPlayer.stop()
+                isAudioCompleted.value = false
+            }
+            delay(500)
         }
     }
 
