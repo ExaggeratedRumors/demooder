@@ -6,6 +6,7 @@ import com.ertools.processing.io.IOSoundData
 import java.io.File
 import javax.sound.sampled.AudioInputStream
 import javax.sound.sampled.AudioSystem
+import kotlin.math.abs
 import kotlin.math.roundToInt
 import kotlin.math.sign
 import kotlin.random.Random
@@ -140,12 +141,12 @@ object WavAugmentation {
         if(shift == 0) return this
 
         /** Calculate data size **/
-        val audioBytes = ByteArray(this.frameLength.toInt() * this.format.frameSize).let { a ->
+        val audioBytes = ByteArray((this.frameLength.toInt() - abs(shift)) * this.format.frameSize).let { a ->
             this.read(a)
             a
         }
         this.read(audioBytes)
-        val outputBytes = ByteArray(audioBytes.size) { 0 }
+        val outputBytes = ByteArray(audioBytes.size)
 
         /** Shift audio data **/
         val increment = if(this.format.channels == 1) 2 else 4

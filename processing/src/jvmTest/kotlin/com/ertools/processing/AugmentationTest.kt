@@ -64,7 +64,7 @@ class AugmentationTest {
             .applyShift(-samplesShift)
         IOSoundData.saveWavFile(
             negativeShiftAugmentation,
-            resourcesPath,
+            "$resourcesPath/augmentation",
             "${filename}_${ProcessingUtils.WAV_AUGMENT_AFFIX}_shift2"
         )
     }
