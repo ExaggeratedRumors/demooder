@@ -3,7 +3,10 @@ package com.ertools.processing.augmentation
 import com.ertools.processing.commons.ProcessingUtils
 import com.ertools.processing.commons.ProjectPathing
 import com.ertools.processing.io.IOSoundData
+import java.io.ByteArrayInputStream
 import java.io.File
+import java.nio.ByteBuffer
+import java.nio.ByteOrder
 import javax.sound.sampled.AudioInputStream
 import javax.sound.sampled.AudioSystem
 import kotlin.math.abs
@@ -27,7 +30,7 @@ object WavAugmentation {
         val files = IOSoundData.fetchWavFiles(path, numberOfFiles)
         var counter = 0
         files.forEach { file ->
-            if(file.name.contains(ProcessingUtils.WAV_AUGMENT_AFFIX)) return@forEach
+            if (file.name.contains(ProcessingUtils.WAV_AUGMENT_AFFIX)) return@forEach
             counter += wavFileAugmentation(file, path, augmentFilesAmount)
         }
         return counter
@@ -67,26 +70,36 @@ object WavAugmentation {
      * @return AudioInputStream with noise added.
      */
     fun AudioInputStream.applyNoise(noiseLevel: Float): AudioInputStream {
-        /** Read audio data bytes **/
-        val audioBytes = ByteArray(this.frameLength.toInt() * this.format.frameSize).let { a ->
-            this.read(a)
-            a
+        require(this.format.sampleSizeInBits == 16) {
+            "Only 16-bit audio format is supported for noise augmentation."
         }
-        this.read(audioBytes)
+        /** Read audio data bytes **/
+        val audioBytes = ByteArray(this.frameLength.toInt() * this.format.frameSize).also {
+            this.read(it)
+        }
 
-        /** Apply noise **/
-        for(i in audioBytes.indices) {
-            val noise = ((Random.nextFloat() - 0.5f) * noiseLevel * 255).roundToInt()
-            audioBytes[i] = (audioBytes[i] + noise).coerceIn(Byte.MIN_VALUE.toInt(), Byte.MAX_VALUE.toInt()).toByte()
+        var i = 0
+        while (i < audioBytes.size) {
+            val l = audioBytes[i]
+            val h = audioBytes[i + 1]
+            val sample = ByteBuffer.wrap(byteArrayOf(l, h))
+                .order(ByteOrder.LITTLE_ENDIAN)
+                .short.toInt()
+            val noise = ((Random.nextFloat() - 0.5f) * 2f * noiseLevel * Short.MAX_VALUE).roundToInt()
+            val noisedSample = (sample + noise).coerceIn(Short.MIN_VALUE.toInt(), Short.MAX_VALUE.toInt())
+
+            audioBytes[i] = (noisedSample and 0xFF).toByte()
+            audioBytes[i + 1] = ((noisedSample shr 8) and 0xFF).toByte()
+
+            i += 2
         }
 
         /** Create new audio input stream **/
-        val newInputStream = AudioInputStream(
-            audioBytes.inputStream(),
+        return AudioInputStream(
+            ByteArrayInputStream(audioBytes),
             this.format,
-            audioBytes.size.toLong() / 2
+            (audioBytes.size / this.format.frameSize).toLong()
         )
-        return newInputStream
     }
 
     /**
@@ -133,36 +146,37 @@ object WavAugmentation {
     }
 
     /**
-     * Shift audio data by `shift` full samples (2 bytes for mono or 4 bytes for stereo).
-     * @param shift Number of samples to shift the audio data. Positive value shifts to the right, negative value shifts to the left.
+     * Shift audio data by `shift` frames full samples (2 bytes for mono or 4 bytes for stereo)
+     * by crop the beginning or end of the audio data.
+     * @param shift Number of frames to shift the audio data. Positive value shifts to the left, negative value shifts to the right.
      * @return AudioInputStream with new format.
      */
-    fun AudioInputStream.applyShift(shift: Int): AudioInputStream {
-        if(shift == 0) return this
+    fun AudioInputStream.applyShift(shiftFrames: Int): AudioInputStream {
+        if (shiftFrames == 0) return this
 
-        /** Calculate data size **/
-        val audioBytes = ByteArray((this.frameLength.toInt() - abs(shift)) * this.format.frameSize).let { a ->
-            this.read(a)
-            a
-        }
-        this.read(audioBytes)
-        val outputBytes = ByteArray(audioBytes.size)
+        val frameSize = this.format.frameSize
+        val totalFrames = this.frameLength.toInt()
 
-        /** Shift audio data **/
-        val increment = if(this.format.channels == 1) 2 else 4
-        var i = if(shift > 0) 0 else audioBytes.size
-        while(i * increment + shift < audioBytes.size && i * increment + shift >= 0) {
-            if(shift > 0) for (j in 0 until increment) outputBytes[increment * i + j] = audioBytes[increment * i + j + shift]
-            else for (j in 0 until increment) outputBytes[increment * i + j + shift] = audioBytes[increment * i + j]
-            i += increment * sign(1.0 * shift).toInt()
+        val audioBytes = ByteArray(totalFrames * frameSize).also {
+            this.read(it)
         }
+
+        val startFrame = if (shiftFrames < 0) -shiftFrames else 0
+        val endFrame = if (shiftFrames > 0) totalFrames - shiftFrames else totalFrames
+
+        if (startFrame >= endFrame) return AudioInputStream(ByteArray(0).inputStream(), format, 0)
 
         /** Create new audio input stream **/
-        val newInputStream = AudioInputStream(
+        val newFrameCount = endFrame - startFrame
+        val outputBytes = audioBytes.copyOfRange(
+            startFrame * frameSize,
+            endFrame * frameSize
+        )
+
+        return AudioInputStream(
             outputBytes.inputStream(),
             format,
-            audioBytes.size.toLong() / 2
+            newFrameCount.toLong()
         )
-        return newInputStream
     }
 }

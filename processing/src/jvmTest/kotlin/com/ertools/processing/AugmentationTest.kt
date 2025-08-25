@@ -15,9 +15,9 @@ class AugmentationTest {
     @Test
     fun `apply noise test`() {
         val resourcesPath = "src/jvmTest/resources/"
-        val filename = "cremad14kHz"
+        val filename = "tess24414Hz"
         val testFile = File(resourcesPath, "$filename.wav")
-        val noiseLevel = 0.015f
+        val noiseLevel = 0.0015f
 
         val noisedAugmentation = AudioSystem.getAudioInputStream(testFile)
             .applyNoise(noiseLevel)
@@ -31,9 +31,9 @@ class AugmentationTest {
     @Test
     fun `apply pitch shift test`() {
         val resourcesPath = "src/jvmTest/resources/"
-        val filename = "cremad14kHz"
+        val filename = "tess24414Hz"
         val testFile = File(resourcesPath, "$filename.wav")
-        val pitchFactor = 0.5f
+        val pitchFactor = 0.8f
 
         val pitchAugmentation = AudioSystem.getAudioInputStream(testFile)
             .applyPitchShift(pitchFactor)
@@ -47,7 +47,7 @@ class AugmentationTest {
     @Test
     fun `apply shift test`() {
         val resourcesPath = "src/jvmTest/resources/"
-        val filename = "cremad14kHz"
+        val filename = "tess24414Hz"
         val testFile = File(resourcesPath, "$filename.wav")
         val wavFile = WavFile.fromFile(testFile)
         val samplesShift = wavFile.data.size / 20

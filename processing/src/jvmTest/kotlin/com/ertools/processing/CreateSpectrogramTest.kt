@@ -15,7 +15,7 @@ class CreateSpectrogramTest {
     fun `create and save spectrogram`() {
         /** Pathing **/
         val resourcesPath = "src/jvmTest/resources/"
-        val filename = "augmentation/cremad14kHz_AUG_shift1.wav"
+        val filename = "augmentation/tess24414Hz_AUG_noise.wav"
 
         /** Files **/
         val testFile = File(resourcesPath, filename)
