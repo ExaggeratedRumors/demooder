@@ -14,6 +14,7 @@ Notebooks for creating and testing Keras models.
 ## Model learning environment 
 
 Create GPU-learning environment on Windows (<a href="https://www.tensorflow.org/install/source_windows?hl=pl#gpu">versions compatibility</a>):
+TensorFlow 2.10 is the last version supporting Windows with GPU.
 
 1. Create tensorflow-gpu enviroment:
 ```bash
@@ -26,6 +27,7 @@ conda install -c conda-forge cudatoolkit=11.2 cudnn=8.1.0
 conda install pip
 pip install tensorflow==2.10
 pip install numpy==1.23
+pip install tensorflow-addons
 conda install keras
 conda install notebook
 conda install matplotlib

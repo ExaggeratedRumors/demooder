@@ -33,7 +33,7 @@ Application:
 Scripts:
 - Python 3.8.20
 - Numpy 1.23.3
-- TensorFlow 2.13.0
+- TensorFlow 2.11.0
 - Keras 2.13.1
 - cuda 11.2
 - cuDNN 8.1.0
