@@ -72,7 +72,7 @@ fun EvaluationWidget(
                 .padding(dimensionResource(R.dimen.prediction_bar_padding))
         ) {
             if (isRecording.value) {
-                TitleValue(
+                TitleValueWidget(
                     modifier = Modifier
                         .fillMaxWidth()
                         .fillMaxHeight(0.5f),
@@ -106,7 +106,7 @@ fun EvaluationWidget(
                         .fillMaxWidth(progressAnimation.value)
                         .background(MaterialTheme.colorScheme.primary)
                 )
-                TitleValue(
+                TitleValueWidget(
                     modifier = Modifier
                         .fillMaxWidth()
                         .fillMaxHeight(0.5f),
@@ -120,7 +120,7 @@ fun EvaluationWidget(
                     },
                     isVertical = false
                 )
-                TitleValue(
+                TitleValueWidget(
                     modifier = Modifier
                         .fillMaxWidth()
                         .fillMaxHeight()

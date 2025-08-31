@@ -35,7 +35,7 @@ import com.ertools.demooder.presentation.components.widgets.AudioSeekBarWidget
 import com.ertools.demooder.presentation.components.widgets.EvaluationWidget
 import com.ertools.demooder.presentation.components.widgets.SoundboardWidget
 import com.ertools.demooder.presentation.components.widgets.SpectrumWidget
-import com.ertools.demooder.presentation.components.widgets.TitleValue
+import com.ertools.demooder.presentation.components.widgets.TitleValueWidget
 import com.ertools.demooder.presentation.viewmodel.AudioViewModel
 import com.ertools.demooder.presentation.viewmodel.AudioViewModelFactory
 import com.ertools.demooder.presentation.viewmodel.NotificationViewModel
@@ -162,7 +162,7 @@ fun PlayerView(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceBetween
         ) {
-            TitleValue(
+            TitleValueWidget(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(dimensionResource(R.dimen.records_description_padding))

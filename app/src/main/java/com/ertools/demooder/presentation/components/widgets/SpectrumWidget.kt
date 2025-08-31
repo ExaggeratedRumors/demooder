@@ -58,9 +58,9 @@ fun SpectrumWidget(
         Box (
             modifier = Modifier
                 .fillMaxWidth()
-                .height(dimensionResource(R.dimen.prediction_equalizer_height))
+                .height(dimensionResource(R.dimen.component_spectrum_height))
                 .background(color = MaterialTheme.colorScheme.surface)
-                .padding(dimensionResource(R.dimen.prediction_spectrum_padding)),
+                .padding(dimensionResource(R.dimen.component_spectrum_padding)),
         ) {
 
             Row(
@@ -76,7 +76,7 @@ fun SpectrumWidget(
                     Box(
                         modifier = Modifier
                             .weight(1f)
-                            .padding(dimensionResource(R.dimen.prediction_spectrum_padding))
+                            .padding(dimensionResource(R.dimen.component_spectrum_padding))
                             .fillMaxHeight()
                             .align(Alignment.Bottom)
                             .background(MaterialTheme.colorScheme.surfaceContainer)

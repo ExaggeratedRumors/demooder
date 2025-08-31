@@ -13,7 +13,7 @@ import androidx.compose.ui.text.style.TextOverflow
 
 
 @Composable
-fun TitleValue(
+fun TitleValueWidget(
     modifier: Modifier,
     title: String,
     value: String,

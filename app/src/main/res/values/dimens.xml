@@ -16,9 +16,7 @@
     <dimen name="prediction_view_spacing">8dp</dimen>
     <dimen name="prediction_button_size">120dp</dimen>
     <dimen name="prediction_buttons_space">50dp</dimen>
-    <dimen name="prediction_equalizer_height">400dp</dimen>
     <dimen name="prediction_bar_padding">10dp</dimen>
-    <dimen name="prediction_spectrum_padding">4dp</dimen>
     <dimen name="prediction_description_padding">8dp</dimen>
 
     <!-- RECORDS -->
@@ -28,6 +26,11 @@
     <dimen name="records_player_padding">32dp</dimen>
     <dimen name="records_description_padding">8dp</dimen>
     <dimen name="records_divider_thickness">1dp</dimen>
+
+    <!-- COMPONENTS -->
+    <dimen name="component_card_padding">16dp</dimen>
+    <dimen name="component_spectrum_padding">4dp</dimen>
+    <dimen name="component_spectrum_height">400dp</dimen>
 
     <!-- WIDGETS -->
     <integer name="spectrum_bar_factor">2</integer>
