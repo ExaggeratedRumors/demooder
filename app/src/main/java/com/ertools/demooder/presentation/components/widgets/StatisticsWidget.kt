@@ -13,7 +13,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.dimensionResource
 import com.ertools.demooder.R
 import com.ertools.demooder.presentation.viewmodel.StatisticsViewModel
@@ -25,7 +24,6 @@ fun StatisticsWidget(
     statisticsViewModel: StatisticsViewModel,
     isVisible: Boolean
 ) {
-    val density = LocalDensity.current
     val emotionsState = Emotion.entries.associateWith {
         statisticsViewModel.getEmotionFlow(it).collectAsState()
     }
