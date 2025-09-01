@@ -1,5 +1,3 @@
-package com.ertools.processing.data
-
 import com.ertools.processing.commons.Emotion
 import com.ertools.processing.commons.ProjectPathing
 

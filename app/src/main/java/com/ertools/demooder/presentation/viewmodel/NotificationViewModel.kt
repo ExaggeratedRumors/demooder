@@ -11,10 +11,10 @@ import com.ertools.demooder.R
 import com.ertools.demooder.core.audio.AudioProvider
 import com.ertools.demooder.core.classifier.Prediction
 import com.ertools.demooder.core.classifier.PredictionRepository
-import com.ertools.demooder.core.notifications.MediaService
-import com.ertools.demooder.core.notifications.NotificationAction
-import com.ertools.demooder.core.notifications.NotificationData
-import com.ertools.demooder.core.notifications.NotificationEventStream
+import com.ertools.demooder.core.notification.MediaService
+import com.ertools.demooder.core.notification.NotificationAction
+import com.ertools.demooder.core.notification.NotificationData
+import com.ertools.demooder.core.notification.NotificationEventStream
 import com.ertools.demooder.utils.AppConstants
 import com.ertools.demooder.utils.Permissions
 import kotlinx.coroutines.flow.MutableSharedFlow

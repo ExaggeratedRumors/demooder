@@ -1,4 +1,4 @@
-package com.ertools.demooder.core.notifications
+package com.ertools.demooder.core.notification
 
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow

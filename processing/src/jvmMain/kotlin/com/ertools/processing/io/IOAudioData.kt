@@ -12,7 +12,7 @@ import javax.sound.sampled.AudioFileFormat
 import javax.sound.sampled.AudioInputStream
 import javax.sound.sampled.AudioSystem
 
-object IOSoundData {
+object IOAudioData {
     /***************/
     /** Wav files **/
     /***************/

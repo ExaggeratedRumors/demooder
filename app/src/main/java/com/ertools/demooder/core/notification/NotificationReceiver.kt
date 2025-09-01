@@ -1,4 +1,4 @@
-package com.ertools.demooder.core.notifications
+package com.ertools.demooder.core.notification
 
 import android.content.BroadcastReceiver
 import android.content.Context

@@ -1,4 +1,4 @@
-package com.ertools.demooder.core.notifications
+package com.ertools.demooder.core.notification
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize

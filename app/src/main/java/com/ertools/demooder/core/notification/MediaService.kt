@@ -1,4 +1,4 @@
-package com.ertools.demooder.core.notifications
+package com.ertools.demooder.core.notification
 
 import android.app.PendingIntent
 import android.app.Service

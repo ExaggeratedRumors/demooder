@@ -4,7 +4,7 @@ import com.ertools.processing.augmentation.WavAugmentation.applyNoise
 import com.ertools.processing.augmentation.WavAugmentation.applyPitchShift
 import com.ertools.processing.augmentation.WavAugmentation.applyShift
 import com.ertools.processing.commons.ProcessingUtils
-import com.ertools.processing.io.IOSoundData
+import com.ertools.processing.io.IOAudioData
 import com.ertools.processing.data.WavFile
 import org.junit.Test
 import java.io.File
@@ -21,7 +21,7 @@ class AugmentationTest {
 
         val noisedAugmentation = AudioSystem.getAudioInputStream(testFile)
             .applyNoise(noiseLevel)
-        IOSoundData.saveWavFile(
+        IOAudioData.saveWavFile(
             noisedAugmentation,
             "$resourcesPath/augmentation/",
             "${filename}_${ProcessingUtils.WAV_AUGMENT_AFFIX}_noise"
@@ -37,7 +37,7 @@ class AugmentationTest {
 
         val pitchAugmentation = AudioSystem.getAudioInputStream(testFile)
             .applyPitchShift(pitchFactor)
-        IOSoundData.saveWavFile(
+        IOAudioData.saveWavFile(
             pitchAugmentation,
             "$resourcesPath/augmentation/",
             "${filename}_${ProcessingUtils.WAV_AUGMENT_AFFIX}_pitch"
@@ -54,7 +54,7 @@ class AugmentationTest {
 
         val positiveShiftAugmentation = AudioSystem.getAudioInputStream(testFile)
             .applyShift(samplesShift)
-        IOSoundData.saveWavFile(
+        IOAudioData.saveWavFile(
             positiveShiftAugmentation,
             "$resourcesPath/augmentation/",
             "${filename}_${ProcessingUtils.WAV_AUGMENT_AFFIX}_shift1"
@@ -62,7 +62,7 @@ class AugmentationTest {
 
         val negativeShiftAugmentation = AudioSystem.getAudioInputStream(testFile)
             .applyShift(-samplesShift)
-        IOSoundData.saveWavFile(
+        IOAudioData.saveWavFile(
             negativeShiftAugmentation,
             "$resourcesPath/augmentation",
             "${filename}_${ProcessingUtils.WAV_AUGMENT_AFFIX}_shift2"

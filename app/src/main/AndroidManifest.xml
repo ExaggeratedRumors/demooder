@@ -18,11 +18,11 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Demooder"
         >
-        <service android:name=".core.notifications.MediaService"
+        <service android:name=".core.notification.MediaService"
             android:enabled="true"
             android:exported="false"
             android:foregroundServiceType="mediaPlayback|microphone" />
-        <receiver android:name=".core.notifications.NotificationReceiver"
+        <receiver android:name=".core.notification.NotificationReceiver"
             android:enabled="true"
             android:exported="true"
             />

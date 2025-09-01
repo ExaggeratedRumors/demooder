@@ -1,8 +1,8 @@
-package com.ertools.processing.scripts
+package com.ertools.processing.impl
 
 import com.ertools.processing.commons.ProcessingUtils
 import com.ertools.processing.commons.ProjectPathing
-import com.ertools.processing.io.IOSoundData
+import com.ertools.processing.io.IOAudioData
 import com.ertools.processing.io.IOSpectrogram
 import com.ertools.processing.signal.Windowing
 import com.ertools.processing.spectrogram.SpectrogramSample
@@ -31,7 +31,7 @@ fun main(args: Array<String>) {
     /** Program **/
     for(dataDir in dataDirs) {
         println("\n\nI:\tLoad sound data from directory: $dataDir")
-        val soundData = IOSoundData.loadWavFiles(
+        val soundData = IOAudioData.loadWavFiles(
             wavDir = dataDir
         )
         println("R:\tRead ${soundData.size} samples.")
@@ -60,7 +60,7 @@ fun main(args: Array<String>) {
             val end = min((it + 1) * spectrogramsBatchSize, soundData.size)
             val subset = soundData.subList(start, end)
             val spectrogramSet: List<SpectrogramSample> =
-                IOSoundData.convertWavFilesToSpectrogramSamples(
+                IOAudioData.convertWavFilesToSpectrogramSamples(
                     wavFiles = subset,
                     frameSize = frameSize,
                     stepSize = stepSize,
