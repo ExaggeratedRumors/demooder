@@ -71,7 +71,7 @@ class EmotionClassifier {
         if (!isModelInitialized) throw IllegalStateException("Model is not initialized")
         val inputBuffers: List<ByteBuffer> = preprocessor.proceed(rawData, recordingSampleRate)
 
-        val labelsHistogram = InferenceStrategy.majorityVoting(inputBuffers) { inputBuffer ->
+        val labelsHistogram = InferenceStrategy.averageVoting(inputBuffers) { inputBuffer ->
             val outputBuffer = Array(1) { FloatArray(labels.size) { Float.NaN }}
             classifier.run(inputBuffer, outputBuffer)
             Log.d("EmotionClassifier", "Raw output: ${outputBuffer.joinToString { it.joinToString() }}")

@@ -75,7 +75,7 @@ class AudioViewModel(
             audioProvider.isRunning().collect { running ->
                 if(running) {
                     _isWorking.value = true
-                    startRecording()
+                    start()
                 } else {
                     _isWorking.value = false
                 }
@@ -86,7 +86,7 @@ class AudioViewModel(
     /**
      * Start recording audio and processing it.
      */
-    private suspend fun startRecording() {
+    private suspend fun start() {
         PredictionRepository.reset()
         val sampleRate = audioProvider.getSampleRate()
         if(sampleRate == null) {

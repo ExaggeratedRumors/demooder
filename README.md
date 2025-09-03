@@ -10,7 +10,7 @@ Android application using input sound to recognize voice.
 
 ## Release
 `
-in progress
+1.0
 `
 
 ## Preview
@@ -27,8 +27,7 @@ Application:
 - Gradle 8.9.3
 - Kotlin Multiplatform 2.1.21
 - Jetpack Compose 1.6.10
-- LiteRT 1.0.0
-- Dagger Hilt 2.56.2
+- LiteRT 1.3.0
 
 Scripts:
 - Python 3.8.20
