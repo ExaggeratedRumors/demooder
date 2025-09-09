@@ -14,7 +14,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import com.ertools.demooder.utils.AppFormat.timeFormat
+import com.ertools.demooder.utils.AppFormat.simpleTimeFormat
 import kotlinx.coroutines.flow.StateFlow
 
 @Composable
@@ -36,7 +36,7 @@ fun AudioSeekBarWidget(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text(text = timeFormat(0), modifier = Modifier.weight(1f))
+            Text(text = simpleTimeFormat(0), modifier = Modifier.weight(1f))
 
             Slider(
                 value = sliderPosition,
@@ -48,8 +48,8 @@ fun AudioSeekBarWidget(
                 modifier = Modifier.weight(6f)
             )
 
-            Text(text = timeFormat(duration), modifier = Modifier.weight(1f))
+            Text(text = simpleTimeFormat(duration), modifier = Modifier.weight(1f))
         }
-        Text(text = timeFormat(position), style = MaterialTheme.typography.bodyMedium)
+        Text(text = simpleTimeFormat(position), style = MaterialTheme.typography.bodyMedium)
     }
 }

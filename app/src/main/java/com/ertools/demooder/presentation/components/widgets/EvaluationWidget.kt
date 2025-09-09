@@ -64,14 +64,27 @@ fun EvaluationWidget(
     Box(
         modifier = modifier
     ){
-        val progressAnimation = remember { Animatable(0f) }
-
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(dimensionResource(R.dimen.prediction_bar_padding))
         ) {
+            val progressAnimation = remember { Animatable(0f) }
             if (isRecording.value) {
+                LaunchedEffect(lastTwoPredictions) {
+                    progressAnimation.snapTo(0f)
+                    while (isRecording.value) {
+                        progressAnimation.animateTo(
+                            targetValue = 1f,
+                            animationSpec = tween(
+                                durationMillis = (1000 * detectionPeriodSeconds.value).roundToInt(),
+                                easing = LinearEasing
+                            )
+                        )
+                        progressAnimation.snapTo(0f)
+                    }
+                }
+
                 TitleValueWidget(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -88,24 +101,13 @@ fun EvaluationWidget(
                     },
                     isVertical = true
                 )
-                LaunchedEffect(lastTwoPredictions) {
-                    while (isRecording.value) {
-                        progressAnimation.animateTo(
-                            targetValue = 1f,
-                            animationSpec = tween(
-                                durationMillis = (1000 * detectionPeriodSeconds.value).roundToInt(),
-                                easing = LinearEasing
-                            )
-                        )
-                        progressAnimation.snapTo(0f)
-                    }
-                    progressAnimation.snapTo(0f)
-                }
+
                 Box(
                     modifier = Modifier.fillMaxHeight(0.1f)
                         .fillMaxWidth(progressAnimation.value)
                         .background(MaterialTheme.colorScheme.primary)
                 )
+
                 TitleValueWidget(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -120,6 +122,7 @@ fun EvaluationWidget(
                     },
                     isVertical = false
                 )
+
                 TitleValueWidget(
                     modifier = Modifier
                         .fillMaxWidth()

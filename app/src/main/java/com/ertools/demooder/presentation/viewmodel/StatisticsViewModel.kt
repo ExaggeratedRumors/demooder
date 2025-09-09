@@ -23,19 +23,16 @@ class StatisticsViewModel(
     private val predictionRepository: PredictionRepository = PredictionRepository
     private val predictionHistory: StateFlow<List<Prediction>> = predictionRepository.predictionHistory
 
-    private val _emotionsTime: Map<Emotion, StateFlow<Long>> = Emotion.entries.toTypedArray()
+    private val _emotionsTime: Map<Emotion, StateFlow<Int>> = Emotion.entries.toTypedArray()
         .associateWith { emotion ->
             predictionHistory.map { history ->
-                history.filter { it.label == emotion }.sumOf { 1L }
+                history.count { it.label == emotion }
             }.stateIn(
                 viewModelScope,
                 SharingStarted.Eagerly,
-                0L
+                0
             )
         }
-
-    private val _isDescriptionVisible = MutableStateFlow(false)
-    val isDescriptionVisible: StateFlow<Boolean> = _isDescriptionVisible
 
     /********************/
     /** Implementation **/
@@ -51,18 +48,8 @@ class StatisticsViewModel(
             )
     }
 
-    override fun count(label: Emotion): StateFlow<Int> {
-        return predictionHistory.map { history ->
-            history.count { it.label == label }
-        }.stateIn(
-            viewModelScope,
-            SharingStarted.Eagerly,
-            0
-        )
-    }
-
-    fun getEmotionFlow(emotion: Emotion): StateFlow<Long> {
-        return _emotionsTime[emotion] ?: MutableStateFlow(0L)
+    override fun count(emotion: Emotion): StateFlow<Int> {
+        return _emotionsTime[emotion] ?: MutableStateFlow(0)
     }
 
     override fun reset() {

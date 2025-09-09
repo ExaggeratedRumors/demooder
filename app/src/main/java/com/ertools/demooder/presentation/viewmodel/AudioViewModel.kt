@@ -12,6 +12,7 @@ import com.ertools.demooder.core.detector.SpeechDetector
 import com.ertools.demooder.core.settings.SettingsStore
 import com.ertools.demooder.core.spectrum.SpectrumBuilder
 import com.ertools.demooder.core.spectrum.SpectrumProvider
+import com.ertools.demooder.presentation.components.interfaces.Resetable
 import com.ertools.demooder.utils.AppConstants
 import com.ertools.processing.commons.OctavesAmplitudeSpectrum
 import com.ertools.processing.commons.ProcessingUtils
@@ -36,7 +37,10 @@ class AudioViewModel(
     private val classifier: EmotionClassifier,
     private val detector: SpeechDetector,
     private val settingsStore: SettingsStore
-) : ViewModel(), SpectrumProvider, DetectionProvider {
+) : ViewModel(), SpectrumProvider, DetectionProvider, Resetable {
+    /** Main buffer **/
+    private var dataBuffer: ByteArray = ByteArray(0)
+
     /** Parameters **/
     private val recordingDelayMillis: Long = AppConstants.RECORDER_DELAY_MILLIS
     private val graphUpdatePeriodMillis: Long = AppConstants.UI_GRAPH_UPDATE_DELAY
@@ -48,12 +52,10 @@ class AudioViewModel(
     private var _isSpeech: MutableStateFlow<Boolean> = MutableStateFlow(false)
     private val isSpeech: StateFlow<Boolean> = _isSpeech.asStateFlow()
 
-    private var _isWorking: MutableStateFlow<Boolean> = MutableStateFlow(false)
-    val isWorking: StateFlow<Boolean> = _isWorking.asStateFlow()
+    private val isWorking: StateFlow<Boolean> = audioProvider.isRunning()
 
     private val _errors: MutableSharedFlow<String> = MutableSharedFlow()
     val audioErrors = _errors.asSharedFlow()
-
 
     /**********/
     /** API **/
@@ -72,13 +74,8 @@ class AudioViewModel(
      */
     private fun startListeningTask() {
         viewModelScope.launch {
-            audioProvider.isRunning().collect { running ->
-                if(running) {
-                    _isWorking.value = true
-                    start()
-                } else {
-                    _isWorking.value = false
-                }
+            isWorking.collect { running ->
+                if(running) start()
             }
         }
     }
@@ -95,7 +92,7 @@ class AudioViewModel(
             return
         }
         val dataBufferSize = (settingsStore.signalDetectionPeriod.first() * sampleRate * 2).toInt()
-        val dataBuffer = ByteArray(dataBufferSize)
+        dataBuffer = ByteArray(dataBufferSize)
         startBufferReadingTask(dataBuffer)
         startSpectrumBuildingTask(dataBuffer, dataBufferSize)
         startEmotionDetectingTask(dataBuffer)
@@ -167,7 +164,6 @@ class AudioViewModel(
      */
     private fun stopRecording() {
         if(isWorking.value) audioProvider.stop()
-        _isWorking.value = false
     }
 
     /********************/
@@ -175,6 +171,7 @@ class AudioViewModel(
     /********************/
     override fun getSpectrum(): StateFlow<OctavesAmplitudeSpectrum> = spectrum
     override fun isSpeech(): StateFlow<Boolean> = isSpeech
+    override fun reset() { dataBuffer = ByteArray(0) }
     override fun onCleared() {
         super.onCleared()
         stopRecording()

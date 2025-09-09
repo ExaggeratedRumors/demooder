@@ -5,7 +5,6 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Card
@@ -15,48 +14,32 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import com.ertools.demooder.R
-import com.ertools.demooder.presentation.viewmodel.StatisticsViewModel
+import com.ertools.demooder.core.classifier.PredictionProvider
 import com.ertools.processing.commons.Emotion
 
 @Composable
 fun StatisticsWidget(
     modifier: Modifier = Modifier,
-    statisticsViewModel: StatisticsViewModel,
-    isVisible: Boolean
+    predictionProvider: PredictionProvider
 ) {
     val emotionsState = Emotion.entries.associateWith {
-        statisticsViewModel.getEmotionFlow(it).collectAsState()
+        predictionProvider.count(it).collectAsState()
     }
 
-    AnimatedVisibility(
-        visible = isVisible,
-        enter = slideInVertically(
-            animationSpec = tween(durationMillis = 500),
-            initialOffsetY = { fullHeight -> fullHeight }
-        ),
-        exit = slideOutVertically(
-            animationSpec = tween(durationMillis = 500),
-            targetOffsetY = { fullHeight -> fullHeight }
-        )
-    ) {
-        Card(
-            modifier = modifier
-                .fillMaxSize()
+    Card(modifier = modifier) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(dimensionResource(R.dimen.component_card_padding)),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(dimensionResource(R.dimen.component_card_padding)),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                emotionsState.forEach { emotion ->
-                    TitleValueWidget(
-                        modifier = Modifier,
-                        title = emotion.key.name,
-                        value = "${emotion.value.value}s",
-                        isVertical = false
-                    )
-                }
+            emotionsState.forEach { emotion ->
+                TitleValueWidget(
+                    modifier = Modifier,
+                    title = emotion.key.name,
+                    value = "${emotion.value.value}s",
+                    isVertical = false
+                )
             }
         }
     }
