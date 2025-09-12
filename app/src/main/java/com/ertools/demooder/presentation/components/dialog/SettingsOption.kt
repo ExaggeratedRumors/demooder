@@ -24,23 +24,20 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.unit.dp
 import com.ertools.demooder.R
-import java.util.Locale
 
 sealed class OptionData(
     val optionTitle: String,
 ) {
-    abstract fun valueToString(): String
     @Composable
     abstract fun SettingsOption(modifier: Modifier)
 
     class InputOptionData(
         optionTitle: String,
-        val value: State<Double>,
+        val value: State<String>,
         val unit: String? = null,
         val onValidate: @Composable (String) -> Boolean,
-        private val onSave: (Double) -> Unit
+        private val onSave: (String) -> Unit
     ) : OptionData(optionTitle) {
-        override fun valueToString(): String = "%.1f".format(Locale.ENGLISH, value.value)
 
         @Composable
         override fun SettingsOption(modifier: Modifier) {
@@ -71,7 +68,7 @@ sealed class OptionData(
                             color = MaterialTheme.colorScheme.onBackground
                         )
                         Text(
-                            text = valueToString() + unit,
+                            text = "${value.value}$unit",
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onPrimary
                         )
@@ -88,7 +85,7 @@ sealed class OptionData(
                             showDialog.value = false
                             //if(option.onValidate(it)) {
                             inputText.value = it
-                            option.onSave(it.toDouble())
+                            option.onSave(it)
                             //}
                             inputText.value = it
                         }
@@ -103,8 +100,6 @@ sealed class OptionData(
         private val value: State<Boolean>,
         private val onSave: (Boolean) -> Unit
     ) : OptionData(optionTitle) {
-        override fun valueToString(): String = "${value.value}"
-
         @Composable
         override fun SettingsOption(modifier: Modifier) {
             val option = this

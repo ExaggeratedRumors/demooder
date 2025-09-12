@@ -31,6 +31,8 @@
     <dimen name="component_card_padding">16dp</dimen>
     <dimen name="component_spectrum_padding">4dp</dimen>
     <dimen name="component_spectrum_height">400dp</dimen>
+    <dimen name="component_statistics_element_padding">8dp</dimen>
+    <dimen name="component_statistics_padding">8dp</dimen>
     <dimen name="component_timer_padding">8dp</dimen>
     <integer name="spectrum_bar_factor">2</integer>
     <integer name="spectrum_bar_spacing_factor">20</integer>

@@ -6,9 +6,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableIntState
 import androidx.compose.runtime.State
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontFamily
@@ -16,7 +14,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import com.ertools.demooder.presentation.viewmodel.TimerViewModel
 import com.ertools.demooder.utils.AppFormat.advancedTimeFormat
 import kotlinx.coroutines.delay
-import kotlin.concurrent.timer
 
 /**
  * A simple timer widget that displays the elapsed time in hh:mm:ss format.

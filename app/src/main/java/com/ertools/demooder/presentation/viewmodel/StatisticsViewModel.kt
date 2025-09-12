@@ -7,7 +7,6 @@ import com.ertools.demooder.core.classifier.Prediction
 import com.ertools.demooder.core.classifier.PredictionProvider
 import com.ertools.demooder.core.classifier.PredictionRepository
 import com.ertools.processing.commons.Emotion
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
@@ -22,17 +21,6 @@ class StatisticsViewModel(
 ): AndroidViewModel(application), PredictionProvider {
     private val predictionRepository: PredictionRepository = PredictionRepository
     private val predictionHistory: StateFlow<List<Prediction>> = predictionRepository.predictionHistory
-
-    private val _emotionsTime: Map<Emotion, StateFlow<Int>> = Emotion.entries.toTypedArray()
-        .associateWith { emotion ->
-            predictionHistory.map { history ->
-                history.count { it.label == emotion }
-            }.stateIn(
-                viewModelScope,
-                SharingStarted.Eagerly,
-                0
-            )
-        }
 
     /********************/
     /** Implementation **/
@@ -49,7 +37,25 @@ class StatisticsViewModel(
     }
 
     override fun count(emotion: Emotion): StateFlow<Int> {
-        return _emotionsTime[emotion] ?: MutableStateFlow(0)
+        return predictionHistory.map { predictions ->
+            predictions.count { it.label == emotion }
+        }.stateIn(
+            viewModelScope,
+            SharingStarted.Eagerly,
+            0
+        )
+    }
+
+    override fun statistics(): Map<Emotion, StateFlow<Int>> {
+        return Emotion.entries.associateWith { emotion ->
+            predictionHistory.map { predictions ->
+                predictions.count { it.label == emotion }
+            }.stateIn(
+                viewModelScope,
+                SharingStarted.WhileSubscribed(),
+                0
+            )
+        }
     }
 
     override fun reset() {

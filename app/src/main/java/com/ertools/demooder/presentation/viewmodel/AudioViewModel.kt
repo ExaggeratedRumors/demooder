@@ -84,7 +84,6 @@ class AudioViewModel(
      * Start recording audio and processing it.
      */
     private suspend fun start() {
-        PredictionRepository.reset()
         val sampleRate = audioProvider.getSampleRate()
         if(sampleRate == null) {
             Log.e("AudioViewModel", "Sample rate is null, cannot start recording.")
@@ -171,7 +170,11 @@ class AudioViewModel(
     /********************/
     override fun getSpectrum(): StateFlow<OctavesAmplitudeSpectrum> = spectrum
     override fun isSpeech(): StateFlow<Boolean> = isSpeech
-    override fun reset() { dataBuffer = ByteArray(0) }
+    override fun reset() {
+        dataBuffer = ByteArray(0)
+        _spectrum.value = OctavesAmplitudeSpectrum(ProcessingUtils.AUDIO_OCTAVES_AMOUNT)
+        _isSpeech.value = false
+    }
     override fun onCleared() {
         super.onCleared()
         stopRecording()

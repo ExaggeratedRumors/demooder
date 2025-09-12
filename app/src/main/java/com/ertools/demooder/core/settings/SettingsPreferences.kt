@@ -2,6 +2,7 @@ package com.ertools.demooder.core.settings
 
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.doublePreferencesKey
+import androidx.datastore.preferences.core.stringPreferencesKey
 
 object SettingsPreferences {
     const val PREFERENCES_NAME = "settings"
@@ -10,4 +11,6 @@ object SettingsPreferences {
     val SIGNAL_DETECTION_PERIOD = doublePreferencesKey("signal_detection_period")
     val ENABLE_NOTIFICATIONS = booleanPreferencesKey("enable_notifications")
     val ANGER_DETECTION_TIME = doublePreferencesKey("anger_detection_time")
+    val PHONE_NUMBER = stringPreferencesKey("+48123123123")
+
 }

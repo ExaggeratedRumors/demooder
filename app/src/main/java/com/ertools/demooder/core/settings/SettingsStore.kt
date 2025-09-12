@@ -33,6 +33,10 @@ class SettingsStore(private val context: Context) {
         it[SettingsPreferences.ANGER_DETECTION_TIME] ?: AppConstants.SETTINGS_DEFAULT_ANGER_DETECTION_TIME
     }
 
+    val phoneNumber: Flow<String> = context.datastore.data.map {
+        it[SettingsPreferences.PHONE_NUMBER] ?: AppConstants.SETTINGS_DEFAULT_PHONE_NUMBER
+    }
+
     suspend fun saveDeviceDamping(value: Double) {
         context.datastore.edit { preferences ->
             preferences[SettingsPreferences.DEVICE_DAMPING] = value
@@ -54,6 +58,12 @@ class SettingsStore(private val context: Context) {
     suspend fun saveAngerDetectionTime(value: Double) {
         context.datastore.edit { preferences ->
             preferences[SettingsPreferences.ANGER_DETECTION_TIME] = value
+        }
+    }
+
+    suspend fun savePhoneNumber(value: String) {
+        context.datastore.edit { preferences ->
+            preferences[SettingsPreferences.PHONE_NUMBER] = value
         }
     }
 }

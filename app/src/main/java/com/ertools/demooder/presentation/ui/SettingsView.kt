@@ -27,6 +27,7 @@ import com.ertools.demooder.presentation.components.dialog.OptionData
 import com.ertools.demooder.presentation.components.scaffold.ReturnScaffold
 import com.ertools.demooder.presentation.viewmodel.SettingsViewModel
 import com.ertools.demooder.presentation.viewmodel.SettingsViewModelFactory
+import com.ertools.demooder.utils.AppFormat
 import com.ertools.demooder.utils.Validation
 
 @Composable
@@ -41,10 +42,11 @@ fun SettingsView(
 
     /** Values **/
     val data = remember { mutableStateOf(emptyList<OptionData>()) }
-    val deviceDamping = settingsViewModel.deviceDamping.collectAsState()
-    val signalDetectionPeriod = settingsViewModel.signalDetectionPeriod.collectAsState()
+    val deviceDamping = settingsViewModel.deviceDampingAsString.collectAsState()
+    val signalDetectionPeriod = settingsViewModel.signalDetectionPeriodAsString.collectAsState()
     val enableNotifications = settingsViewModel.enableNotifications.collectAsState()
-    val angerDetectionTime = settingsViewModel.angerDetectionTime.collectAsState()
+    val angerDetectionTime = settingsViewModel.angerDetectionTimeAsString.collectAsState()
+    val phoneNumber = settingsViewModel.phoneNumber.collectAsState()
 
     /** Strings **/
     val deviceDampingTitle = stringResource(R.string.settings_device_damping_title)
@@ -54,7 +56,8 @@ fun SettingsView(
     val enableNotificationsTitle = stringResource(R.string.settings_enable_notifications_title)
     val angerDetectionTimeTitle = stringResource(R.string.settings_anger_detection_time_title)
     val angerDetectionTimeUnit = stringResource(R.string.settings_anger_detection_time_unit)
-
+    val phoneNumberTitle = stringResource(R.string.settings_phone_number_title)
+    val phoneNumberUnit = stringResource(R.string.settings_phone_number_unit)
 
     LaunchedEffect(true) {
         data.value = listOf(
@@ -63,14 +66,14 @@ fun SettingsView(
                 value = deviceDamping,
                 unit = deviceDampingUnit,
                 onValidate = { Validation.isNumberInRange(it, -100, 100) },
-                onSave = { settingsViewModel.saveDeviceDamping(it) }
+                onSave = { settingsViewModel.saveDeviceDamping(it.toDouble()) }
             ),
             OptionData.InputOptionData(
                 optionTitle = signalDetectionPeriodTitle,
                 value = signalDetectionPeriod,
                 unit = signalDetectionPeriodUnit,
                 onValidate = { Validation.isNumberInRange(it, 1, 10) },
-                onSave = { settingsViewModel.saveSignalDetectionPeriod(it) }
+                onSave = { settingsViewModel.saveSignalDetectionPeriod(it.toDouble()) }
             ),
             OptionData.SwitchOptionData(
                 optionTitle = enableNotificationsTitle,
@@ -82,7 +85,14 @@ fun SettingsView(
                 value = angerDetectionTime,
                 unit = angerDetectionTimeUnit,
                 onValidate = { Validation.isNumberInRange(it, 1, 60) },
-                onSave = { settingsViewModel.saveAngerDetectionTime(it) }
+                onSave = { settingsViewModel.saveAngerDetectionTime(it.toDouble()) }
+            ),
+            OptionData.InputOptionData(
+                optionTitle = phoneNumberTitle,
+                value = phoneNumber,
+                unit = phoneNumberUnit,
+                onValidate = { Validation.isNumberInRange(it, 1, 60) },
+                onSave = { settingsViewModel.savePhoneNumber(it) }
             )
         )
     }

@@ -13,9 +13,10 @@
     <string name="nav_player">Player</string>
 
     <!-- HOME -->
-    <string name="home_description_01">Every speech is emotional, even a little bit.</string>
-    <string name="home_description_02">Analise the speech using Demooder!</string>
-    <string name="home_button_speech">Start the speech</string>
+    <string name="home_description_01">Detect even six emotions from speech</string>
+    <string name="home_description_02">start real time prediction</string>
+    <string name="home_description_03">or</string>
+    <string name="home_description_04">analise records from device</string>
 
     <!-- PREDICTION -->
     <string name="prediction_start_recording">Start</string>
@@ -49,6 +50,16 @@
     <string name="settings_enable_notifications_title">ENABLE NOTIFICATIONS</string>
     <string name="settings_anger_detection_time_title">ANGER DETECTION TIME IN SECONDS BEFORE TRIGGER NOTIFICATION</string>
     <string name="settings_anger_detection_time_unit">s</string>
+    <string name="settings_phone_number_title">PHONE NUMBER FOR SMS NOTIFICATION</string>
+    <string name="settings_phone_number_unit" />
+
+    <!-- Emotions -->
+    <string name="emotion_neutral">Neutral</string>
+    <string name="emotion_happy">Happiness</string>
+    <string name="emotion_sad">Sadness</string>
+    <string name="emotion_angry">Anger</string>
+    <string name="emotion_fearful">Fear</string>
+    <string name="emotion_disgusted">Disgust</string>
 
     <!-- ERRORS -->
     <string name="error_number">You must input a number.</string>

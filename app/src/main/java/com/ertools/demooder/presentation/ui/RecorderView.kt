@@ -16,7 +16,6 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -31,17 +30,15 @@ import com.ertools.demooder.core.audio.AudioRecorder
 import com.ertools.demooder.core.classifier.EmotionClassifier
 import com.ertools.demooder.core.classifier.PredictionProvider
 import com.ertools.demooder.core.classifier.PredictionRepository
-import com.ertools.demooder.core.detector.DetectionProvider
 import com.ertools.demooder.core.detector.SpeechDetector
 import com.ertools.demooder.core.settings.SettingsStore
-import com.ertools.demooder.core.spectrum.SpectrumProvider
 import com.ertools.demooder.presentation.components.dialog.ClickButton
 import com.ertools.demooder.presentation.components.dialog.StateButton
 import com.ertools.demooder.presentation.components.interfaces.Resetable
 import com.ertools.demooder.presentation.components.widgets.EvaluationWidget
 import com.ertools.demooder.presentation.components.widgets.SoundboardWidget
 import com.ertools.demooder.presentation.components.widgets.SpectrumWidget
-import com.ertools.demooder.presentation.components.widgets.StatisticsWidget
+import com.ertools.demooder.presentation.components.widgets.EmotionStatisticsWidget
 import com.ertools.demooder.presentation.components.widgets.TimerWidget
 import com.ertools.demooder.presentation.viewmodel.AudioViewModel
 import com.ertools.demooder.presentation.viewmodel.AudioViewModelFactory
@@ -218,8 +215,11 @@ fun RecorderContent(
         Spacer(modifier = Modifier.weight(2f))
 
         if(animatedWeight > 0f) {
-            StatisticsWidget(
-                modifier = Modifier.weight(animatedWeight),
+            EmotionStatisticsWidget(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(animatedWeight)
+                    .padding(dimensionResource(R.dimen.component_statistics_padding)),
                 predictionProvider = predictionProvider
             )
         }

@@ -48,12 +48,15 @@ object AppConstants {
     const val NOTIFICATION_ACTION_STOP = "action_stop"
     const val NOTIFICATION_ACTION_NOTIFY = "action_notify"
     const val NOTIFICATION_DATA = "notification_data"
+    const val NOTIFICATION_SMS_CONTENT = "Anger detection alert! Please check the app for more details."
 
     /* Default settings */
     const val SETTINGS_DEFAULT_DEVICE_DAMPING = 0.0
     const val SETTINGS_DEFAULT_SIGNAL_DETECTION_SECONDS = 2.0
     const val SETTINGS_DEFAULT_ENABLE_NOTIFICATIONS = true
     const val SETTINGS_DEFAULT_ANGER_DETECTION_TIME = 10.0
+    const val SETTINGS_DEFAULT_PHONE_NUMBER = "+48123123123"
+
 
     /* Bundle keys */
     const val BUNDLE_KEY_RECORDS_FILE = "records_file"

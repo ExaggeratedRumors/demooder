@@ -24,4 +24,8 @@ object AppFormat {
         val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH)
         return sdf.format(Date(date.toLong() * 1000)).toString()
     }
+
+    fun doubleToString(value: Double): String {
+        return "%.1f".format(Locale.ENGLISH, value)
+    }
 }
