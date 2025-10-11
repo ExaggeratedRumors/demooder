@@ -7,7 +7,6 @@ import com.ertools.demooder.core.classifier.Prediction
 import com.ertools.demooder.core.classifier.PredictionProvider
 import com.ertools.demooder.core.classifier.PredictionRepository
 import com.ertools.processing.commons.Emotion
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
@@ -16,7 +15,6 @@ import kotlinx.coroutines.flow.stateIn
 /**
  * VieModel for calculating and providing statistics based on predictions.
  */
-
 class StatisticsViewModel(
     application: Application
 ): AndroidViewModel(application), PredictionProvider {
@@ -46,15 +44,6 @@ class StatisticsViewModel(
                 SharingStarted.Eagerly,
                 0
             )
-    }
-
-    override fun statistics(): Flow<Map<Emotion, Int>> {
-        return predictionHistory
-            .map { predictions ->
-                Emotion.entries.associateWith { emotion ->
-                    predictions.count { it.label == emotion }
-                }
-            }
     }
 
     override fun reset() {

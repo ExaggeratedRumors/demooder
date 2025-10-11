@@ -63,10 +63,10 @@ fun RecorderView() {
     }
     val settingsViewModel: SettingsViewModel = viewModel(factory = settingsViewModelFactory)
 
-    /** Recorder **/
+    /** AudioViewModel for control player and detect speech **/
     val classifier = EmotionClassifier().apply { this.loadClassifier(context) }
     val detector = SpeechDetector().apply { this.loadModel(context) }
-    val recorderViewModelFactory = remember {
+    val audioViewModelFactory = remember {
         AudioViewModelFactory(
             audioProvider = audioRecorder,
             classifier = classifier,
@@ -75,10 +75,10 @@ fun RecorderView() {
         )
     }
     val audioViewModel: AudioViewModel = viewModel<AudioViewModel>(
-        factory = recorderViewModelFactory
+        factory = audioViewModelFactory
     ).apply { runTasks() }
 
-    /** Notifications **/
+    /** NotificationViewModel for notifications **/
     val notificationViewModelFactory = remember {
         NotificationViewModelFactory(
             audioProvider = audioRecorder,
@@ -90,7 +90,7 @@ fun RecorderView() {
     /** Timer **/
     val timerViewModel = viewModel<TimerViewModel>()
 
-    /** Statistics **/
+    /** StatisticsViewModel for statistics of audio **/
     val statisticsViewModel: StatisticsViewModel = viewModel()
 
     /** Buttons state **/
@@ -119,7 +119,7 @@ fun RecorderContent(
         modifier = Modifier
         .fillMaxWidth()
         .fillMaxHeight()
-        .padding(dimensionResource(R.dimen.prediction_view_padding)),
+        .padding(horizontal = dimensionResource(R.dimen.prediction_view_padding)),
         verticalArrangement = Arrangement.SpaceBetween,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
