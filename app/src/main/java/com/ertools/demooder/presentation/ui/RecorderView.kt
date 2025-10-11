@@ -35,10 +35,10 @@ import com.ertools.demooder.core.settings.SettingsStore
 import com.ertools.demooder.presentation.components.dialog.ClickButton
 import com.ertools.demooder.presentation.components.dialog.StateButton
 import com.ertools.demooder.presentation.components.interfaces.Resetable
+import com.ertools.demooder.presentation.components.widgets.EmotionStatisticsWidget
 import com.ertools.demooder.presentation.components.widgets.EvaluationWidget
 import com.ertools.demooder.presentation.components.widgets.SoundboardWidget
 import com.ertools.demooder.presentation.components.widgets.SpectrumWidget
-import com.ertools.demooder.presentation.components.widgets.EmotionStatisticsWidget
 import com.ertools.demooder.presentation.components.widgets.TimerWidget
 import com.ertools.demooder.presentation.viewmodel.AudioViewModel
 import com.ertools.demooder.presentation.viewmodel.AudioViewModelFactory

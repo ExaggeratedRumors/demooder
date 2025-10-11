@@ -7,6 +7,7 @@ import com.ertools.demooder.core.classifier.Prediction
 import com.ertools.demooder.core.classifier.PredictionProvider
 import com.ertools.demooder.core.classifier.PredictionRepository
 import com.ertools.processing.commons.Emotion
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
@@ -37,25 +38,23 @@ class StatisticsViewModel(
     }
 
     override fun count(emotion: Emotion): StateFlow<Int> {
-        return predictionHistory.map { predictions ->
-            predictions.count { it.label == emotion }
-        }.stateIn(
-            viewModelScope,
-            SharingStarted.Eagerly,
-            0
-        )
-    }
-
-    override fun statistics(): Map<Emotion, StateFlow<Int>> {
-        return Emotion.entries.associateWith { emotion ->
-            predictionHistory.map { predictions ->
+        return predictionHistory
+            .map { predictions ->
                 predictions.count { it.label == emotion }
             }.stateIn(
                 viewModelScope,
-                SharingStarted.WhileSubscribed(),
+                SharingStarted.Eagerly,
                 0
             )
-        }
+    }
+
+    override fun statistics(): Flow<Map<Emotion, Int>> {
+        return predictionHistory
+            .map { predictions ->
+                Emotion.entries.associateWith { emotion ->
+                    predictions.count { it.label == emotion }
+                }
+            }
     }
 
     override fun reset() {

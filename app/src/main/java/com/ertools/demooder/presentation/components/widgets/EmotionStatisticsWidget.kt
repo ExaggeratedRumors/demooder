@@ -13,6 +13,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
@@ -48,6 +49,7 @@ fun EmotionStatisticsWidget(
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically
         ) {
+
             Column(
                 modifier = Modifier
                     .fillMaxWidth(0.8f)
@@ -56,20 +58,19 @@ fun EmotionStatisticsWidget(
                 verticalArrangement = Arrangement.SpaceEvenly
             ) {
                 Emotion.entries.forEach { emotion ->
+                    val count: Int by predictionProvider.count(emotion).collectAsState()
                     val emotionTranslation = stringResource(
                         Translations.emotions[emotion.name]?: R.string.empty
                     )
-                    val emotionFlow = predictionProvider.count(emotion).collectAsState()
-
                     TitleValueWidget(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(dimensionResource(R.dimen.component_statistics_element_padding)),
                         title = "${emotion.name} ($emotionTranslation)",
-                        value = "${emotionFlow.value}s",
+                        value = "${count}s",
                         isVertical = false
                     )
-                    if(emotion != Emotion.entries.last()) {
+                    if(emotion.name != Emotion.entries.last().name) {
                         HorizontalDivider(
                             modifier = Modifier.fillMaxWidth(),
                             thickness = dimensionResource(R.dimen.global_divider_thickness),
