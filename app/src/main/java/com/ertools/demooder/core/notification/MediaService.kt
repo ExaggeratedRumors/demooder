@@ -17,6 +17,7 @@ import kotlinx.coroutines.launch
 class MediaService: Service() {
     private val job = Job()
     private val scope = CoroutineScope(Dispatchers.Main + job)
+    private var previousNotificationData: NotificationData? = null
 
     /*********************/
     /** Implementations **/
@@ -45,7 +46,6 @@ class MediaService: Service() {
     private fun observeEvents() {
         scope.launch {
             NotificationEventStream.events.collect { data ->
-                Log.d("MediaService", "Received notification event: $data")
                 when(data.action) {
                     NotificationAction.DESTROY -> {
                         onDestroy()
@@ -60,17 +60,24 @@ class MediaService: Service() {
         val style = androidx.media.app.NotificationCompat.MediaStyle()
             .setShowActionsInCompactView(0)
 
-        val icon =  if(data?.action == NotificationAction.START) R.drawable.stop_filled
-                    else R.drawable.mic_filled
+        val startActionList = listOf(NotificationAction.STOP_FROM_UI, NotificationAction.INIT)
 
-        val action =    if(data?.action == NotificationAction.START) AppConstants.NOTIFICATION_ACTION_STOP
-                        else AppConstants.NOTIFICATION_ACTION_START
+        val icon = if (data?.action in startActionList) R.drawable.mic_filled
+        else R.drawable.stop_filled
+
+        val action =
+            if (data?.action in startActionList) AppConstants.NOTIFICATION_ACTION_START
+            else AppConstants.NOTIFICATION_ACTION_STOP
 
         /** Action intent **/
         val actionData = NotificationData(
-            action =    if(data?.action == NotificationAction.START) NotificationAction.STOP
-                        else NotificationAction.START,
+            action = when (data?.action) {
+                in startActionList -> NotificationAction.START_FROM_SERVICE
+                NotificationAction.START_FROM_UI -> NotificationAction.STOP_FROM_SERVICE
+                else -> previousNotificationData?.action ?: NotificationAction.STOP_FROM_SERVICE
+            }
         )
+        previousNotificationData = actionData
 
         val actionIntent = Intent(this, NotificationReceiver::class.java).apply {
             putExtra(AppConstants.NOTIFICATION_DATA, actionData)
@@ -96,17 +103,22 @@ class MediaService: Service() {
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
-        val notification = NotificationCompat.Builder(this, AppConstants.NOTIFICATION_MEDIA_CHANNEL_ID)
-            .setStyle(style)
-            .setContentTitle(data?.title ?: "")
-            .setContentText(data?.subtitle ?: "")
-            .setContentIntent(openAppPendingIntent)
-            .addAction(
-                icon,
-                action,
-                actionPendingIntent
-            ).setSmallIcon(R.drawable.vec_home_speech)
-            .build()
-        startForeground(AppConstants.NOTIFICATION_MEDIA_ID, notification)
+        val notification =
+            NotificationCompat.Builder(this, AppConstants.NOTIFICATION_MEDIA_CHANNEL_ID)
+                .setStyle(style)
+                .setContentTitle(data?.title ?: "")
+                .setContentText(data?.subtitle ?: "")
+                .setContentIntent(openAppPendingIntent)
+                .addAction(
+                    icon,
+                    action,
+                    actionPendingIntent
+                ).setSmallIcon(R.drawable.vec_home_speech)
+                .build()
+        try {
+            startForeground(AppConstants.NOTIFICATION_MEDIA_ID, notification)
+        } catch (e: Exception) {
+            Log.e("MediaService", "Error starting foreground service: ${e.message}")
+        }
     }
 }

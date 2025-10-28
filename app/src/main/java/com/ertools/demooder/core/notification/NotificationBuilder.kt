@@ -10,13 +10,13 @@ object NotificationBuilder{
         val microphoneChannel = NotificationChannel(
             AppConstants.NOTIFICATION_MICROPHONE_CHANNEL_ID,
             AppConstants.NOTIFICATION_MICROPHONE_CHANNEL_NAME,
-            NotificationManager.IMPORTANCE_DEFAULT
+            NotificationManager.IMPORTANCE_MIN
         )
 
         val mediaChannel = NotificationChannel(
             AppConstants.NOTIFICATION_MEDIA_CHANNEL_ID,
             AppConstants.NOTIFICATION_MEDIA_CHANNEL_NAME,
-            NotificationManager.IMPORTANCE_DEFAULT
+            NotificationManager.IMPORTANCE_MIN
         )
 
         val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager

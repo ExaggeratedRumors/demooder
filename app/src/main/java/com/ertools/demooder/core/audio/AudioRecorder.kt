@@ -64,10 +64,16 @@ class AudioRecorder: AudioProvider {
             Log.d("AudioRecorder", "Stop called but recorder is not playing.")
             return
         }
-        recorder.stop()
-        recorder.release()
         isPlaying.value = false
-        Log.d("AudioRecorder", "Recording stopped.")
+        try {
+            if (recorder.recordingState == AudioRecord.RECORDSTATE_RECORDING) recorder.stop()
+        } catch (e: IllegalStateException) {
+            Log.e("AudioRecorder", "Error stopping recorder: ${e.message}")
+        } finally {
+            recorder.release()
+            isPlaying.value = false
+            Log.d("AudioRecorder", "Recording stopped and released.")
+        }
     }
 
     /**
@@ -85,11 +91,23 @@ class AudioRecorder: AudioProvider {
             Log.d("AudioRecorder", "Recorder is not playing.")
             return null
         }
+        val tempBuffer = ByteArray(recorderBufferSize)
+        val result = try {
+            recorder.read(
+                tempBuffer,
+                0,
+                recorderBufferSize
+            )
+        } catch (e: IllegalStateException) {
+            Log.e("AudioRecorder", "Error reading from recorder: ${e.message}")
+        }
         shiftAudioBuffer(buffer, recorderBufferSize)
-        val result = recorder.read(
+        System.arraycopy(
+            tempBuffer,
+            0,
             buffer,
-            buffer.size - recorderBufferSize,
-            recorderBufferSize
+            buffer.size - tempBuffer.size,
+            tempBuffer.size
         )
         when(result) {
             AudioRecord.ERROR -> Log.e("AudioRecorder", "AudioRecord.ERROR")

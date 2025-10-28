@@ -74,7 +74,6 @@ class EmotionClassifier {
         val labelsHistogram = InferenceStrategy.averageVoting(inputBuffers) { inputBuffer ->
             val outputBuffer = Array(1) { FloatArray(labels.size) { Float.NaN }}
             classifier.run(inputBuffer, outputBuffer)
-            Log.d("EmotionClassifier", "Raw output: ${outputBuffer.joinToString { it.joinToString() }}")
             outputBuffer
         }.map { Prediction(it.first, it.second) }
 

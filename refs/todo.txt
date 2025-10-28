@@ -1,6 +1,0 @@
-1. Wyrównanie zmian między recordview a playerview
-2. Poprawki w SeekBar
-3. Sekcja statystyk nie odświeża danych poprawnie
-4. Wywołać AlertViewModel
-5. Dodanie na pasku powiadomień etykiety predykcji
-6. Problemy z synchronizacją bufora klasyfikacji i detekcji

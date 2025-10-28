@@ -27,7 +27,6 @@ import com.ertools.demooder.presentation.components.dialog.OptionData
 import com.ertools.demooder.presentation.components.scaffold.ReturnScaffold
 import com.ertools.demooder.presentation.viewmodel.SettingsViewModel
 import com.ertools.demooder.presentation.viewmodel.SettingsViewModelFactory
-import com.ertools.demooder.utils.AppFormat
 import com.ertools.demooder.utils.Validation
 
 @Composable
@@ -38,14 +37,16 @@ fun SettingsView(
     val context = LocalContext.current.applicationContext
     val settingsStore = SettingsStore(context)
     val settingsViewModelFactory = remember { SettingsViewModelFactory(settingsStore) }
-    val settingsViewModel: SettingsViewModel = viewModel(factory = settingsViewModelFactory)
+    val settingsViewModel: SettingsViewModel = viewModel<SettingsViewModel>(
+        factory = settingsViewModelFactory
+    )
 
     /** Values **/
     val data = remember { mutableStateOf(emptyList<OptionData>()) }
-    val deviceDamping = settingsViewModel.deviceDampingAsString.collectAsState()
+    val deviceDamping = settingsViewModel.deviceDamping.collectAsState()
     val signalDetectionPeriod = settingsViewModel.signalDetectionPeriodAsString.collectAsState()
     val enableNotifications = settingsViewModel.enableNotifications.collectAsState()
-    val angerDetectionTime = settingsViewModel.angerDetectionTimeAsString.collectAsState()
+    val angerDetectionTime = settingsViewModel.angerDetectionTime.collectAsState()
     val phoneNumber = settingsViewModel.phoneNumber.collectAsState()
 
     /** Strings **/

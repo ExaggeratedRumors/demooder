@@ -25,7 +25,11 @@ object AppFormat {
         return sdf.format(Date(date.toLong() * 1000)).toString()
     }
 
-    fun doubleToString(value: Double): String {
+    fun doubleToOnePrecString(value: Double): String {
         return "%.1f".format(Locale.ENGLISH, value)
+    }
+
+    fun floatToTwoPrecString(value: Float): String {
+        return "%.2f".format(Locale.ENGLISH, value)
     }
 }

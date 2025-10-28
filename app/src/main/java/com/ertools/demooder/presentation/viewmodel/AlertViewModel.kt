@@ -7,46 +7,73 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.ertools.demooder.core.classifier.PredictionRepository
+import com.ertools.demooder.utils.AppConstants
 import com.ertools.demooder.utils.AppConstants.NOTIFICATION_SMS_CONTENT
 import com.ertools.demooder.utils.AppConstants.SETTINGS_DEFAULT_PHONE_NUMBER
 import com.ertools.processing.commons.Emotion
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class AlertViewModel(
-    val maxAngerDetectionTimeSeconds: Int,
-    val analyzePeriodSeconds: Int,
+    maxAngerDetectionTimeSecondsFlow: Flow<Double>,
+    analyzePeriodSecondsFlow: Flow<Double>,
+    phoneNumber: Flow<String>
 ): ViewModel() {
-    val angerDataFlow = PredictionRepository.predictionHistory.map {
+    /** Data flows **/
+    val phoneNumber = phoneNumber.stateIn(
+        viewModelScope,
+        SharingStarted.Eagerly,
+        SETTINGS_DEFAULT_PHONE_NUMBER
+    )
+    private val maxAngerDetectionTime = maxAngerDetectionTimeSecondsFlow.stateIn(
+        viewModelScope,
+        SharingStarted.Eagerly,
+        AppConstants.SETTINGS_DEFAULT_ANGER_DETECTION_TIME
+    )
+    private val analyzePeriodSeconds = analyzePeriodSecondsFlow.stateIn(
+        viewModelScope,
+        SharingStarted.Eagerly,
+        AppConstants.SETTINGS_DEFAULT_SIGNAL_DETECTION_SECONDS
+    )
+    private val angerDataFlow = PredictionRepository.predictionHistory.map {
         it.count { prediction -> prediction.label == Emotion.ANG }
     }.stateIn(
         viewModelScope,
         SharingStarted.Eagerly,
         0
     )
+    private val alertHasBeenSent = mutableStateOf(false)
 
-    val alertHasBeenSent = mutableStateOf(false)
-
+    /*********/
+    /** API **/
+    /*********/
     fun startListening() {
         viewModelScope.launch {
             while(!alertHasBeenSent.value) {
-                if(angerDataFlow.value * analyzePeriodSeconds >= maxAngerDetectionTimeSeconds) {
+                if(angerDataFlow.value * analyzePeriodSeconds.value >= maxAngerDetectionTime.value) {
                     sendSms()
                     alertHasBeenSent.value = true
                 }
+                delay(analyzePeriodSeconds.value.toLong())
             }
         }
     }
 
+
+    /*************/
+    /** Private **/
+    /*************/
     private fun sendSms() {
         try {
             val smsManager = SmsManager.getDefault()
             smsManager.sendTextMessage(
                 SETTINGS_DEFAULT_PHONE_NUMBER,
                 null,
-                NOTIFICATION_SMS_CONTENT,
+                phoneNumber.value,
                 null,
                 null
             )
@@ -58,8 +85,9 @@ class AlertViewModel(
 }
 
 class AlertViewModelFactory(
-    val maxAngerDetectionTimeSeconds: Int,
-    val analyzePeriodSeconds: Int
+    val maxAngerDetectionTimeSeconds: Flow<Double>,
+    val analyzePeriodSeconds: Flow<Double>,
+    val phoneNumber: Flow<String>
 ) : ViewModelProvider.Factory {
 
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -67,7 +95,8 @@ class AlertViewModelFactory(
             @Suppress("UNCHECKED_CAST")
             return AlertViewModel(
                 maxAngerDetectionTimeSeconds,
-                analyzePeriodSeconds
+                analyzePeriodSeconds,
+                phoneNumber
             ) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")

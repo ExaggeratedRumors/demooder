@@ -1,5 +1,6 @@
 package com.ertools.demooder.presentation.ui
 
+import android.util.Log
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
@@ -40,6 +41,8 @@ import com.ertools.demooder.presentation.components.widgets.EvaluationWidget
 import com.ertools.demooder.presentation.components.widgets.SoundboardWidget
 import com.ertools.demooder.presentation.components.widgets.SpectrumWidget
 import com.ertools.demooder.presentation.components.widgets.TimerWidget
+import com.ertools.demooder.presentation.viewmodel.AlertViewModel
+import com.ertools.demooder.presentation.viewmodel.AlertViewModelFactory
 import com.ertools.demooder.presentation.viewmodel.AudioViewModel
 import com.ertools.demooder.presentation.viewmodel.AudioViewModelFactory
 import com.ertools.demooder.presentation.viewmodel.NotificationViewModel
@@ -91,7 +94,19 @@ fun RecorderView() {
     val timerViewModel = viewModel<TimerViewModel>()
 
     /** StatisticsViewModel for statistics of audio **/
-    val statisticsViewModel: StatisticsViewModel = viewModel()
+    val statisticsViewModel: StatisticsViewModel = viewModel<StatisticsViewModel>().apply {
+        reset()
+    }
+
+    /** AlertViewModel for alerting **/
+    val alertViewModelFactory = remember {
+        AlertViewModelFactory(
+            maxAngerDetectionTimeSeconds = settingsStore.angerDetectionTime,
+            analyzePeriodSeconds = settingsStore.signalDetectionPeriod,
+            phoneNumber = settingsStore.phoneNumber
+        )
+    }
+    viewModel<AlertViewModel>(factory = alertViewModelFactory).apply { startListening() }
 
     /** Buttons state **/
     val isRecording = audioRecorder.isRunning().collectAsState()
@@ -220,6 +235,7 @@ fun RecorderContent(
                     .fillMaxWidth()
                     .weight(animatedWeight)
                     .padding(dimensionResource(R.dimen.component_statistics_padding)),
+                detectionPeriodSeconds = detectionPeriodSeconds,
                 predictionProvider = predictionProvider
             )
         }

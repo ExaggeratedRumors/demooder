@@ -65,6 +65,7 @@ dependencies {
 
     /** Tensorflow **/
     implementation(libs.litert)
+    implementation(libs.litert.support)
 
     /** Complex **/
     implementation(libs.multik.core)

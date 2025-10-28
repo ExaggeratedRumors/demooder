@@ -1,6 +1,7 @@
 package com.ertools.demooder.presentation.viewmodel
 
 import android.util.Log
+import androidx.compose.runtime.key
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -17,6 +18,7 @@ import com.ertools.demooder.utils.AppConstants
 import com.ertools.processing.commons.OctavesAmplitudeSpectrum
 import com.ertools.processing.commons.ProcessingUtils
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -44,6 +46,7 @@ class AudioViewModel(
     /** Parameters **/
     private val recordingDelayMillis: Long = AppConstants.RECORDER_DELAY_MILLIS
     private val graphUpdatePeriodMillis: Long = AppConstants.UI_GRAPH_UPDATE_DELAY
+    private var emotionDetectionJob: Job? = null
 
     /** Data flows **/
     private val _spectrum: MutableStateFlow<OctavesAmplitudeSpectrum> = MutableStateFlow(OctavesAmplitudeSpectrum(ProcessingUtils.AUDIO_OCTAVES_AMOUNT))
@@ -56,6 +59,10 @@ class AudioViewModel(
 
     private val _errors: MutableSharedFlow<String> = MutableSharedFlow()
     val audioErrors = _errors.asSharedFlow()
+
+    private val _newDataCounter = MutableStateFlow(0)
+    val newDataCounter = _newDataCounter.asStateFlow()
+
 
     /**********/
     /** API **/
@@ -120,10 +127,10 @@ class AudioViewModel(
     private fun startSpectrumBuildingTask(dataBuffer: ByteArray, dataBufferSize: Int) {
         viewModelScope.launch {
             while(isActive && isWorking.value) {
-                delay(graphUpdatePeriodMillis)
                 val lastSampleSize = dataBuffer.size.coerceAtMost(AppConstants.UI_GRAPH_MAX_DATA_SIZE)
                 val data = dataBuffer.sliceArray(dataBufferSize - lastSampleSize until dataBufferSize)
                 _spectrum.value = SpectrumBuilder.build(data)
+                delay(graphUpdatePeriodMillis)
             }
         }
     }
@@ -135,27 +142,32 @@ class AudioViewModel(
      * @param dataBuffer The byte array buffer containing audio data.
      */
     private fun startEmotionDetectingTask(dataBuffer: ByteArray) {
-        viewModelScope.launch(Dispatchers.IO) {
+        if(emotionDetectionJob?.isActive == true) return
+        emotionDetectionJob = viewModelScope.launch(Dispatchers.Default) {
             val classificationPeriodMillis = (1000 * settingsStore.signalDetectionPeriod.first()).toLong()
             while(isActive && isWorking.value) {
                 delay(classificationPeriodMillis)
+                if(!isWorking.value) break
                 audioProvider.getSampleRate()?.let { sampleRate ->
                     detector.detectSpeech(dataBuffer, sampleRate) { isSpeech ->
                         if(isSpeech) {
                             _isSpeech.value = true
                             classifier.predict(dataBuffer, sampleRate) { prediction ->
+                                if(!isWorking.value) return@predict
                                 PredictionRepository.updatePredictions(prediction)
+                                _newDataCounter.value = if(newDataCounter.value > 10) 0 else newDataCounter.value + 1
                             }
                         } else {
                             _isSpeech.value = false
+                            _newDataCounter.value = if(newDataCounter.value > 10) 0 else newDataCounter.value + 1
                         }
                     }
                 } ?: run {
                     Log.e("AudioViewModel", "Sample rate is null, cannot detect speech.")
                     _errors.emit("Sample rate is null, cannot detect speech.")
                 }
-
             }
+            emotionDetectionJob = null
         }
     }
     /**
@@ -170,10 +182,15 @@ class AudioViewModel(
     /********************/
     override fun getSpectrum(): StateFlow<OctavesAmplitudeSpectrum> = spectrum
     override fun isSpeech(): StateFlow<Boolean> = isSpeech
+    override fun detectionCounter(): StateFlow<Int> = newDataCounter
     override fun reset() {
         dataBuffer = ByteArray(0)
-        _spectrum.value = OctavesAmplitudeSpectrum(ProcessingUtils.AUDIO_OCTAVES_AMOUNT)
+        _spectrum.value = OctavesAmplitudeSpectrum(ProcessingUtils.AUDIO_OCTAVES_AMOUNT) {
+            0.0
+        }
         _isSpeech.value = false
+        emotionDetectionJob?.cancel()
+        emotionDetectionJob = null
     }
     override fun onCleared() {
         super.onCleared()

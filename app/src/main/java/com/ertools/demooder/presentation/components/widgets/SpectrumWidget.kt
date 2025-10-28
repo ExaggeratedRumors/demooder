@@ -17,6 +17,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -47,8 +48,8 @@ fun SpectrumWidget(
         verticalArrangement = Arrangement.Center,
     ) {
         /** Flow **/
-        val spectrumFlow = remember(provider) { provider.getSpectrum() }
-        val spectrum by spectrumFlow.collectAsStateWithLifecycle()
+        val spectrumFlow = remember { provider.getSpectrum() }
+        val spectrum by spectrumFlow.collectAsState()
 
         /** Constance **/
         val labels: List<String> = listOf(
@@ -109,7 +110,6 @@ fun SpectrumWidget(
                                 color = MaterialTheme.colorScheme.onSurface,
                                 fontSize = 12.sp,
                             )
-
                         }
                     }
                 }

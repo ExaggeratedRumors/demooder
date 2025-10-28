@@ -101,7 +101,7 @@ fun ColumnScope.HomeDescription() {
     ) {
         Text(
             text = stringResource(id = R.string.home_description_01),
-            style = MaterialTheme.typography.bodyMedium,
+            style = MaterialTheme.typography.bodySmall,
             modifier = Modifier,
             fontFamily = FontFamily.Monospace,
             color = MaterialTheme.colorScheme.onSurface,
@@ -110,7 +110,7 @@ fun ColumnScope.HomeDescription() {
         )
         Text(
             text = stringResource(id = R.string.home_description_02),
-            style = MaterialTheme.typography.bodyMedium,
+            style = MaterialTheme.typography.bodySmall,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.fillMaxWidth(0.75f),
             fontFamily = FontFamily.Monospace,
@@ -121,7 +121,7 @@ fun ColumnScope.HomeDescription() {
         )
         Text(
             text = stringResource(id = R.string.home_description_03),
-            style = MaterialTheme.typography.bodyMedium,
+            style = MaterialTheme.typography.bodySmall,
             modifier = Modifier.fillMaxWidth(0.75f),
             fontFamily = FontFamily.Monospace,
             color = MaterialTheme.colorScheme.onSurface,
@@ -131,7 +131,7 @@ fun ColumnScope.HomeDescription() {
         )
         Text(
             text = stringResource(id = R.string.home_description_04),
-            style = MaterialTheme.typography.bodyMedium,
+            style = MaterialTheme.typography.bodySmall,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.fillMaxWidth(0.75f),
             fontFamily = FontFamily.Monospace,

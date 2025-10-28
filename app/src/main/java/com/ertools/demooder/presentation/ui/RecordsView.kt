@@ -31,6 +31,7 @@ import com.ertools.demooder.core.audio.RecordingFile
 import com.ertools.demooder.presentation.navigation.RecordsNavigationItem
 import com.ertools.demooder.presentation.viewmodel.FilesViewModel
 import com.ertools.demooder.utils.AppConstants
+import com.ertools.demooder.utils.AppFormat
 
 @Composable
 fun RecordsView(
@@ -135,12 +136,17 @@ fun RecordItemView(
                 }
             }
             Column(
-                modifier = Modifier.padding(8.dp),
+                modifier = Modifier.padding(4.dp),
                 horizontalAlignment = Alignment.End,
                 verticalArrangement = Arrangement.Center
             ) {
                 Text(
                     text = file.size,
+                    fontSize = MaterialTheme.typography.labelSmall.fontSize,
+                    fontWeight = MaterialTheme.typography.labelSmall.fontWeight
+                )
+                Text(
+                    text = "${AppFormat.doubleToOnePrecString(file.durationMillis/1000.0)}s",
                     fontSize = MaterialTheme.typography.labelSmall.fontSize,
                     fontWeight = MaterialTheme.typography.labelSmall.fontWeight
                 )

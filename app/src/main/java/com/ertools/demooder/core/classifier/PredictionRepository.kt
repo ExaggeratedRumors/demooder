@@ -12,7 +12,7 @@ object PredictionRepository {
     fun updatePredictions(newPredictions: List<Prediction>) {
         val prediction = newPredictions.maxBy { it.confidence }
         val currentHistory = _predictionHistory.value.toMutableList()
-        if(currentHistory.size == HISTORY_MAX_SIZE)  currentHistory.removeAt(0)
+        if(currentHistory.size == HISTORY_MAX_SIZE) currentHistory.removeAt(0)
         currentHistory.add(prediction)
         _predictionHistory.value = currentHistory.toList()
     }

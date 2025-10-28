@@ -69,9 +69,10 @@ class NotificationViewModel(
             startBackgroundTask(context, AppConstants.NOTIFICATION_ACTION_NOTIFY)
             NotificationEventStream.events.collect { notificationData ->
                 when(notificationData.action) {
-                    NotificationAction.START ->
+                    NotificationAction.START_FROM_SERVICE -> {
                         audioProvider.start()
-                    NotificationAction.STOP ->
+                    }
+                    NotificationAction.STOP_FROM_SERVICE ->
                         audioProvider.stop()
                     else -> {}
                 }
@@ -83,11 +84,11 @@ class NotificationViewModel(
         viewModelScope.launch {
             audioProvider.isRunning().collect { running ->
                 val notificationData = if (running) NotificationData(
-                    action = NotificationAction.START,
+                    action = NotificationAction.START_FROM_UI,
                     title = context.getString(R.string.prediction_result_label),
                     subtitle = context.getString(R.string.prediction_result_loading)
                 ) else NotificationData(
-                    action = NotificationAction.STOP,
+                    action = NotificationAction.STOP_FROM_UI,
                     title = context.getString(R.string.prediction_placeholder)
                 )
                 updateBackgroundTask(notificationData)
@@ -98,8 +99,13 @@ class NotificationViewModel(
     private fun startPredictionTask(context: Context) {
         viewModelScope.launch {
             lastTwoPredictions.collect { it ->
-                val currentPrediction = it.firstOrNull()?.label?.name ?: context.getString(R.string.prediction_result_loading)
-                val previousPrediction = it.getOrNull(1)?.label?.name ?: context.getString(R.string.empty)
+                val currentPrediction =
+                    if(it.size == 1) it.firstOrNull()?.label?.name
+                    else if(it.size > 1) it.getOrNull(1)?.label?.name
+                    else context.getString(R.string.prediction_result_loading)
+                val previousPrediction =
+                    if(it.size > 1) it.firstOrNull()?.label?.name
+                    else context.getString(R.string.empty)
 
                 val notificationData = NotificationData(
                     action = NotificationAction.UPDATE,

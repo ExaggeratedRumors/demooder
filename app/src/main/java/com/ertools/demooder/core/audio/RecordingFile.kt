@@ -9,6 +9,7 @@ data class RecordingFile(
     val name: String,
     val modificationDate: String,
     val size: String,
+    val durationMillis: Int,
     val uri: Uri,
     val isWav: Boolean
 ): Parcelable

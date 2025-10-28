@@ -27,6 +27,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.integerResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ertools.demooder.R
 import com.ertools.demooder.core.audio.AudioPlayer
@@ -39,7 +40,6 @@ import com.ertools.demooder.core.detector.SpeechDetector
 import com.ertools.demooder.core.settings.SettingsStore
 import com.ertools.demooder.presentation.components.dialog.ClickButton
 import com.ertools.demooder.presentation.components.dialog.StateButton
-import com.ertools.demooder.presentation.components.interfaces.Resetable
 import com.ertools.demooder.presentation.components.widgets.AudioSeekBarWidget
 import com.ertools.demooder.presentation.components.widgets.EmotionStatisticsWidget
 import com.ertools.demooder.presentation.components.widgets.EvaluationWidget
@@ -55,7 +55,6 @@ import com.ertools.demooder.presentation.viewmodel.SeekBarViewModelFactory
 import com.ertools.demooder.presentation.viewmodel.SettingsViewModel
 import com.ertools.demooder.presentation.viewmodel.SettingsViewModelFactory
 import com.ertools.demooder.presentation.viewmodel.StatisticsViewModel
-import com.ertools.demooder.presentation.viewmodel.TimerViewModel
 import kotlinx.coroutines.delay
 
 @Composable
@@ -117,10 +116,12 @@ fun PlayerView(
     }
     val seekBarViewModel: SeekBarViewModel = viewModel<SeekBarViewModel>(
         factory = seekBarViewModelFactory
-    ).apply { runTasks() }
+    )
 
     /** StatisticsViewModel for statistics of audio **/
-    val statisticsViewModel: StatisticsViewModel = viewModel()
+    val statisticsViewModel: StatisticsViewModel = viewModel<StatisticsViewModel>().apply {
+        reset()
+    }
 
     /** Buttons state **/
     val isPlaying = audioPlayer.isRunning().collectAsState()
@@ -247,7 +248,12 @@ fun PlayerContent(
                     iconContentDescriptionResource = R.string.records_play_cd,
                     onClick = {
                         if(isPlaying.value) audioProvider.stop()
-                        else audioProvider.start()
+                        else {
+                            predictionProvider.reset()
+                            audioViewModel.reset()
+                            audioProvider.start()
+                            seekBarViewModel.runTasks()
+                        }
                     }
                 )
             },
@@ -268,7 +274,11 @@ fun PlayerContent(
                         .aspectRatio(1f),
                     iconResource = R.drawable.replay_filled,
                     iconContentDescriptionResource = R.string.records_replay_cd,
-                    onClick = { seekBarViewModel.seekTo(0) }
+                    onClick = {
+                        audioViewModel.reset()
+                        predictionProvider.reset()
+                        seekBarViewModel.seekTo(0)
+                    }
                 )
             }
         )
@@ -280,7 +290,8 @@ fun PlayerContent(
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(animatedWeight)
-                    .padding(dimensionResource(R.dimen.component_statistics_padding)),
+                    .padding(4.dp),
+                detectionPeriodSeconds = detectionPeriodSeconds,
                 predictionProvider = predictionProvider
             )
         }

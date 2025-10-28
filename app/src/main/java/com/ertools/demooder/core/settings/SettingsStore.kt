@@ -1,6 +1,7 @@
 package com.ertools.demooder.core.settings
 
 import android.content.Context
+import android.util.Log
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
@@ -35,6 +36,14 @@ class SettingsStore(private val context: Context) {
 
     val phoneNumber: Flow<String> = context.datastore.data.map {
         it[SettingsPreferences.PHONE_NUMBER] ?: AppConstants.SETTINGS_DEFAULT_PHONE_NUMBER
+    }
+
+    init {
+        Log.d("SettingsStore", "Load: deviceDamping=${AppConstants.SETTINGS_DEFAULT_DEVICE_DAMPING}, " +
+                "signalDetectionPeriod=${AppConstants.SETTINGS_DEFAULT_SIGNAL_DETECTION_SECONDS}, " +
+                "enableNotifications=${AppConstants.SETTINGS_DEFAULT_ENABLE_NOTIFICATIONS}, " +
+                "angerDetectionTime=${AppConstants.SETTINGS_DEFAULT_ANGER_DETECTION_TIME}, " +
+                "phoneNumber='${AppConstants.SETTINGS_DEFAULT_PHONE_NUMBER}'")
     }
 
     suspend fun saveDeviceDamping(value: Double) {

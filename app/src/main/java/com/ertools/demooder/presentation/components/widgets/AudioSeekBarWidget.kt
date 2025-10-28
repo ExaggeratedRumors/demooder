@@ -40,12 +40,13 @@ fun AudioSeekBarWidget(
 
             Slider(
                 value = sliderPosition,
-                onValueChange = { sliderPosition = it },
+                onValueChange = { sliderPosition = it / duration },
                 onValueChangeFinished = {
                     onSeekChange(sliderPosition.toInt())
                 },
                 valueRange = 0f..duration.toFloat(),
-                modifier = Modifier.weight(6f)
+                modifier = Modifier.weight(6f),
+                enabled = false
             )
 
             Text(text = simpleTimeFormat(duration), modifier = Modifier.weight(1f))

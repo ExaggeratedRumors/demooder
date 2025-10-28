@@ -11,6 +11,6 @@ object SettingsPreferences {
     val SIGNAL_DETECTION_PERIOD = doublePreferencesKey("signal_detection_period")
     val ENABLE_NOTIFICATIONS = booleanPreferencesKey("enable_notifications")
     val ANGER_DETECTION_TIME = doublePreferencesKey("anger_detection_time")
-    val PHONE_NUMBER = stringPreferencesKey("+48123123123")
+    val PHONE_NUMBER = stringPreferencesKey("phone_number")
 
 }

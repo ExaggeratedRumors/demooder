@@ -7,6 +7,7 @@ import com.ertools.processing.data.WavFile
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlin.math.max
+import kotlin.math.min
 
 /**
  * Class for playing audio using the Android MediaPlayer API.
@@ -20,8 +21,8 @@ class AudioPlayer(
     private var wavFile: WavFile? = null
     private var isRunning: MutableStateFlow<Boolean> = MutableStateFlow(false)
 
-    fun isInitialized(): Boolean {
-        return mediaPlayer != null && wavFile != null
+    init {
+        initialize()
     }
 
     /*********************************/
@@ -33,30 +34,15 @@ class AudioPlayer(
      * If the MediaPlayer is not initialized, it will load the wav file from the recordingFile URI.
      */
     override fun start() {
-        if(mediaPlayer == null) {
-            try {
-                context.contentResolver.openInputStream(recordingFile.uri)?.use { input ->
-                    wavFile = WavFile.fromStream(recordingFile.name, input)
-                }
-                mediaPlayer = MediaPlayer().apply {
-                    setDataSource(context, recordingFile.uri)
-                    prepare()
-                    start()
-                    setOnCompletionListener {
-                        onStopCallback()
-                    }
-                }
-                isRunning.value = true
-                Log.d("AudioPlayer", "MediaPlayer initialized and started with wav file: ${wavFile?.fileName}, header: ${wavFile?.header}")
-            } catch (e: Exception) {
-                Log.e("AudioPlayer", "Error initializing MediaPlayer: ${e.message}")
-                e.printStackTrace()
-            }
+        if(mediaPlayer == null) initialize()
+        if (isRunning.value) {
+            Log.d("AudioPlayer", "Start called but MediaPlayer is already playing.")
+            return
         }
         else if(mediaPlayer?.isPlaying == false) {
             try {
-                mediaPlayer?.start()
                 isRunning.value = true
+                mediaPlayer?.start()
             } catch (e: Exception) {
                 Log.e("AudioPlayer", "Error starting MediaPlayer: ${e.message}")
                 e.printStackTrace()
@@ -100,15 +86,19 @@ class AudioPlayer(
         }
         val currentMillis = mediaPlayer!!.currentPosition
         val bytesPerSample = 2 * wavFile!!.header.numChannels
-        val endPosition = bytesPerSample * currentMillis * wavFile!!.header.sampleRate / 1000
+
+        val endPosition = min(
+            wavFile!!.data.size,
+            bytesPerSample * currentMillis * wavFile!!.header.sampleRate / 1000
+        )
         val startPosition = max(0, endPosition - buffer.size)
 
-        Log.d("AudioPlayer", "Reading audio data from position $startPosition to $endPosition (current millis: $currentMillis), buffer size: ${buffer.size}, bytes per sample: $bytesPerSample")
         if(startPosition == endPosition) return 0
         wavFile!!.data.copyInto(
             destination = buffer,
+            destinationOffset = buffer.size - (endPosition - startPosition),
             startIndex = startPosition,
-            endIndex = endPosition
+            endIndex = endPosition,
         )
         return endPosition - startPosition
     }
@@ -140,5 +130,32 @@ class AudioPlayer(
             return
         }
         mediaPlayer?.seekTo(position)
+    }
+
+    /****************************/
+    /* Private methods section */
+    /****************************/
+    private fun initialize() {
+        if(isInitialized()) return
+        try {
+            context.contentResolver.openInputStream(recordingFile.uri)?.use { input ->
+                wavFile = WavFile.fromStream(recordingFile.name, input)
+            }
+            mediaPlayer = MediaPlayer().apply {
+                setDataSource(context, recordingFile.uri)
+                prepare()
+                setOnCompletionListener {
+                    onStopCallback()
+                }
+            }
+            Log.d("AudioPlayer", "MediaPlayer initialized with wav file: ${wavFile?.fileName}, header: ${wavFile?.header}")
+        } catch (e: Exception) {
+            Log.e("AudioPlayer", "Error initializing MediaPlayer: ${e.message}")
+            e.printStackTrace()
+        }
+    }
+
+    private fun isInitialized(): Boolean {
+        return mediaPlayer != null && wavFile != null
     }
 }

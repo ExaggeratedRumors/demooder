@@ -40,6 +40,7 @@ class FilesViewModel(application: Application) : AndroidViewModel(application) {
             MediaStore.Audio.Media._ID,
             MediaStore.Audio.Media.DISPLAY_NAME,
             MediaStore.Audio.Media.DATE_MODIFIED,
+            MediaStore.Audio.Media.DURATION,
             MediaStore.Audio.Media.SIZE
         )
         val query = "${MediaStore.Audio.Media.IS_RECORDING} != 0"
@@ -51,12 +52,14 @@ class FilesViewModel(application: Application) : AndroidViewModel(application) {
             val filenameColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DISPLAY_NAME)
             val modificationDateColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DATE_MODIFIED)
             val sizeColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.SIZE)
+            val durationColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DURATION)
             while (cursor.moveToNext()) audioFiles.add(
                 RecordingFile(
                     name = cursor.getString(filenameColumn),
                     modificationDate = dateFormat(cursor.getString(modificationDateColumn)),
                     size = bytesFormat(cursor.getLong(sizeColumn)),
                     uri = ContentUris.withAppendedId(contentUri, cursor.getLong(idColumn)),
+                    durationMillis = cursor.getInt(durationColumn),
                     isWav = cursor.getString(filenameColumn).endsWith(".wav", ignoreCase = true)
                 )
             )

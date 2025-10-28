@@ -84,6 +84,7 @@ sealed class OptionData(
                         onConfirm = {
                             showDialog.value = false
                             //if(option.onValidate(it)) {
+                            if(it.count { char -> char.isDigit() } < 1) return@TextInputDialog
                             inputText.value = it
                             option.onSave(it)
                             //}

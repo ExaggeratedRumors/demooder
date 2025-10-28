@@ -24,6 +24,7 @@ object Permissions {
             Manifest.permission.FOREGROUND_SERVICE
         },
         Manifest.permission.RECORD_AUDIO,
+        Manifest.permission.SEND_SMS
     ).toTypedArray()
 
     fun requestPermissions(context: Activity) {

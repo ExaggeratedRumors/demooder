@@ -15,9 +15,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -25,12 +27,13 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextAlign
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ertools.demooder.R
 import com.ertools.demooder.core.classifier.Prediction
 import com.ertools.demooder.core.classifier.PredictionProvider
 import com.ertools.demooder.core.detector.DetectionProvider
+import com.ertools.demooder.utils.AppFormat
 import com.ertools.processing.commons.Emotion
-import java.util.Locale
 import kotlin.math.roundToInt
 
 
@@ -50,16 +53,19 @@ fun EvaluationWidget(
     detectionPeriodSeconds: State<Double>,
     isRecording: State<Boolean>
 ) {
-    val lastTwoPredictions: List<Prediction> by predictionProvider.last(2).collectAsState()
-    val angerCounter by predictionProvider.count(Emotion.ANG).collectAsState()
-    val isSpeech by detectionProvider.isSpeech().collectAsState()
-
     val placeholderText = stringResource(R.string.prediction_placeholder)
     val predictionLabel = stringResource(R.string.prediction_result_label)
     val loadingText = stringResource(R.string.prediction_result_loading)
     val previousPredictionLabel = stringResource(R.string.prediction_previous_label)
     val previousPredictionPlaceholderText = stringResource(R.string.prediction_previous_placeholder)
     val angerLabel = stringResource(R.string.prediction_anger_label)
+
+    val lastTwoPredictions: List<Prediction> by predictionProvider.last(2).collectAsStateWithLifecycle()
+    val lastPrediction: MutableState<String> = remember { mutableStateOf(loadingText) }
+    val previousPrediction: MutableState<String> = remember { mutableStateOf(previousPredictionPlaceholderText) }
+    val angerCounter by predictionProvider.count(Emotion.ANG).collectAsState()
+    val isSpeech by detectionProvider.isSpeech().collectAsState()
+    val detectionCounter by detectionProvider.detectionCounter().collectAsState()
 
     Box(
         modifier = modifier
@@ -71,7 +77,21 @@ fun EvaluationWidget(
         ) {
             val progressAnimation = remember { Animatable(0f) }
             if (isRecording.value) {
-                LaunchedEffect(lastTwoPredictions) {
+                LaunchedEffect(detectionCounter) {
+                    lastPrediction.value =
+                        if (lastTwoPredictions.isEmpty()) loadingText
+                        else if(isSpeech) lastTwoPredictions.last().let {
+                            "${it.label}: ${AppFormat.floatToTwoPrecString(it.confidence * 100)}%"
+                        }
+                        else loadingText
+
+                    previousPrediction.value =
+                        if (lastTwoPredictions.isEmpty() || (isSpeech && lastTwoPredictions.size == 1))
+                            previousPredictionPlaceholderText
+                        else lastTwoPredictions[0].let {
+                            "${it.label} (${AppFormat.floatToTwoPrecString(it.confidence * 100)}%)"
+                        }
+
                     progressAnimation.snapTo(0f)
                     while (isRecording.value) {
                         progressAnimation.animateTo(
@@ -81,7 +101,6 @@ fun EvaluationWidget(
                                 easing = LinearEasing
                             )
                         )
-                        progressAnimation.snapTo(0f)
                     }
                 }
 
@@ -90,15 +109,7 @@ fun EvaluationWidget(
                         .fillMaxWidth()
                         .fillMaxHeight(0.5f),
                     title = predictionLabel,
-                    value = if (!isSpeech || lastTwoPredictions.isEmpty()) loadingText
-                    else lastTwoPredictions[lastTwoPredictions.size - 1].let { prediction ->
-                        "${prediction.label}: ${
-                            "%.2f".format(
-                                Locale.ENGLISH,
-                                prediction.confidence * 100
-                            )
-                        }%"
-                    },
+                    value = lastPrediction.value,
                     isVertical = true
                 )
 
@@ -113,13 +124,7 @@ fun EvaluationWidget(
                         .fillMaxWidth()
                         .fillMaxHeight(0.5f),
                     title = previousPredictionLabel,
-                    value = if (lastTwoPredictions.size < 2) previousPredictionPlaceholderText
-                    else {
-                        val index = if(isSpeech) 0 else lastTwoPredictions.size - 1
-                        lastTwoPredictions[index].let {
-                            "${it.label} (${"%.2f".format(Locale.ENGLISH, it.confidence * 100)}%)"
-                        }
-                    },
+                    value = previousPrediction.value,
                     isVertical = false
                 )
 

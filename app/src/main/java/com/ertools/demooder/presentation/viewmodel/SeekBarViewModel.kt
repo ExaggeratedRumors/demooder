@@ -61,7 +61,6 @@ class SeekBarViewModel(
 
     /**
      * Start listening for audio running state and update isWorking state.
-     * Emits NotificationAction.START or NotificationAction.STOP based on the state.
      */
     private fun runListeningTask() {
         viewModelScope.launch {
@@ -78,6 +77,7 @@ class SeekBarViewModel(
     private fun runPositionUpdatingTask() {
         viewModelScope.launch {
             while (isWorking.value) {
+                _duration.value = progressProvider.getSize()
                 _position.value = progressProvider.getCurrentPosition()
                 delay(AppConstants.UI_SEEK_BAR_UPDATE_DELAY)
             }

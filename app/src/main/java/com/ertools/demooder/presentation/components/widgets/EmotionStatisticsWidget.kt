@@ -12,6 +12,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -20,6 +21,7 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import com.ertools.demooder.R
 import com.ertools.demooder.core.classifier.PredictionProvider
+import com.ertools.demooder.utils.AppFormat
 import com.ertools.demooder.utils.Translations
 import com.ertools.processing.commons.Emotion
 
@@ -32,6 +34,7 @@ import com.ertools.processing.commons.Emotion
 @Composable
 fun EmotionStatisticsWidget(
     modifier: Modifier = Modifier,
+    detectionPeriodSeconds: State<Double>,
     predictionProvider: PredictionProvider
 ) {
     Card(
@@ -67,7 +70,7 @@ fun EmotionStatisticsWidget(
                             .fillMaxWidth()
                             .padding(dimensionResource(R.dimen.component_statistics_element_padding)),
                         title = "${emotion.name} ($emotionTranslation)",
-                        value = "${count}s",
+                        value = "${AppFormat.doubleToOnePrecString(count * detectionPeriodSeconds.value)}s",
                         isVertical = false
                     )
                     if(emotion.name != Emotion.entries.last().name) {

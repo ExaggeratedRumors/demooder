@@ -4,4 +4,5 @@ import kotlinx.coroutines.flow.StateFlow
 
 interface DetectionProvider {
     fun isSpeech(): StateFlow<Boolean>
+    fun detectionCounter(): StateFlow<Int>
 }
