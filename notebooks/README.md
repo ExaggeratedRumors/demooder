@@ -53,11 +53,11 @@ jupyter notebook
 - `mobilenet_classifier.ipynb` - build and test MobileNetV2 model.
 
 <p align="center">
-    <img src="../refs/uml_notebooks.png" width="900" alt="preview"/> 
+    <img src="../refs/uml_notebooks.png" width="700" alt="preview"/> 
 </p>
 
 ## Model structure
 
 <p align="center">
-    <img src="../refs/model.png" width="900" alt="preview"/> 
+    <img src="../refs/model.png" width="800" alt="preview"/> 
 </p>
