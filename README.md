@@ -1,6 +1,6 @@
 # Demooder
 
-![Android support](https://shields.io/badge/Android-SDK_34-green) ![Compose](https://shields.io/badge/Jetpack_Compose-1.6.10-blue) ![Model](https://shields.io/badge/TensorFlow-2.10.0-orange) ![In progress](https://shields.io/badge/In_progress-purple)
+![Android support](https://shields.io/badge/Android-SDK_34-green) ![Compose](https://shields.io/badge/Jetpack_Compose-1.6.10-blue) ![Model](https://shields.io/badge/TensorFlow-2.10.0-orange) ![1.0](https://shields.io/badge/1.0-purple)
 
 <p align="center">
     <img src="refs/logo.png" width="200" alt="logo"/> 
@@ -9,9 +9,7 @@
 Android application using input sound to recognize voice.
 
 ## Release
-`
-1.0
-`
+`1.0`
 
 ## Preview
 
@@ -20,7 +18,8 @@ Android application using input sound to recognize voice.
 </p>
 
 ## Technologies
-Application:
+
+### Application
 - Kotlin 2.1.21
 - Java 11
 - Android SDK 34
@@ -29,7 +28,7 @@ Application:
 - Jetpack Compose 1.6.10
 - LiteRT 1.3.0
 
-Scripts:
+### Machine Learning / Scripts
 - Python 3.8.20
 - Numpy 1.23.3
 - TensorFlow 2.11.0
@@ -37,19 +36,25 @@ Scripts:
 - cuda 11.2
 - cuDNN 8.1.0
 
+## Project structure
 
-## Executing
+<p align="center">
+    <img src="refs/uml_project.png" width="800" alt="preview"/> 
+</p>
+
+
+## Data processing execution
 1. Clone repository:
 ```agsl
 https://github.com/ExaggeratedRumors/demooder.git
 ```
 2. Download AudioWav data: <a href="https://www.kaggle.com/api/v1/datasets/download/ejlok1/cremad">Download from Kaggle</a>.
-3. Unzip Wav files in `data_audio` directory (from root it's `demooder-model/data_audio` directory).
-4. [optional] Run data augmentation task:
+3. Unzip Wav files in the `processing/data_audio` directory.
+4. [optional] Run data augmentation task (use `gradlew.bat` on Windows):
 ```bash
 ./gradlew :processing:dataAugmentation
 ```
-5. Run create spectrograms task:
+5. Run create spectrograms task (use `gradlew.bat` on Windows):
 ```bash
 ./gradlew :processing:createSpectrograms
 ```
@@ -86,7 +91,7 @@ Output spectrograms are saved in `data/spectrograms` directory.
 7. Predict.
 
 ## Predicting in Android
-1. Convert TF model to ONNX.
+1. Convert TF model to ONNX. The model is converted to ONNX to leverage the ONNX Runtime for efficient, cross-platform inference on Android devices.
 2. Record voice signal.
 3. Downsample signal from 48000Hz to 16000Hz.
 4. Convert byte data to complex.

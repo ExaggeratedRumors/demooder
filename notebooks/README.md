@@ -51,3 +51,13 @@ jupyter notebook
 - `custom_classifier.ipynb` - build and test custom network modelled on a VGG16 (<a href="https://viso.ai/deep-learning/vgg-very-deep-convolutional-networks/">about VGG</a>).
 - `nasnet_classifier.ipynb` - build and test NASNetMobile model.
 - `mobilenet_classifier.ipynb` - build and test MobileNetV2 model.
+
+<p align="center">
+    <img src="../refs/uml_notebooks.png" width="900" alt="preview"/> 
+</p>
+
+## Model structure
+
+<p align="center">
+    <img src="../refs/model.png" width="900" alt="preview"/> 
+</p>
