@@ -1,6 +1,6 @@
 # Demooder
 
-![Android support](https://shields.io/badge/Android-SDK_34-green) ![Compose](https://shields.io/badge/Jetpack_Compose-1.6.10-blue) ![Model](https://shields.io/badge/TensorFlow-2.10.0-orange) ![1.0](https://shields.io/badge/1.0-purple)
+![Android support](https://shields.io/badge/Android-SDK_34-green) ![Compose](https://shields.io/badge/Jetpack_Compose-1.6.10-blue) ![Model](https://shields.io/badge/TensorFlow-2.10.0-orange) ![1.0](https://shields.io/badge/release-v1.0-purple)
 
 <p align="center">
     <img src="refs/logo.png" width="200" alt="logo"/> 
@@ -9,7 +9,7 @@
 Android application using input sound to recognize voice.
 
 ## Release
-`1.0`
+`v1.0`
 
 ## Preview
 
